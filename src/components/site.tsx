@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Menu, X, MessageCircle, Phone, Mail, MapPin, Facebook, Instagram, Youtube, ChevronLeft, ChevronRight, LockKeyhole } from "lucide-react";
+import { Menu, X, MessageCircle, Phone, Mail, MapPin, Facebook, Instagram, Youtube, ChevronLeft, ChevronRight, LockKeyhole, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang, pick } from "@/lib/i18n";
 import { settingsQuery, slidesQuery, pricesQuery, historyQuery, verifiedPricesQuery, whatsappLink, calcZakat } from "@/lib/data";
@@ -66,6 +66,7 @@ export function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className="rounded-md border border-border px-3 py-1.5 text-sm hover:border-gold hover:text-gold">
             {lang === "ar" ? "EN" : "عربي"}
           </button>
@@ -383,5 +384,23 @@ export function PageHero({ title }: { title: string }) {
         <h1 className="text-4xl font-bold text-gold-gradient">{title}</h1>
       </div>
     </section>
+  );
+}
+
+export function ThemeToggle() {
+  const { lang } = useLang();
+  const [light, setLight] = useState(false);
+  useEffect(() => { setLight(document.documentElement.classList.contains("light")); }, []);
+  const toggle = () => {
+    const next = !light;
+    setLight(next);
+    document.documentElement.classList.toggle("light", next);
+    try { localStorage.setItem("theme", next ? "light" : "dark"); } catch {}
+  };
+  const label = light ? (lang === "ar" ? "الوضع الداكن" : "Dark mode") : (lang === "ar" ? "الوضع الساطع" : "Light mode");
+  return (
+    <button onClick={toggle} aria-label={label} title={label} className="grid h-9 w-9 place-items-center rounded-md border border-border hover:border-gold hover:text-gold">
+      {light ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+    </button>
   );
 }
