@@ -7,9 +7,9 @@ import { PageHero, ProductCard } from "@/components/site";
 export const Route = createFileRoute("/products")({
   head: () => ({
     meta: [
-      { title: "منتجاتنا | سبائك وجنيهات ذهب" },
+      { title: "منتجاتنا | جولد سنتر" },
       { name: "description", content: "سبائك ذهب وجنيهات ومشغولات، اطلبها مباشرة عبر واتساب." },
-      { property: "og:title", content: "منتجاتنا | دار السبائك" },
+      { property: "og:title", content: "منتجاتنا | جولد سنتر" },
       { property: "og:description", content: "سبائك ذهب وجنيهات ومشغولات." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

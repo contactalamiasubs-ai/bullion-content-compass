@@ -7,9 +7,9 @@ import { PageHero, PostCard } from "@/components/site";
 export const Route = createFileRoute("/blog")({
   head: () => ({
     meta: [
-      { title: "المدونة | دار السبائك" },
+      { title: "المدونة | جولد سنتر" },
       { name: "description", content: "مقالات وأدلة عن الذهب والفضة والادخار." },
-      { property: "og:title", content: "المدونة | دار السبائك" },
+      { property: "og:title", content: "المدونة | جولد سنتر" },
       { property: "og:description", content: "مقالات وأدلة عن الذهب والفضة." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

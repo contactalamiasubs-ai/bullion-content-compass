@@ -33,7 +33,7 @@ function AuthPage() {
       if (error) { toast.error(error.message); return; }
       nav({ to: "/admin" });
     } else {
-      const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/admin` } });
+      const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
       setBusy(false);
       if (error) { toast.error(error.message); return; }
       toast.success("تم إنشاء الحساب — افتح بريدك لتأكيده ثم سجّل الدخول");

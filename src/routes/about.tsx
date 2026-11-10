@@ -7,9 +7,9 @@ import { PageHero, fallbackImages } from "@/components/site";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "من نحن | دار السبائك" },
+      { title: "من نحن | جولد سنتر" },
       { name: "description", content: "تعرف على تاريخنا ورؤيتنا ورسالتنا وقيمنا في سوق الذهب." },
-      { property: "og:title", content: "من نحن | دار السبائك" },
+      { property: "og:title", content: "من نحن | جولد سنتر" },
       { property: "og:description", content: "تاريخنا ورؤيتنا ورسالتنا وقيمنا." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

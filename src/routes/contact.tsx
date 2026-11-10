@@ -8,9 +8,9 @@ import { PageHero } from "@/components/site";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "تواصل معنا | دار السبائك" },
+      { title: "تواصل معنا | جولد سنتر" },
       { name: "description", content: "راسلنا لأي استفسار عن الذهب والسبائك والخدمات." },
-      { property: "og:title", content: "تواصل معنا | دار السبائك" },
+      { property: "og:title", content: "تواصل معنا | جولد سنتر" },
       { property: "og:description", content: "راسلنا لأي استفسار." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

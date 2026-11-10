@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Menu, X, MessageCircle, Phone, Mail, MapPin, Facebook, Instagram, Youtube, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
-import { settingsQuery, slidesQuery, pricesQuery, historyQuery, whatsappLink, calcZakat } from "@/lib/data";
+import { settingsQuery, slidesQuery, pricesQuery, historyQuery, verifiedPricesQuery, whatsappLink, calcZakat } from "@/lib/data";
 import s1 from "@/assets/slide-1.jpg";
 import s2 from "@/assets/slide-2.jpg";
 import s3 from "@/assets/slide-3.jpg";
@@ -109,7 +109,7 @@ export function Footer() {
         © {new Date().getFullYear()} {pick(s, "site_name", lang)} — {t("rights")}
       </p>
       {s?.whatsapp_number && (
-        <a href={whatsappLink(s.whatsapp_number, "")} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="fixed bottom-5 end-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-success text-primary-foreground shadow-gold">
+        <a href={whatsappLink(s.whatsapp_number, "")} onClick={() => window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "floating" })} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="fixed bottom-5 end-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-success text-primary-foreground shadow-gold">
           <MessageCircle />
         </a>
       )}
@@ -150,7 +150,8 @@ export function HeroSlider() {
     return () => clearInterval(id);
   }, [active.length]);
   if (!active.length) return <div className="h-[70vh] bg-card" />;
-  const cur = active[i % active.length]!;
+  const cur = active[i % active.length];
+  if (!cur) return null;
   const go = (d: number) => setI((p) => (p + d + active.length) % active.length);
   return (
     <section className="relative h-[75vh] min-h-[480px] overflow-hidden">
@@ -182,6 +183,9 @@ export function HeroSlider() {
 export function PriceTicker() {
   const { t, lang } = useLang();
   const { data: s } = useQuery(settingsQuery);
+  const { data: audits = [] } = useQuery(verifiedPricesQuery);
+  const audit = audits[0];
+  const verified = audit && Number(audit.gold_usd) === Number(s?.gold_usd) && Number(audit.silver_usd) === Number(s?.silver_usd);
   if (!s) return null;
   return (
     <div className="mx-auto -mt-10 grid max-w-4xl grid-cols-2 gap-4 px-4 relative z-10">
@@ -195,6 +199,14 @@ export function PriceTicker() {
           <p className="text-xs text-muted-foreground">{t("perOz")}</p>
         </div>
       ))}
+      <div className="col-span-2 text-center text-xs text-muted-foreground">
+        {verified ? <>
+          <p>{t("lastUpdate")}: {new Date(audit.verified_at).toLocaleString(lang === "ar" ? "ar-EG" : "en-GB", { timeZone: "Africa/Cairo" })}</p>
+          <a className="text-gold underline" href={audit.gold_source_url} target="_blank" rel="noreferrer">Gold API · XAU</a>{" · "}
+          <a className="text-gold underline" href={audit.silver_source_url} target="_blank" rel="noreferrer">XAG</a>
+          <p className="mx-auto mt-1 max-w-2xl">{pick(audit, "summary", lang)}</p>
+        </> : <p>{lang === "ar" ? "أسعار يدوية — لم تُوثّق من المصدر بعد" : "Manual prices — not yet source-verified"}</p>}
+      </div>
     </div>
   );
 }
@@ -275,10 +287,10 @@ export function ZakatCalculator() {
       <h3 className="mb-4 text-2xl text-gold-gradient">{t("zakat")}</h3>
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="text-sm">{t("grams")}
-          <input type="number" min={0} value={g} onChange={(e) => setG(e.target.value)} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
+          <input type="number" min={0} value={g} onChange={(e) => { setG(e.target.value); if (e.target.value !== "" && Number(e.target.value) >= 0) window.__lovableEvents?.track?.("project.zakat_calculated", { karat: Number(k), above_nisab: calcZakat(Number(e.target.value), Number(k), p24).aboveNisab }); }} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
         </label>
         <label className="text-sm">{t("karat")}
-          <select value={k} onChange={(e) => setK(e.target.value)} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2">
+          <select value={k} onChange={(e) => { setK(e.target.value); window.__lovableEvents?.track?.("project.zakat_calculated", { karat: Number(e.target.value), above_nisab: calcZakat(Number(g) || 0, Number(e.target.value), p24).aboveNisab }); }} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2">
             {["24", "22", "21", "18"].map((x) => <option key={x}>{x}</option>)}
           </select>
         </label>
@@ -301,17 +313,30 @@ type ProductRow = { id: string; name_ar: string; name_en: string; description_ar
 export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
   const { t, lang } = useLang();
   const { data: s } = useQuery(settingsQuery);
+  const cardRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const element = cardRef.current;
+    if (!element) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        window.__lovableEvents?.track?.("project.product_viewed", { product_id: p.id });
+        observer.disconnect();
+      }
+    }, { threshold: 0.5 });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [p.id]);
   const name = pick(p, "name", lang);
   const msg = lang === "ar" ? `مرحبًا، أريد طلب: ${name}` : `Hello, I'd like to order: ${name}`;
   return (
-    <div className="group overflow-hidden rounded-xl border border-border bg-card transition hover:border-gold/60 hover:shadow-gold">
+    <div ref={cardRef} className="group overflow-hidden rounded-xl border border-border bg-card transition hover:border-gold/60 hover:shadow-gold">
       <div className="aspect-square overflow-hidden bg-secondary">
         <img src={p.image_url || fallbackImages[idx % 4]} alt={name} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
       </div>
       <div className="p-4">
         <h3 className="mb-1 line-clamp-2 min-h-12 text-base">{name}</h3>
         {p.price != null && <p className="mb-3 font-semibold text-gold" dir="ltr">{fmt(p.price, "en")} EGP</p>}
-        <a href={whatsappLink(s?.whatsapp_number, msg)} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-md bg-gold-gradient py-2 text-sm font-semibold text-primary-foreground">
+        <a href={whatsappLink(s?.whatsapp_number, msg)} onClick={() => window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "product", product_id: p.id })} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-md bg-gold-gradient py-2 text-sm font-semibold text-primary-foreground">
           <MessageCircle className="h-4 w-4" /> {t("buyWhatsapp")}
         </a>
       </div>

@@ -137,6 +137,57 @@ export type Database = {
         }
         Relationships: []
       }
+      price_updates: {
+        Row: {
+          created_by: string
+          gold_source_at: string
+          gold_source_url: string
+          gold_usd: number
+          id: string
+          model: string
+          response_id: string
+          silver_source_at: string
+          silver_source_url: string
+          silver_usd: number
+          source_payload: Json
+          summary_ar: string
+          summary_en: string
+          verified_at: string
+        }
+        Insert: {
+          created_by: string
+          gold_source_at: string
+          gold_source_url: string
+          gold_usd: number
+          id?: string
+          model: string
+          response_id: string
+          silver_source_at: string
+          silver_source_url: string
+          silver_usd: number
+          source_payload: Json
+          summary_ar: string
+          summary_en: string
+          verified_at?: string
+        }
+        Update: {
+          created_by?: string
+          gold_source_at?: string
+          gold_source_url?: string
+          gold_usd?: number
+          id?: string
+          model?: string
+          response_id?: string
+          silver_source_at?: string
+          silver_source_url?: string
+          silver_usd?: number
+          source_payload?: Json
+          summary_ar?: string
+          summary_en?: string
+          verified_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           active: boolean
@@ -240,6 +291,7 @@ export type Database = {
           app_link: string | null
           email: string | null
           facebook: string | null
+          gold_source_url: string
           gold_usd: number
           id: number
           instagram: string | null
@@ -251,6 +303,8 @@ export type Database = {
           popup_link: string | null
           popup_title_ar: string | null
           popup_title_en: string | null
+          price_source_enabled: boolean
+          silver_source_url: string
           silver_usd: number
           site_name_ar: string
           site_name_en: string
@@ -266,6 +320,7 @@ export type Database = {
           app_link?: string | null
           email?: string | null
           facebook?: string | null
+          gold_source_url?: string
           gold_usd?: number
           id?: number
           instagram?: string | null
@@ -277,6 +332,8 @@ export type Database = {
           popup_link?: string | null
           popup_title_ar?: string | null
           popup_title_en?: string | null
+          price_source_enabled?: boolean
+          silver_source_url?: string
           silver_usd?: number
           site_name_ar?: string
           site_name_en?: string
@@ -292,6 +349,7 @@ export type Database = {
           app_link?: string | null
           email?: string | null
           facebook?: string | null
+          gold_source_url?: string
           gold_usd?: number
           id?: number
           instagram?: string | null
@@ -303,6 +361,8 @@ export type Database = {
           popup_link?: string | null
           popup_title_ar?: string | null
           popup_title_en?: string | null
+          price_source_enabled?: boolean
+          silver_source_url?: string
           silver_usd?: number
           site_name_ar?: string
           site_name_en?: string
@@ -382,6 +442,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_verified_prices: {
+        Args: { _update_id: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

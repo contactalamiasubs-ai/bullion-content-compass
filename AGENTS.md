@@ -34,3 +34,6 @@ use the editor.
 - Admin dashboard uses the generic `ListEditor`/`SingleEditor` in `src/components/admin/editors.tsx`; add new editable tables by declaring fields there, not by writing new forms.
 - Writes are admin-only via `has_role(auth.uid(),'admin')` RLS; the first signed-up user becomes admin through a trigger.
 - The `media` bucket is private (workspace blocks public buckets); uploads store a 10-year signed URL.
+- Price refresh is an admin-authenticated server function; only exact Gold API XAU/XAG HTTPS endpoints are allowed to prevent SSRF, and validated USD-per-ounce quotes must match AI output exactly before publication.
+- Price audit records retain source timestamps, payload and model response ID; manual prices are not labeled source-verified.
+- Visitor events use the injected optional track global at visible product exposure and existing interaction handlers; no personal data or calculator holdings are collected.

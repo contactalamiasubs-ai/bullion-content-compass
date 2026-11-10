@@ -7,9 +7,9 @@ import { fallbackImages } from "@/components/site";
 export const Route = createFileRoute("/posts/$slug")({
   head: () => ({
     meta: [
-      { title: "مقال | دار السبائك" },
-      { name: "description", content: "اقرأ المقال كاملًا على دار السبائك." },
-      { property: "og:title", content: "مقال | دار السبائك" },
+      { title: "مقال | جولد سنتر" },
+      { name: "description", content: "اقرأ المقال كاملًا على جولد سنتر." },
+      { property: "og:title", content: "مقال | جولد سنتر" },
       { property: "og:description", content: "اقرأ المقال كاملًا." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary_large_image" },

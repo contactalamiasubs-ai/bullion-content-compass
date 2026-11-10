@@ -8,9 +8,9 @@ import { HeroSlider, PriceTicker, PriceTable, PriceChart, ZakatCalculator, Produ
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "دار السبائك | أسعار الذهب اليوم وسبائك الذهب" },
+      { title: "جولد سنتر | أسعار الذهب اليوم وسبائك الذهب" },
       { name: "description", content: "تابع أسعار الذهب والفضة لحظة بلحظة، واطلب السبائك والجنيهات الذهب عبر واتساب." },
-      { property: "og:title", content: "دار السبائك | أسعار الذهب اليوم" },
+      { property: "og:title", content: "جولد سنتر | أسعار الذهب اليوم" },
       { property: "og:description", content: "أسعار الذهب والفضة، سبائك وجنيهات، وحاسبة زكاة الذهب." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

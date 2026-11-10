@@ -4,9 +4,9 @@ import { PostList } from "./blog";
 export const Route = createFileRoute("/news")({
   head: () => ({
     meta: [
-      { title: "أخبار الذهب | دار السبائك" },
+      { title: "أخبار الذهب | جولد سنتر" },
       { name: "description", content: "آخر أخبار أسواق الذهب والفضة والتقرير اليومي." },
-      { property: "og:title", content: "أخبار الذهب | دار السبائك" },
+      { property: "og:title", content: "أخبار الذهب | جولد سنتر" },
       { property: "og:description", content: "آخر أخبار أسواق الذهب والفضة." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

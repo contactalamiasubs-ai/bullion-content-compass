@@ -7,9 +7,9 @@ import { PageHero, fallbackImages } from "@/components/site";
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "خدماتنا | دار السبائك" },
+      { title: "خدماتنا | جولد سنتر" },
       { name: "description", content: "خدمات الشركات والجملة والتكرير للذهب والفضة." },
-      { property: "og:title", content: "خدماتنا | دار السبائك" },
+      { property: "og:title", content: "خدماتنا | جولد سنتر" },
       { property: "og:description", content: "خدمات الشركات والجملة والتكرير." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -32,7 +32,7 @@ function Services() {
             <div>
               <h2 className="mb-3 text-3xl text-gold-gradient">{pick(x, "title", lang)}</h2>
               <p className="mb-5 whitespace-pre-line leading-relaxed text-muted-foreground">{pick(x, "body", lang)}</p>
-              <a href={whatsappLink(s?.whatsapp_number, pick(x, "title", lang))} target="_blank" rel="noreferrer" className="inline-block rounded-md bg-gold-gradient px-6 py-2.5 font-semibold text-primary-foreground">{t("contact")}</a>
+              <a href={whatsappLink(s?.whatsapp_number, pick(x, "title", lang))} onClick={() => window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "service" })} target="_blank" rel="noreferrer" className="inline-block rounded-md bg-gold-gradient px-6 py-2.5 font-semibold text-primary-foreground">{t("contact")}</a>
             </div>
           </div>
         ))}

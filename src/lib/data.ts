@@ -11,6 +11,10 @@ export const settingsQuery = queryOptions({
   queryKey: ["settings"],
   queryFn: () => q(supabase.from("site_settings").select("*").eq("id", 1).single()),
 });
+export const verifiedPricesQuery = queryOptions({
+  queryKey: ["verified-prices"],
+  queryFn: () => q(supabase.from("price_updates").select("id,gold_usd,silver_usd,gold_source_url,silver_source_url,gold_source_at,silver_source_at,verified_at,summary_ar,summary_en").order("verified_at", { ascending: false }).limit(1)),
+});
 export const slidesQuery = queryOptions({
   queryKey: ["slides"],
   queryFn: () => q(supabase.from("slides").select("*").order("sort")),

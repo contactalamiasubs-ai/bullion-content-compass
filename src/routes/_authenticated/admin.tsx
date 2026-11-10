@@ -4,6 +4,11 @@ import { useState } from "react";
 import { Settings, Images, Coins, LineChart, FileText, Briefcase, Package, Newspaper, Mail, LogOut, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SingleEditor, ListEditor, type Field } from "@/components/admin/editors";
+import { useServerFn } from "@tanstack/react-start";
+import { refreshVerifiedPrices } from "@/lib/prices.functions";
+import { verifiedPricesQuery } from "@/lib/data";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -30,6 +35,7 @@ const tabs = [
   { id: "popup", l: "النافذة المنبثقة", i: Images },
   { id: "slides", l: "السلايدر", i: Images },
   { id: "prices", l: "الأسعار", i: Coins },
+  { id: "source", l: "مصدر الأسعار والتوثيق", i: Coins },
   { id: "history", l: "سجل الأسعار", i: LineChart },
   { id: "sections", l: "أقسام الموقع", i: FileText },
   { id: "services", l: "الخدمات", i: Briefcase },
@@ -86,6 +92,8 @@ function Admin() {
 
 function Panel({ tab }: { tab: string }) {
   switch (tab) {
+    case "source":
+      return <PriceSource />;
     case "settings":
       return <SingleEditor table="site_settings" id={1} queryKey={["settings"]} fields={[
         ...bi("site_name", "اسم الموقع"), { name: "logo_url", label: "اللوجو", type: "image" },
@@ -134,6 +142,32 @@ function Panel({ tab }: { tab: string }) {
       return <Messages />;
   }
   return null;
+}
+
+function PriceSource() {
+  const qc = useQueryClient();
+  const refresh = useServerFn(refreshVerifiedPrices);
+  const [busy, setBusy] = useState(false);
+  const { data: updates = [] } = useQuery(verifiedPricesQuery);
+  return <div className="space-y-6">
+    <SingleEditor table="site_settings" id={1} queryKey={["settings"]} fields={[
+      { name: "price_source_enabled", label: "تفعيل مصدر Gold API", type: "bool" },
+      { name: "gold_source_url", label: "مصدر الذهب (https://api.gold-api.com/price/XAU)" },
+      { name: "silver_source_url", label: "مصدر الفضة (https://api.gold-api.com/price/XAG)" },
+    ]} />
+    <Button disabled={busy} onClick={async () => {
+      setBusy(true);
+      try { await refresh(); await Promise.all([qc.invalidateQueries({ queryKey: ["settings"] }), qc.invalidateQueries({ queryKey: ["verified-prices"] }), qc.invalidateQueries({ queryKey: ["admin", "site_settings"] })]); toast.success("تم توثيق وتحديث أسعار الذهب والفضة"); }
+      catch (err) { toast.error(err instanceof Error ? err.message : "تعذر تحديث الأسعار"); }
+      finally { setBusy(false); }
+    }}><Coins />{busy ? "جارٍ التحليل والتوثيق…" : "جلب الأسعار وتحليلها وتحديثها"}</Button>
+    {updates.map(update => <div key={update.id} className="space-y-2 border-t border-border py-4">
+      <p dir="ltr">XAU: {update.gold_usd} USD · XAG: {update.silver_usd} USD</p>
+      <p>{new Date(update.verified_at).toLocaleString("ar-EG", { timeZone: "Africa/Cairo" })}</p>
+      <p className="text-sm text-muted-foreground">{update.summary_ar}</p>
+      <p className="text-xs text-muted-foreground">وقت مصدر الذهب: {new Date(update.gold_source_at).toLocaleString("ar-EG")} · الفضة: {new Date(update.silver_source_at).toLocaleString("ar-EG")}</p>
+    </div>)}
+  </div>;
 }
 
 function Messages() {

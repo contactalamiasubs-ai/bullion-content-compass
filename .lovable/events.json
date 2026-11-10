@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "events": {
+    "project.product_viewed": {
+      "event_schema_version": 1,
+      "description": "A product card becomes at least 50 percent visible, once per mounted card.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "product_id"
+        ],
+        "properties": {
+          "product_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "project.whatsapp_clicked": {
+      "event_schema_version": 1,
+      "description": "A product, service or floating WhatsApp link is clicked.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "placement"
+        ],
+        "properties": {
+          "placement": {
+            "type": "string",
+            "enum": [
+              "product",
+              "service",
+              "floating"
+            ]
+          },
+          "product_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "project.zakat_calculated": {
+      "event_schema_version": 1,
+      "description": "User changes weight or karat and the existing zakat calculator recomputes.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "karat",
+          "above_nisab"
+        ],
+        "properties": {
+          "karat": {
+            "type": "number",
+            "enum": [
+              18,
+              21,
+              22,
+              24
+            ]
+          },
+          "above_nisab": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

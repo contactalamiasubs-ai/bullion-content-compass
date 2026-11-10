@@ -8,6 +8,20 @@
       "when": 1794308486840,
       "tag": "0000_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794310393139,
+      "tag": "0001_verified_metal_prices",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794310552410,
+      "tag": "0002_restrict_trigger_execution",
+      "breakpoints": true
     }
   ]
 }
