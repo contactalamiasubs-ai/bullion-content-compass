@@ -98,6 +98,7 @@ export function Footer() {
           <Link to="/blog" className="text-muted-foreground hover:text-gold">{t("blog")}</Link>
           <Link to="/news" className="text-muted-foreground hover:text-gold">{t("news")}</Link>
           <Link to="/contact" className="text-muted-foreground hover:text-gold">{t("contact")}</Link>
+          <Link to="/admin" className="text-muted-foreground hover:text-gold">{lang === "ar" ? "لوحة التحكم" : "Dashboard"}</Link>
         </div>
         <div className="space-y-2 text-sm text-muted-foreground">
           {s?.phone && <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-gold" /> <span dir="ltr">{s.phone}</span></p>}

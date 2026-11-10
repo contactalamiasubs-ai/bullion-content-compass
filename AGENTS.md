@@ -32,6 +32,7 @@ use the editor.
 ## Project rules
 - All site content (texts, prices, slides, products, posts) lives in Cloud tables with `_ar`/`_en` columns; UI reads them via `pick()` in `src/lib/i18n.tsx` so every text stays editable from /admin.
 - Admin dashboard uses the generic `ListEditor`/`SingleEditor` in `src/components/admin/editors.tsx`; add new editable tables by declaring fields there, not by writing new forms.
+- Admin editor mutations invalidate the public collection, post detail and overview queries, and expose pending/error states so saved content is reflected without silent failures.
 - Writes are admin-only via `has_role(auth.uid(),'admin')` RLS; the first signed-up user becomes admin through a trigger.
 - The `media` bucket is private (workspace blocks public buckets); uploads store a 10-year signed URL.
 - Price refresh is an admin-authenticated server function; only exact Gold API XAU/XAG HTTPS endpoints are allowed to prevent SSRF, and validated USD-per-ounce quotes must match AI output exactly before publication.

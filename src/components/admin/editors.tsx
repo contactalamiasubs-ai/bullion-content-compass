@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2, Save, Upload } from "lucide-react";
+import { Plus, Trash2, Save, Upload, Search, ChevronDown, ImageOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadImage } from "@/lib/data";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 
 export type Field = {
   name: string;
@@ -18,30 +20,30 @@ function FieldInput({ f, value, onChange }: { f: Field; value: unknown; onChange
   const [busy, setBusy] = useState(false);
   switch (f.type) {
     case "textarea":
-      return <textarea rows={4} className={inp} value={(value as string) ?? ""} onChange={(e) => onChange(e.target.value)} />;
+      return <textarea aria-label={f.label} rows={4} className={inp} value={(value as string) ?? ""} onChange={(e) => onChange(e.target.value)} />;
     case "number":
-      return <input type="number" step="any" className={inp} value={value == null ? "" : String(value)} onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))} />;
+      return <input aria-label={f.label} type="number" step="any" className={inp} value={value == null ? "" : String(value)} onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))} />;
     case "date":
-      return <input type="date" className={inp} value={(value as string) ?? ""} onChange={(e) => onChange(e.target.value)} />;
+      return <input aria-label={f.label} type="date" className={inp} value={(value as string) ?? ""} onChange={(e) => onChange(e.target.value)} />;
     case "bool":
       return (
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={!!value} onChange={(e) => onChange(e.target.checked)} className="h-4 w-4 accent-[var(--gold)]" /> مفعّل
-        </label>
+        <div className="flex h-9 items-center gap-2 text-sm">
+          <Switch aria-label={f.label} checked={!!value} onCheckedChange={onChange} /> {value ? "مفعّل" : "غير مفعّل"}
+        </div>
       );
     case "select":
       return (
-        <select className={inp} value={(value as string) ?? ""} onChange={(e) => onChange(e.target.value)}>
+        <select aria-label={f.label} className={inp} value={(value as string) ?? ""} onChange={(e) => onChange(e.target.value)}>
           {f.options?.map((o) => <option key={o}>{o}</option>)}
         </select>
       );
     case "image":
       return (
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {value ? <img src={value as string} alt="" className="h-14 w-14 rounded object-cover" /> : <div className="h-14 w-14 rounded bg-secondary" />}
           <label className="flex cursor-pointer items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs hover:border-gold">
             <Upload className="h-3.5 w-3.5" /> {busy ? "جارٍ الرفع..." : "رفع صورة"}
-            <input type="file" accept="image/*" hidden onChange={async (e) => {
+            <input aria-label={f.label} type="file" accept="image/*" disabled={busy} hidden onChange={async (e) => {
               const file = e.target.files?.[0];
               if (!file) return;
               setBusy(true);
@@ -49,11 +51,12 @@ function FieldInput({ f, value, onChange }: { f: Field; value: unknown; onChange
               setBusy(false);
             }} />
           </label>
-          {!!value && <button type="button" onClick={() => onChange(null)} className="text-xs text-destructive">إزالة</button>}
+          {!!value && <Button type="button" variant="ghost" size="icon" title="إزالة الصورة" aria-label="إزالة الصورة" onClick={() => onChange(null)} className="text-destructive"><ImageOff /></Button>}
+          <input aria-label={`رابط ${f.label}`} className={inp} dir="ltr" placeholder="https://" value={(value as string) ?? ""} onChange={e => onChange(e.target.value || null)} />
         </div>
       );
     default:
-      return <input className={inp} value={(value as string) ?? ""} onChange={(e) => onChange(e.target.value)} />;
+      return <input aria-label={f.label} dir={f.name.endsWith("_en") || f.name.includes("url") ? "ltr" : undefined} className={inp} value={(value as string) ?? ""} onChange={(e) => onChange(e.target.value)} />;
   }
 }
 
@@ -72,23 +75,52 @@ function FormGrid({ fields, row, set }: { fields: Field[]; row: Record<string, u
 
 type AnyTable = "site_settings" | "slides" | "metal_prices" | "price_history" | "sections" | "services" | "products" | "posts";
 
+async function readRows(table: AnyTable, order: string, ascending: boolean) {
+  const { data, error } = await supabase.from(table).select("*").order(order, { ascending });
+  if (error) throw error;
+  return (data ?? []) as unknown as Record<string, unknown>[];
+}
+
+function ReadState({ loading, error }: { loading: boolean; error: Error | null }) {
+  if (loading) return <p className="py-6 text-muted-foreground">جارٍ تحميل المحتوى…</p>;
+  if (error) return <p role="alert" className="py-6 text-destructive">تعذر تحميل المحتوى: {error.message}</p>;
+  return null;
+}
+
+function refreshContent(qc: ReturnType<typeof useQueryClient>, table: AnyTable, queryKey: string[]) {
+  void qc.invalidateQueries({ queryKey: ["admin", table] });
+  void qc.invalidateQueries({ queryKey });
+  void qc.invalidateQueries({ queryKey: ["admin-overview"] });
+  if (table === "posts") void qc.invalidateQueries({ queryKey: ["post"] });
+}
+
 /** Single-row form (site_settings). */
 export function SingleEditor({ table, id, fields, queryKey }: { table: AnyTable; id: number; fields: Field[]; queryKey: string[] }) {
   const qc = useQueryClient();
-  const { data } = useQuery({ queryKey: ["admin", table], queryFn: async () => (await supabase.from(table).select("*").eq("id" as never, id as never).single()).data as Record<string, unknown> });
+  const { data, isLoading, error } = useQuery({ queryKey: ["admin", table], queryFn: async () => {
+    const result = await supabase.from(table).select("*").eq("id" as never, id as never).single();
+    if (result.error) throw result.error;
+    return result.data as unknown as Record<string, unknown>;
+  } });
   const [row, setRow] = useState<Record<string, unknown>>({});
+  const [saving, setSaving] = useState(false);
   useEffect(() => { if (data) setRow(data); }, [data]);
   const save = async () => {
+    setSaving(true);
+    try {
     const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
     const { error } = await supabase.from(table).update(patch as never).eq("id" as never, id as never);
     if (error) { toast.error(error.message); return; }
     toast.success("تم الحفظ");
-    qc.invalidateQueries({ queryKey }); qc.invalidateQueries({ queryKey: ["admin", table] });
+    refreshContent(qc, table, queryKey);
+    } catch (err) { toast.error(err instanceof Error ? err.message : "تعذر الحفظ"); }
+    finally { setSaving(false); }
   };
+  if (isLoading || error) return <ReadState loading={isLoading} error={error} />;
   return (
-    <div className="space-y-4 rounded-xl border border-border bg-card p-5">
+    <div className="space-y-6">
       <FormGrid fields={fields} row={row} set={(k, v) => setRow({ ...row, [k]: v })} />
-      <button onClick={save} className="flex items-center gap-2 rounded-md bg-gold-gradient px-5 py-2 text-sm font-semibold text-primary-foreground"><Save className="h-4 w-4" /> حفظ</button>
+      <Button disabled={saving || !data} onClick={save}><Save />{saving ? "جارٍ الحفظ…" : "حفظ التغييرات"}</Button>
     </div>
   );
 }
@@ -96,31 +128,43 @@ export function SingleEditor({ table, id, fields, queryKey }: { table: AnyTable;
 function RowCard({ table, pk, initial, fields, titleField, onDone, canDelete }: { table: AnyTable; pk: string; initial: Record<string, unknown>; fields: Field[]; titleField: string; onDone: () => void; canDelete: boolean }) {
   const [row, setRow] = useState(initial);
   const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
   useEffect(() => setRow(initial), [initial]);
   const save = async () => {
+    setBusy(true);
+    try {
     const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
     const { error } = await supabase.from(table).update(patch as never).eq(pk, row[pk] as never);
     if (error) { toast.error(error.message); return; }
     toast.success("تم الحفظ"); onDone();
+    } catch (err) { toast.error(err instanceof Error ? err.message : "تعذر الحفظ"); }
+    finally { setBusy(false); }
   };
   const del = async () => {
     if (!confirm("حذف هذا العنصر؟")) return;
+    setBusy(true);
+    try {
     const { error } = await supabase.from(table).delete().eq(pk, row[pk] as never);
     if (error) { toast.error(error.message); return; }
     toast.success("تم الحذف"); onDone();
+    } catch (err) { toast.error(err instanceof Error ? err.message : "تعذر الحذف"); }
+    finally { setBusy(false); }
   };
   return (
     <div className="rounded-lg border border-border bg-card">
-      <button onClick={() => setOpen(!open)} className="flex w-full items-center justify-between px-4 py-3 text-start">
-        <span className="font-medium">{String(row[titleField] ?? "—")}</span>
-        <span className="text-xs text-muted-foreground">{open ? "إخفاء" : "تعديل"}</span>
-      </button>
+      <Button variant="ghost" aria-expanded={open} onClick={() => setOpen(!open)} className="h-auto min-h-14 w-full justify-between whitespace-normal px-4 py-3 text-start">
+        <span className="flex min-w-0 items-center gap-3">
+          {typeof row["image_url"] === "string" && row["image_url"] && <img src={row["image_url"]} alt="" className="h-10 w-10 shrink-0 rounded object-cover" />}
+          <span className="break-words font-medium">{String(row[titleField] ?? "—")}</span>
+        </span>
+        <ChevronDown className={open ? "rotate-180" : ""} />
+      </Button>
       {open && (
         <div className="space-y-4 border-t border-border p-4">
           <FormGrid fields={fields} row={row} set={(k, v) => setRow({ ...row, [k]: v })} />
           <div className="flex gap-2">
-            <button onClick={save} className="flex items-center gap-2 rounded-md bg-gold-gradient px-4 py-2 text-sm font-semibold text-primary-foreground"><Save className="h-4 w-4" /> حفظ</button>
-            {canDelete && <button onClick={del} className="flex items-center gap-2 rounded-md border border-destructive px-4 py-2 text-sm text-destructive"><Trash2 className="h-4 w-4" /> حذف</button>}
+            <Button disabled={busy} onClick={save}><Save /> {busy ? "جارٍ التنفيذ…" : "حفظ"}</Button>
+            {canDelete && <Button disabled={busy} onClick={del} variant="outline" className="text-destructive"><Trash2 /> حذف</Button>}
           </div>
         </div>
       )}
@@ -133,17 +177,30 @@ export function ListEditor({ table, fields, titleField, order, ascending = true,
   table: AnyTable; fields: Field[]; titleField: string; order: string; ascending?: boolean; queryKey: string[]; newRow?: Record<string, unknown>; pk?: string; canAdd?: boolean;
 }) {
   const qc = useQueryClient();
-  const { data = [] } = useQuery({ queryKey: ["admin", table], queryFn: async () => ((await supabase.from(table).select("*").order(order, { ascending })).data ?? []) as Record<string, unknown>[] });
-  const refresh = () => { qc.invalidateQueries({ queryKey: ["admin", table] }); qc.invalidateQueries({ queryKey }); };
+  const [search, setSearch] = useState("");
+  const [adding, setAdding] = useState(false);
+  const { data = [], isLoading, error } = useQuery({ queryKey: ["admin", table], queryFn: () => readRows(table, order, ascending) });
+  const refresh = () => refreshContent(qc, table, queryKey);
   const add = async () => {
+    setAdding(true);
+    try {
     const { error } = await supabase.from(table).insert((newRow ?? {}) as never);
     if (error) { toast.error(error.message); return; }
     toast.success("تمت الإضافة — افتحها لتعديلها"); refresh();
+    } catch (err) { toast.error(err instanceof Error ? err.message : "تعذرت الإضافة"); }
+    finally { setAdding(false); }
   };
+  const visible = data.filter(r => fields.some(f => String(r[f.name] ?? "").toLocaleLowerCase().includes(search.toLocaleLowerCase())));
   return (
     <div className="space-y-3">
-      {canAdd && <button onClick={add} className="flex items-center gap-2 rounded-md border border-gold px-4 py-2 text-sm text-gold hover:bg-accent"><Plus className="h-4 w-4" /> إضافة جديد</button>}
-      {data.map((r) => <RowCard key={String(r[pk])} table={table} pk={pk} initial={r} fields={fields} titleField={titleField} onDone={refresh} canDelete={canAdd} />)}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative min-w-0 flex-1"><Search className="absolute start-3 top-2.5 h-4 w-4 text-muted-foreground" /><input aria-label="البحث في المحتوى" placeholder="بحث…" className={`${inp} ps-9`} value={search} onChange={e => setSearch(e.target.value)} /></div>
+        {canAdd && <Button disabled={adding || isLoading || !!error} onClick={add} variant="outline"><Plus /> {adding ? "جارٍ الإضافة…" : "إضافة جديد"}</Button>}
+        <span className="text-xs text-muted-foreground">{data.length} عنصر</span>
+      </div>
+      <ReadState loading={isLoading} error={error} />
+      {!isLoading && !error && !visible.length && <p className="py-8 text-center text-muted-foreground">{search ? "لا توجد نتائج مطابقة." : "لا يوجد محتوى بعد."}</p>}
+      {visible.map((r) => <RowCard key={String(r[pk])} table={table} pk={pk} initial={r} fields={fields} titleField={titleField} onDone={refresh} canDelete={canAdd} />)}
     </div>
   );
 }
