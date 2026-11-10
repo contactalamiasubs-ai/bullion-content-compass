@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- All site content (texts, prices, slides, products, posts) lives in Cloud tables with `_ar`/`_en` columns; UI reads them via `pick()` in `src/lib/i18n.tsx` so every text stays editable from /admin.
+- Admin dashboard uses the generic `ListEditor`/`SingleEditor` in `src/components/admin/editors.tsx`; add new editable tables by declaring fields there, not by writing new forms.
+- Writes are admin-only via `has_role(auth.uid(),'admin')` RLS; the first signed-up user becomes admin through a trigger.
+- The `media` bucket is private (workspace blocks public buckets); uploads store a 10-year signed URL.
