@@ -342,11 +342,11 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
   const msg = lang === "ar" ? `مرحبًا، أريد طلب: ${name}` : `Hello, I'd like to order: ${name}`;
   return (
     <div ref={cardRef} className="group overflow-hidden rounded-xl border border-border bg-card transition hover:border-gold/60 hover:shadow-gold">
-      <div className="aspect-square overflow-hidden bg-secondary">
+      <Link to="/products/$id" params={{ id: p.id }} className="block aspect-square overflow-hidden bg-secondary">
         <img src={p.image_url || fallbackImages[idx % 4]} alt={name} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-      </div>
+      </Link>
       <div className="p-4">
-        <h3 className="mb-1 line-clamp-2 min-h-12 text-base">{name}</h3>
+        <Link to="/products/$id" params={{ id: p.id }} className="hover:text-gold"><h3 className="mb-1 line-clamp-2 min-h-12 text-base">{name}</h3></Link>
         {p.price != null && <p className="mb-3 font-semibold text-gold" dir="ltr">{fmt(p.price, "en")} EGP</p>}
         <a href={whatsappLink(s?.whatsapp_number, msg)} onClick={() => window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "product", product_id: p.id })} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-md bg-gold-gradient py-2 text-sm font-semibold text-primary-foreground">
           <MessageCircle className="h-4 w-4" /> {t("buyWhatsapp")}

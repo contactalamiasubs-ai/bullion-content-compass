@@ -42,6 +42,11 @@ export const productsQuery = queryOptions({
   queryKey: ["products"],
   queryFn: () => q(supabase.from("products").select("*").order("sort")),
 });
+export const productQuery = (id: string) =>
+  queryOptions({
+    queryKey: ["products", id],
+    queryFn: () => q(supabase.from("products").select("*").eq("id", id).maybeSingle()),
+  });
 export const postsQuery = (kind?: "blog" | "news") =>
   queryOptions({
     queryKey: ["posts", kind ?? "all"],
