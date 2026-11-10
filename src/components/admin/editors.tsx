@@ -109,8 +109,9 @@ export function SingleEditor({ table, id, fields, queryKey }: { table: AnyTable;
     setSaving(true);
     try {
     const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
-    const { error } = await supabase.from(table).update(patch as never).eq("id" as never, id as never);
+    const { data: saved, error } = await supabase.from(table).update(patch as never).eq("id" as never, id as never).select();
     if (error) { toast.error(error.message); return; }
+    if (!saved?.length) { toast.error("لم يتم الحفظ: هذا الحساب لا يملك صلاحية المسؤول"); return; }
     toast.success("تم الحفظ");
     refreshContent(qc, table, queryKey);
     } catch (err) { toast.error(err instanceof Error ? err.message : "تعذر الحفظ"); }
@@ -134,8 +135,9 @@ function RowCard({ table, pk, initial, fields, titleField, onDone, canDelete }: 
     setBusy(true);
     try {
     const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
-    const { error } = await supabase.from(table).update(patch as never).eq(pk, row[pk] as never);
+    const { data: saved, error } = await supabase.from(table).update(patch as never).eq(pk, row[pk] as never).select();
     if (error) { toast.error(error.message); return; }
+    if (!saved?.length) { toast.error("لم يتم الحفظ: هذا الحساب لا يملك صلاحية المسؤول"); return; }
     toast.success("تم الحفظ"); onDone();
     } catch (err) { toast.error(err instanceof Error ? err.message : "تعذر الحفظ"); }
     finally { setBusy(false); }
@@ -144,8 +146,9 @@ function RowCard({ table, pk, initial, fields, titleField, onDone, canDelete }: 
     if (!confirm("حذف هذا العنصر؟")) return;
     setBusy(true);
     try {
-    const { error } = await supabase.from(table).delete().eq(pk, row[pk] as never);
+    const { data: gone, error } = await supabase.from(table).delete().eq(pk, row[pk] as never).select();
     if (error) { toast.error(error.message); return; }
+    if (!gone?.length) { toast.error("لم يتم الحذف: هذا الحساب لا يملك صلاحية المسؤول"); return; }
     toast.success("تم الحذف"); onDone();
     } catch (err) { toast.error(err instanceof Error ? err.message : "تعذر الحذف"); }
     finally { setBusy(false); }
