@@ -38,3 +38,4 @@ use the editor.
 - Price refresh is an admin-authenticated server function; only exact Gold API XAU/XAG HTTPS endpoints are allowed to prevent SSRF, and validated USD-per-ounce quotes must match AI output exactly before publication.
 - Price audit records retain source timestamps, payload and model response ID; manual prices are not labeled source-verified.
 - Visitor events use the injected optional track global at visible product exposure and existing interaction handlers; no personal data or calculator holdings are collected.
+- Dashboard entry links use the same-origin `/admin` path in the shared header and footer; the managed authenticated layout remains the login gate so links work across hosting domains without weakening access.

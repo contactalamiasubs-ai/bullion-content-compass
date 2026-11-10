@@ -1,4 +1,5 @@
 # Gold Center updates
+- [x] Add a persistent same-domain dashboard link and verify signed-out access remains protected on desktop and mobile.
 - [x] Complete the dashboard overview, navigation and all existing content editors. Authenticated save/readback remains blocked by the missing administrator account below.
 - [x] Apply supplied name and logo with matching favicon.
 - [x] Add administrator-configured trusted price source, AI validation, audit history, and last-update display.

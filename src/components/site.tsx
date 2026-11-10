@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Menu, X, MessageCircle, Phone, Mail, MapPin, Facebook, Instagram, Youtube, ChevronLeft, ChevronRight } from "lucide-react";
+import { Menu, X, MessageCircle, Phone, Mail, MapPin, Facebook, Instagram, Youtube, ChevronLeft, ChevronRight, LockKeyhole } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useLang, pick } from "@/lib/i18n";
 import { settingsQuery, slidesQuery, pricesQuery, historyQuery, verifiedPricesQuery, whatsappLink, calcZakat } from "@/lib/data";
 import s1 from "@/assets/slide-1.jpg";
@@ -38,6 +39,16 @@ export function Header() {
   ] as const;
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur">
+      <div className="border-b border-border/60 bg-card">
+        <div className="mx-auto flex max-w-7xl justify-end px-4 py-1">
+          <Button asChild variant="ghost" size="sm" className="text-gold">
+            <Link to="/admin" onClick={() => setOpen(false)}>
+              <LockKeyhole aria-hidden="true" />
+              {lang === "ar" ? "لوحة التحكم" : "Dashboard"}
+            </Link>
+          </Button>
+        </div>
+      </div>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
           {s?.logo_url ? (
