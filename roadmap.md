@@ -1,9 +1,10 @@
 # Gold Center updates
+- [x] Validate dashboard WhatsApp numbers, preview actual product links before saving, and verify authenticated save/readback; original number restored after testing.
 - [x] Verify product and contact WhatsApp links navigate without opening a blocked popup; destination verified on desktop/mobile, external WhatsApp handoff requires the user's device.
 - [x] Add a persistent same-domain dashboard link and verify signed-out access remains protected on desktop and mobile.
-- [x] Complete the dashboard overview, navigation and all existing content editors. Authenticated save/readback remains blocked by the missing administrator account below.
+- [x] Complete the dashboard overview, navigation and all existing content editors. Authenticated product and WhatsApp settings save/readback verified.
 - [x] Apply supplied name and logo with matching favicon.
 - [x] Add administrator-configured trusted price source, AI validation, audit history, and last-update display.
 - [x] Track product views, WhatsApp clicks, and zakat calculations.
-- [ ] Verify completed signup, administrator login, edits and end-to-end AI refresh: blocked until the owner creates and confirms their first account; no auth users currently exist. Signed-out redirects and invalid-login rejection verified.
+- [ ] Verify signup/password login and end-to-end AI refresh in a separate requested check; authenticated administrator access and edits verified with a managed session.
 - [x] Run relevant tests and save changes.

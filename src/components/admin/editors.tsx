@@ -6,11 +6,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { uploadImage } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { WhatsappField } from "@/components/admin/whatsapp-field";
+import { validateWhatsappNumber } from "@/lib/whatsapp";
 
 export type Field = {
   name: string;
   label: string;
-  type?: "text" | "textarea" | "number" | "image" | "bool" | "select" | "date";
+  type?: "text" | "textarea" | "number" | "image" | "bool" | "select" | "date" | "whatsapp";
   options?: string[];
 };
 
@@ -19,6 +21,8 @@ const inp = "w-full rounded-md border border-input bg-background px-3 py-2 text-
 function FieldInput({ f, value, onChange }: { f: Field; value: unknown; onChange: (v: unknown) => void }) {
   const [busy, setBusy] = useState(false);
   switch (f.type) {
+    case "whatsapp":
+      return <WhatsappField label={f.label} value={value} onChange={onChange} />;
     case "textarea":
       return <textarea aria-label={f.label} rows={4} className={inp} value={(value as string) ?? ""} onChange={(e) => onChange(e.target.value)} />;
     case "number":
@@ -105,10 +109,14 @@ export function SingleEditor({ table, id, fields, queryKey }: { table: AnyTable;
   const [row, setRow] = useState<Record<string, unknown>>({});
   const [saving, setSaving] = useState(false);
   useEffect(() => { if (data) setRow(data); }, [data]);
+  const whatsappField = fields.find(field => field.type === "whatsapp");
+  const whatsappValidation = whatsappField ? validateWhatsappNumber(row[whatsappField.name]) : null;
   const save = async () => {
+    if (whatsappValidation?.error) { toast.error(whatsappValidation.error); return; }
     setSaving(true);
     try {
     const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
+    if (whatsappField && whatsappValidation) patch[whatsappField.name] = whatsappValidation.number;
     const { data: saved, error } = await supabase.from(table).update(patch as never).eq("id" as never, id as never).select();
     if (error) { toast.error(error.message); return; }
     if (!saved?.length) { toast.error("لم يتم الحفظ: هذا الحساب لا يملك صلاحية المسؤول"); return; }
@@ -121,7 +129,7 @@ export function SingleEditor({ table, id, fields, queryKey }: { table: AnyTable;
   return (
     <div className="space-y-6">
       <FormGrid fields={fields} row={row} set={(k, v) => setRow({ ...row, [k]: v })} />
-      <Button disabled={saving || !data} onClick={save}><Save />{saving ? "جارٍ الحفظ…" : "حفظ التغييرات"}</Button>
+      <Button disabled={saving || !data || !!whatsappValidation?.error} onClick={save}><Save />{saving ? "جارٍ الحفظ…" : "حفظ التغييرات"}</Button>
     </div>
   );
 }

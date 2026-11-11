@@ -111,7 +111,7 @@ function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void 
     case "settings":
       return <SingleEditor table="site_settings" id={1} queryKey={["settings"]} fields={[
         ...bi("site_name", "اسم الموقع"), { name: "logo_url", label: "اللوجو", type: "image" },
-        { name: "whatsapp_number", label: "رقم واتساب (بالكود الدولي، مثال 2010...)" }, { name: "phone", label: "الهاتف" }, { name: "email", label: "البريد" },
+        { name: "whatsapp_number", label: "رقم واتساب (بالكود الدولي)", type: "whatsapp" }, { name: "phone", label: "الهاتف" }, { name: "email", label: "البريد" },
         ...bi("address", "العنوان"), { name: "facebook", label: "فيسبوك" }, { name: "instagram", label: "إنستجرام" }, { name: "youtube", label: "يوتيوب" }, { name: "tiktok", label: "تيك توك" },
         { name: "gold_usd", label: "سعر أوقية الذهب (USD)", type: "number" }, { name: "silver_usd", label: "سعر أوقية الفضة (USD)", type: "number" },
         { name: "years_experience", label: "سنوات الخبرة", type: "number" }, { name: "app_link", label: "رابط تحميل التطبيق" },
