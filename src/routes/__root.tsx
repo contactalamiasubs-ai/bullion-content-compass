@@ -25,7 +25,10 @@ function NotFoundComponent() {
         <h1 className="text-7xl font-bold text-gold-gradient">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">الصفحة غير موجودة</h2>
         <div className="mt-6">
-          <Link to="/" className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          >
             الرئيسية
           </Link>
         </div>
@@ -45,8 +48,18 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold text-foreground">This page didn't load</h1>
         <div className="mt-6 flex justify-center gap-2">
-          <button onClick={() => { router.invalidate(); reset(); }} className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground">Try again</button>
-          <a href="/" className="rounded-md border border-input px-4 py-2 text-sm">Go home</a>
+          <button
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
+            className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
+          >
+            Try again
+          </button>
+          <a href="/" className="rounded-md border border-input px-4 py-2 text-sm">
+            Go home
+          </a>
         </div>
       </div>
     </div>
@@ -59,9 +72,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "جولد سنتر | ذهب وسبائك ومعادن ثمينة" },
-      { name: "description", content: "أسعار الذهب اليوم، سبائك وجنيهات ذهب، خدمات الشركات والتكرير." },
+      {
+        name: "description",
+        content: "أسعار الذهب اليوم، سبائك وجنيهات ذهب، خدمات الشركات والتكرير.",
+      },
       { property: "og:title", content: "جولد سنتر | ذهب وسبائك" },
-      { property: "og:description", content: "أسعار الذهب اليوم، سبائك وجنيهات ذهب، خدمات الشركات والتكرير." },
+      {
+        property: "og:description",
+        content: "أسعار الذهب اليوم، سبائك وجنيهات ذهب، خدمات الشركات والتكرير.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -70,7 +89,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.png", type: "image/png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -83,7 +105,11 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem("theme")==="light")document.documentElement.classList.add("light")}catch(e){}` }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("theme")==="light")document.documentElement.classList.add("light")}catch(e){}`,
+          }}
+        />
         <HeadContent />
       </head>
       <body>

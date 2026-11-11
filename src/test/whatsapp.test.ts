@@ -9,13 +9,24 @@ describe("WhatsApp number validation", () => {
     }
   });
   it("normalizes Arabic digits", () => {
-    expect(validateWhatsappNumber("+٢٠١٠١٢٣٤٥٦٧٨")).toEqual({ number: "201012345678", error: null });
+    expect(validateWhatsappNumber("+٢٠١٠١٢٣٤٥٦٧٨")).toEqual({
+      number: "201012345678",
+      error: null,
+    });
   });
   it("rejects local-only numbers", () => {
     expect(validateWhatsappNumber("01012345678").error).not.toBeNull();
   });
   it("rejects empty, malformed and impossible international numbers", () => {
-    for (const input of ["", "https://wa.me/201012345678", "201012345678abc", "123", "+999123456789", "20+1012345678", "+20101234567899999"]) {
+    for (const input of [
+      "",
+      "https://wa.me/201012345678",
+      "201012345678abc",
+      "123",
+      "+999123456789",
+      "20+1012345678",
+      "+20101234567899999",
+    ]) {
       expect(validateWhatsappNumber(input).error).not.toBeNull();
     }
   });

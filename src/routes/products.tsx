@@ -25,7 +25,11 @@ function Products() {
     <main>
       <PageHero title={t("products")} />
       <section className="mx-auto grid max-w-7xl grid-cols-2 gap-5 px-4 py-12 md:grid-cols-3 lg:grid-cols-4">
-        {data.filter((p) => p.active).map((p, i) => <ProductCard key={p.id} p={p} idx={i} />)}
+        {data
+          .filter((p) => p.active)
+          .map((p, i) => (
+            <ProductCard key={p.id} p={p} idx={i} />
+          ))}
       </section>
     </main>
   );

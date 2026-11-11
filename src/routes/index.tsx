@@ -3,15 +3,31 @@ import { useQuery } from "@tanstack/react-query";
 import { FileText, BookOpen, Download, ShieldCheck, Smartphone } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
 import { settingsQuery, sectionsQuery, servicesQuery, productsQuery, postsQuery } from "@/lib/data";
-import { HeroSlider, PriceTicker, PriceTable, PriceChart, ZakatCalculator, ProductCard, PostCard, SectionTitle, fallbackImages } from "@/components/site";
+import {
+  HeroSlider,
+  PriceTicker,
+  PriceTable,
+  PriceChart,
+  ZakatCalculator,
+  ProductCard,
+  PostCard,
+  SectionTitle,
+  fallbackImages,
+} from "@/components/site";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "جولد سنتر | أسعار الذهب اليوم وسبائك الذهب" },
-      { name: "description", content: "تابع أسعار الذهب والفضة لحظة بلحظة، واطلب السبائك والجنيهات الذهب عبر واتساب." },
+      {
+        name: "description",
+        content: "تابع أسعار الذهب والفضة لحظة بلحظة، واطلب السبائك والجنيهات الذهب عبر واتساب.",
+      },
       { property: "og:title", content: "جولد سنتر | أسعار الذهب اليوم" },
-      { property: "og:description", content: "أسعار الذهب والفضة، سبائك وجنيهات، وحاسبة زكاة الذهب." },
+      {
+        property: "og:description",
+        content: "أسعار الذهب والفضة، سبائك وجنيهات، وحاسبة زكاة الذهب.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -45,13 +61,24 @@ function Index() {
       </section>
 
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 md:grid-cols-2">
-        <img src={sec?.["about"]?.image_url || fallbackImages[0]} alt="" loading="lazy" className="rounded-xl border border-border" />
+        <img
+          src={sec?.["about"]?.image_url || fallbackImages[0]}
+          alt=""
+          loading="lazy"
+          className="rounded-xl border border-border"
+        />
         <div>
-          <p className="font-display text-7xl font-bold text-gold-gradient">{s?.years_experience ?? 90}+</p>
+          <p className="font-display text-7xl font-bold text-gold-gradient">
+            {s?.years_experience ?? 90}+
+          </p>
           <p className="mb-4 text-xl text-muted-foreground">{t("years")}</p>
           <h2 className="mb-4 text-3xl">{pick(sec?.["about"], "title", lang)}</h2>
-          <p className="mb-6 leading-relaxed text-muted-foreground">{pick(sec?.["about"], "body", lang)}</p>
-          <Link to="/about" className="text-gold hover:underline">{t("readMore")}</Link>
+          <p className="mb-6 leading-relaxed text-muted-foreground">
+            {pick(sec?.["about"], "body", lang)}
+          </p>
+          <Link to="/about" className="text-gold hover:underline">
+            {t("readMore")}
+          </Link>
         </div>
       </section>
 
@@ -60,7 +87,12 @@ function Index() {
         <div className="grid gap-6 md:grid-cols-3">
           {services.map((x, i) => (
             <div key={x.id} className="overflow-hidden rounded-xl border border-border bg-card">
-              <img src={x.image_url || fallbackImages[(i + 2) % 4]} alt={pick(x, "title", lang)} loading="lazy" className="aspect-video w-full object-cover" />
+              <img
+                src={x.image_url || fallbackImages[(i + 2) % 4]}
+                alt={pick(x, "title", lang)}
+                loading="lazy"
+                className="aspect-video w-full object-cover"
+              />
               <div className="p-5">
                 <h3 className="mb-2 text-xl text-gold">{pick(x, "title", lang)}</h3>
                 <p className="text-sm text-muted-foreground">{pick(x, "body", lang)}</p>
@@ -73,9 +105,18 @@ function Index() {
       <section className="mx-auto max-w-7xl px-4 py-16">
         <SectionTitle title={t("products")} />
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-          {products.filter((p) => p.active).slice(0, 6).map((p, i) => <ProductCard key={p.id} p={p} idx={i} />)}
+          {products
+            .filter((p) => p.active)
+            .slice(0, 6)
+            .map((p, i) => (
+              <ProductCard key={p.id} p={p} idx={i} />
+            ))}
         </div>
-        <div className="mt-8 text-center"><Link to="/products" className="text-gold hover:underline">{t("viewAll")}</Link></div>
+        <div className="mt-8 text-center">
+          <Link to="/products" className="text-gold hover:underline">
+            {t("viewAll")}
+          </Link>
+        </div>
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-6 px-4 py-16 lg:grid-cols-2">
@@ -83,7 +124,11 @@ function Index() {
           <h2 className="mb-6 text-3xl text-gold-gradient">{t("infoHub")}</h2>
           <div className="grid grid-cols-2 gap-4">
             {hub.map((h) => (
-              <Link key={h.l} to={h.to} className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 text-center hover:border-gold">
+              <Link
+                key={h.l}
+                to={h.to}
+                className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 text-center hover:border-gold"
+              >
                 <h.i className="h-8 w-8 text-gold" />
                 <span>{h.l}</span>
               </Link>
@@ -96,7 +141,9 @@ function Index() {
       <section className="mx-auto max-w-7xl px-4 py-16">
         <SectionTitle title={t("latest")} />
         <div className="grid gap-6 md:grid-cols-3">
-          {posts.slice(0, 3).map((p, i) => <PostCard key={p.slug} p={p} idx={i} />)}
+          {posts.slice(0, 3).map((p, i) => (
+            <PostCard key={p.slug} p={p} idx={i} />
+          ))}
         </div>
       </section>
 
@@ -109,7 +156,12 @@ function Index() {
               <p className="text-muted-foreground">{pick(sec?.["app"], "body", lang)}</p>
             </div>
           </div>
-          <a href={s?.app_link ?? "#"} className="rounded-md bg-gold-gradient px-7 py-3 font-semibold text-primary-foreground">{t("download")}</a>
+          <a
+            href={s?.app_link ?? "#"}
+            className="rounded-md bg-gold-gradient px-7 py-3 font-semibold text-primary-foreground"
+          >
+            {t("download")}
+          </a>
         </div>
       </section>
     </main>

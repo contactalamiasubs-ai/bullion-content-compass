@@ -29,11 +29,38 @@ function Services() {
       <section className="mx-auto max-w-6xl space-y-10 px-4 py-12">
         {list.map((x, i) => (
           <div key={x.id} className="grid items-center gap-8 md:grid-cols-2">
-            <img src={x.image_url || fallbackImages[(i + 2) % 4]} alt={pick(x, "title", lang)} loading="lazy" className={`rounded-xl border border-border ${i % 2 ? "md:order-2" : ""}`} />
+            <img
+              src={x.image_url || fallbackImages[(i + 2) % 4]}
+              alt={pick(x, "title", lang)}
+              loading="lazy"
+              className={`rounded-xl border border-border ${i % 2 ? "md:order-2" : ""}`}
+            />
             <div>
               <h2 className="mb-3 text-3xl text-gold-gradient">{pick(x, "title", lang)}</h2>
-              <p className="mb-5 whitespace-pre-line leading-relaxed text-muted-foreground">{pick(x, "body", lang)}</p>
-              <Button asChild className="h-auto bg-gold-gradient px-6 py-2.5 font-semibold text-primary-foreground"><a href={whatsappLink(s?.whatsapp_number, pick(x, "title", lang))} onClick={() => { try { window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "service" }); } catch {} }} target="_blank" rel="noopener noreferrer">{t("contact")}</a></Button>
+              <p className="mb-5 whitespace-pre-line leading-relaxed text-muted-foreground">
+                {pick(x, "body", lang)}
+              </p>
+              <Button
+                asChild
+                className="h-auto bg-gold-gradient px-6 py-2.5 font-semibold text-primary-foreground"
+              >
+                <a
+                  href={whatsappLink(s?.whatsapp_number, pick(x, "title", lang))}
+                  onClick={() => {
+                    try {
+                      window.__lovableEvents?.track?.("project.whatsapp_clicked", {
+                        placement: "service",
+                      });
+                    } catch {
+                      /* analytics is optional */
+                    }
+                  }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("contact")}
+                </a>
+              </Button>
             </div>
           </div>
         ))}

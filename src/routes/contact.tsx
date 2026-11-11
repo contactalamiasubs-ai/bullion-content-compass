@@ -26,9 +26,14 @@ function Contact() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const { error } = await supabase.from("contact_messages").insert({ ...f, phone: f.phone || null });
+    const { error } = await supabase
+      .from("contact_messages")
+      .insert({ ...f, phone: f.phone || null });
     setBusy(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success(t("sent"));
     setF({ name: "", email: "", phone: "", message: "" });
   };
@@ -37,11 +42,45 @@ function Contact() {
     <main>
       <PageHero title={t("contact")} />
       <form onSubmit={submit} className="mx-auto max-w-xl space-y-4 px-4 py-12">
-        <input required maxLength={120} placeholder={t("name")} className={inp} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
-        <input required type="email" maxLength={200} placeholder={t("email")} className={inp} value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} />
-        <input maxLength={40} placeholder={t("phone")} className={inp} value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
-        <textarea required maxLength={3000} rows={5} placeholder={t("message")} className={inp} value={f.message} onChange={(e) => setF({ ...f, message: e.target.value })} />
-        <button disabled={busy} className="w-full rounded-md bg-gold-gradient py-3 font-semibold text-primary-foreground disabled:opacity-60">{t("send")}</button>
+        <input
+          required
+          maxLength={120}
+          placeholder={t("name")}
+          className={inp}
+          value={f.name}
+          onChange={(e) => setF({ ...f, name: e.target.value })}
+        />
+        <input
+          required
+          type="email"
+          maxLength={200}
+          placeholder={t("email")}
+          className={inp}
+          value={f.email}
+          onChange={(e) => setF({ ...f, email: e.target.value })}
+        />
+        <input
+          maxLength={40}
+          placeholder={t("phone")}
+          className={inp}
+          value={f.phone}
+          onChange={(e) => setF({ ...f, phone: e.target.value })}
+        />
+        <textarea
+          required
+          maxLength={3000}
+          rows={5}
+          placeholder={t("message")}
+          className={inp}
+          value={f.message}
+          onChange={(e) => setF({ ...f, message: e.target.value })}
+        />
+        <button
+          disabled={busy}
+          className="w-full rounded-md bg-gold-gradient py-3 font-semibold text-primary-foreground disabled:opacity-60"
+        >
+          {t("send")}
+        </button>
       </form>
     </main>
   );

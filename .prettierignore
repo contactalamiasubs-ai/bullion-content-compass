@@ -6,3 +6,7 @@ pnpm-lock.yaml
 package-lock.json
 bun.lock
 routeTree.gen.ts
+
+# Platform-generated files — kept exactly as generated
+src/integrations/supabase/**
+src/generated/**

@@ -1,7 +1,9 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-async function q<T>(p: PromiseLike<{ data: T; error: { message: string } | null }>): Promise<NonNullable<T>> {
+async function q<T>(
+  p: PromiseLike<{ data: T; error: { message: string } | null }>,
+): Promise<NonNullable<T>> {
   const { data, error } = await p;
   if (error) throw new Error(error.message);
   return data as NonNullable<T>;
@@ -13,7 +15,16 @@ export const settingsQuery = queryOptions({
 });
 export const verifiedPricesQuery = queryOptions({
   queryKey: ["verified-prices"],
-  queryFn: () => q(supabase.from("price_updates").select("id,gold_usd,silver_usd,gold_source_url,silver_source_url,gold_source_at,silver_source_at,verified_at,summary_ar,summary_en").order("verified_at", { ascending: false }).limit(1)),
+  queryFn: () =>
+    q(
+      supabase
+        .from("price_updates")
+        .select(
+          "id,gold_usd,silver_usd,gold_source_url,silver_source_url,gold_source_at,silver_source_at,verified_at,summary_ar,summary_en",
+        )
+        .order("verified_at", { ascending: false })
+        .limit(1),
+    ),
 });
 export const slidesQuery = queryOptions({
   queryKey: ["slides"],
@@ -79,7 +90,9 @@ export async function uploadImage(file: File): Promise<string> {
   const path = `${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
   const { error } = await supabase.storage.from("media").upload(path, file);
   if (error) throw error;
-  const { data, error: e2 } = await supabase.storage.from("media").createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+  const { data, error: e2 } = await supabase.storage
+    .from("media")
+    .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
   if (e2 || !data) throw e2 ?? new Error("url");
   return data.signedUrl;
 }

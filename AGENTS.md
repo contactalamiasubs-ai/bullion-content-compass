@@ -1,4 +1,5 @@
 <!-- LOVABLE:BEGIN -->
+
 > [!IMPORTANT]
 > This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
 > published git history — force pushing, or rebasing/amending/squashing commits
@@ -27,9 +28,11 @@ use the editor.
   `LOVABLE_API_KEY`. When Lovable does not provide one, users can bring their
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
+
 <!-- LOVABLE:END -->
 
 ## Project rules
+
 - All site content (texts, prices, slides, products, posts) lives in Cloud tables with `_ar`/`_en` columns; UI reads them via `pick()` in `src/lib/i18n.tsx` so every text stays editable from /admin.
 - Admin dashboard uses the generic `ListEditor`/`SingleEditor` in `src/components/admin/editors.tsx`; add new editable tables by declaring fields there, not by writing new forms.
 - Admin editor mutations invalidate the public collection, post detail and overview queries, and expose pending/error states so saved content is reflected without silent failures.

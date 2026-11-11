@@ -25,7 +25,9 @@ export function PostList({ kind }: { kind: "blog" | "news" }) {
     <main>
       <PageHero title={t(kind)} />
       <section className="mx-auto grid max-w-7xl gap-6 px-4 py-12 md:grid-cols-3">
-        {data.map((p, i) => <PostCard key={p.slug} p={p} idx={i} />)}
+        {data.map((p, i) => (
+          <PostCard key={p.slug} p={p} idx={i} />
+        ))}
       </section>
     </main>
   );

@@ -36,7 +36,10 @@ const dict = {
   karat: { ar: "العيار", en: "Karat" },
   calculate: { ar: "احسب", en: "Calculate" },
   zakatDue: { ar: "الزكاة المستحقة", en: "Zakat due" },
-  belowNisab: { ar: "أقل من النصاب (85 جرام عيار 24) — لا زكاة", en: "Below nisab (85 g of 24K) — no zakat due" },
+  belowNisab: {
+    ar: "أقل من النصاب (85 جرام عيار 24) — لا زكاة",
+    en: "Below nisab (85 g of 24K) — no zakat due",
+  },
   download: { ar: "حمّل الآن", en: "Download now" },
   name: { ar: "الاسم", en: "Name" },
   email: { ar: "البريد الإلكتروني", en: "Email" },
@@ -77,7 +80,11 @@ export function LangProvider({ children }: { children: ReactNode }) {
 export const useLang = () => useContext(Ctx);
 
 /** Pick the bilingual field: pick(row, "title") -> row.title_ar | row.title_en */
-export function pick(row: Record<string, unknown> | null | undefined, field: string, lang: Lang): string {
+export function pick(
+  row: Record<string, unknown> | null | undefined,
+  field: string,
+  lang: Lang,
+): string {
   if (!row) return "";
   const v = row[`${field}_${lang}`] ?? row[`${field}_ar`];
   return typeof v === "string" ? v : "";
