@@ -4,6 +4,7 @@ import { MessageCircle, ArrowRight } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
 import { productQuery, productsQuery, settingsQuery, whatsappLink } from "@/lib/data";
 import { fallbackImages, ProductCard } from "@/components/site";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/products_/$id")({
   head: () => ({
@@ -48,14 +49,15 @@ function ProductPage() {
           <h1 className="mb-4 text-4xl font-bold text-gold-gradient">{name}</h1>
           {p.price != null && <p className="mb-6 text-2xl font-semibold text-gold" dir="ltr">{Number(p.price).toLocaleString("en")} EGP</p>}
           {desc && <p className="mb-8 whitespace-pre-line leading-loose text-muted-foreground">{desc}</p>}
+          <Button asChild className="inline-flex h-auto w-fit items-center gap-2 bg-gold-gradient px-8 py-3 font-semibold text-primary-foreground">
           <a
             href={whatsappLink(s?.whatsapp_number, msg)}
-            onClick={() => window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "product", product_id: p.id })}
-            target="_blank" rel="noreferrer"
-            className="inline-flex w-fit items-center gap-2 rounded-md bg-gold-gradient px-8 py-3 font-semibold text-primary-foreground"
+            onClick={() => { try { window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "product", product_id: p.id }); } catch {} }}
+            target="_self" rel="noreferrer"
           >
             <MessageCircle className="h-5 w-5" /> {t("buyWhatsapp")}
           </a>
+          </Button>
         </div>
       </div>
       {related.length > 0 && (

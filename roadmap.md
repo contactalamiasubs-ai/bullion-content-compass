@@ -1,4 +1,5 @@
 # Gold Center updates
+- [x] Verify product and contact WhatsApp links navigate without opening a blocked popup; destination verified on desktop/mobile, external WhatsApp handoff requires the user's device.
 - [x] Add a persistent same-domain dashboard link and verify signed-out access remains protected on desktop and mobile.
 - [x] Complete the dashboard overview, navigation and all existing content editors. Authenticated save/readback remains blocked by the missing administrator account below.
 - [x] Apply supplied name and logo with matching favicon.

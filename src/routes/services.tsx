@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLang, pick } from "@/lib/i18n";
 import { servicesQuery, settingsQuery, whatsappLink } from "@/lib/data";
 import { PageHero, fallbackImages } from "@/components/site";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
@@ -32,7 +33,7 @@ function Services() {
             <div>
               <h2 className="mb-3 text-3xl text-gold-gradient">{pick(x, "title", lang)}</h2>
               <p className="mb-5 whitespace-pre-line leading-relaxed text-muted-foreground">{pick(x, "body", lang)}</p>
-              <a href={whatsappLink(s?.whatsapp_number, pick(x, "title", lang))} onClick={() => window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "service" })} target="_blank" rel="noreferrer" className="inline-block rounded-md bg-gold-gradient px-6 py-2.5 font-semibold text-primary-foreground">{t("contact")}</a>
+              <Button asChild className="h-auto bg-gold-gradient px-6 py-2.5 font-semibold text-primary-foreground"><a href={whatsappLink(s?.whatsapp_number, pick(x, "title", lang))} onClick={() => { try { window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "service" }); } catch {} }} target="_self" rel="noreferrer">{t("contact")}</a></Button>
             </div>
           </div>
         ))}
