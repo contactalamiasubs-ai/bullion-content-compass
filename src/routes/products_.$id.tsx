@@ -53,7 +53,7 @@ function ProductPage() {
           <a
             href={whatsappLink(s?.whatsapp_number, msg)}
             onClick={() => { try { window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "product", product_id: p.id }); } catch {} }}
-            target="_self" rel="noreferrer"
+            target="_top" rel="noreferrer"
           >
             <MessageCircle className="h-5 w-5" /> {t("buyWhatsapp")}
           </a>

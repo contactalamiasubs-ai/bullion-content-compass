@@ -122,7 +122,7 @@ export function Footer() {
         © {new Date().getFullYear()} {pick(s, "site_name", lang)} — {t("rights")}
       </p>
       {s?.whatsapp_number && (
-        <a href={whatsappLink(s.whatsapp_number, "")} onClick={() => { try { window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "floating" }); } catch {} }} target="_self" rel="noreferrer" aria-label="WhatsApp" className="fixed bottom-5 end-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-success text-primary-foreground shadow-gold">
+        <a href={whatsappLink(s.whatsapp_number, "")} onClick={() => { try { window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "floating" }); } catch {} }} target="_top" rel="noreferrer" aria-label="WhatsApp" className="fixed bottom-5 end-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-success text-primary-foreground shadow-gold">
           <MessageCircle />
         </a>
       )}
@@ -350,7 +350,7 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
         <Link to="/products/$id" params={{ id: p.id }} className="hover:text-gold"><h3 className="mb-1 line-clamp-2 min-h-12 text-base">{name}</h3></Link>
         {p.price != null && <p className="mb-3 font-semibold text-gold" dir="ltr">{fmt(p.price, "en")} EGP</p>}
         <Button asChild className="flex h-auto w-full items-center justify-center gap-2 bg-gold-gradient py-2 text-sm font-semibold text-primary-foreground">
-        <a href={whatsappLink(s?.whatsapp_number, msg)} onClick={() => { try { window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "product", product_id: p.id }); } catch {} }} target="_self" rel="noreferrer">
+        <a href={whatsappLink(s?.whatsapp_number, msg)} onClick={() => { try { window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "product", product_id: p.id }); } catch {} }} target="_top" rel="noreferrer">
           <MessageCircle className="h-4 w-4" /> {t("buyWhatsapp")}
         </a>
         </Button>

@@ -22,7 +22,7 @@ export function WhatsappField({ label, value, onChange }: { label: string; value
     <div className="space-y-2 border-s-2 border-border ps-3">
       <p className="text-sm font-medium">معاينة رابط طلب المنتج</p>
       {isLoading ? <p className="text-xs text-muted-foreground">جارٍ تحميل المنتجات…</p> : error ? <p role="alert" className="text-xs text-destructive">تعذر تحميل المنتجات للمعاينة.</p> : !product ? <p className="text-xs text-muted-foreground">لا توجد منتجات ظاهرة للمعاينة.</p> : <select aria-label="منتج المعاينة" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={product.id} onChange={event => setSelected(event.target.value)}>{available.map(item => <option key={item.id} value={item.id}>{pick(item, "name", lang)}</option>)}</select>}
-      {url && <><a href={url} target="_self" rel="noreferrer" dir="ltr" className="block break-all text-xs text-gold hover:underline">{url}</a><p className="text-xs text-muted-foreground">{message}</p><Button asChild variant="outline" size="sm"><a href={url} target="_self" rel="noreferrer"><ExternalLink />فتح المعاينة</a></Button></>}
+      {url && <><a href={url} target="_top" rel="noreferrer" dir="ltr" className="block break-all text-xs text-gold hover:underline">{url}</a><p className="text-xs text-muted-foreground">{message}</p><Button asChild variant="outline" size="sm"><a href={url} target="_top" rel="noreferrer"><ExternalLink />فتح المعاينة</a></Button></>}
       <p className="text-xs text-muted-foreground">التحقق من الصيغة لا يؤكد وجود حساب واتساب على الرقم.</p>
     </div>
   </div>;
