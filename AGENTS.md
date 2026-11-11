@@ -39,5 +39,5 @@ use the editor.
 - Price audit records retain source timestamps, payload and model response ID; manual prices are not labeled source-verified.
 - Visitor events use the injected optional track global at visible product exposure and existing interaction handlers; no personal data or calculator holdings are collected.
 - Dashboard entry links use the same-origin `/admin` path in the shared header and footer; the managed authenticated layout remains the login gate so links work across hosting domains without weakening access.
-- WhatsApp contact and dashboard preview links use native target="_top" navigation with non-blocking optional analytics so WhatsApp opens outside embedded previews in the same browser tab without popup blocking.
+- WhatsApp links use native target="_blank" anchors (rel noopener) with non-blocking optional analytics, because wa.me refuses to load inside frames and embedded previews block top-window navigation.
 - The generic settings editor validates WhatsApp numbers with international numbering metadata and stores normalized digits; its product preview reuses the public link builder to match actual ordering destinations.

@@ -33,7 +33,7 @@ function Services() {
             <div>
               <h2 className="mb-3 text-3xl text-gold-gradient">{pick(x, "title", lang)}</h2>
               <p className="mb-5 whitespace-pre-line leading-relaxed text-muted-foreground">{pick(x, "body", lang)}</p>
-              <Button asChild className="h-auto bg-gold-gradient px-6 py-2.5 font-semibold text-primary-foreground"><a href={whatsappLink(s?.whatsapp_number, pick(x, "title", lang))} onClick={() => { try { window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "service" }); } catch {} }} target="_top" rel="noreferrer">{t("contact")}</a></Button>
+              <Button asChild className="h-auto bg-gold-gradient px-6 py-2.5 font-semibold text-primary-foreground"><a href={whatsappLink(s?.whatsapp_number, pick(x, "title", lang))} onClick={() => { try { window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "service" }); } catch {} }} target="_blank" rel="noopener noreferrer">{t("contact")}</a></Button>
             </div>
           </div>
         ))}
