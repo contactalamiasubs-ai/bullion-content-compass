@@ -28,6 +28,7 @@ import {
   Heart,
   ShoppingBag,
   House,
+  ChartNoAxesCombined,
   Gem,
   BookOpen,
   Newspaper,
@@ -76,9 +77,10 @@ export function Header() {
   const cartCount = Object.values(state.cart).reduce((sum, quantity) => sum + quantity, 0);
   const links = [
     { to: "/", l: t("home"), icon: House },
+    { to: "/", hash: "prices", l: t("metalPrices"), icon: ChartNoAxesCombined },
+    { to: "/products", l: t("products"), icon: Gem },
     { to: "/about", l: t("about"), icon: Info },
     { to: "/services", l: t("services"), icon: Handshake },
-    { to: "/products", l: t("products"), icon: Gem },
     { to: "/blog", l: t("blog"), icon: BookOpen },
     { to: "/news", l: t("news"), icon: Newspaper },
     { to: "/contact", l: t("contact"), icon: MessageCircle },
@@ -123,13 +125,13 @@ export function Header() {
         </Link>
         <div className="hidden items-center gap-2 xl:flex" role="navigation" aria-label={lang === "ar" ? "التنقل الرئيسي" : "Main navigation"}>
           {links.map((x) => (
-            <Button asChild variant="ghost" key={x.to} className="site-nav-link">
+            <Button asChild variant="ghost" key={x.l} className="site-nav-link">
             <Link
-              key={x.to}
               to={x.to}
+              hash={"hash" in x ? x.hash : ""}
               title={x.l}
               activeProps={{ className: "site-nav-active", "aria-current": "page" }}
-              activeOptions={{ exact: x.to === "/" }}
+              activeOptions={{ exact: x.to === "/", includeHash: true }}
             >
               <span className="nav-icon"><x.icon strokeWidth={1.7} aria-hidden="true" /></span>
               <span>{x.l}</span>
@@ -154,13 +156,13 @@ export function Header() {
       {open && (
         <nav id="mobile-navigation" aria-label={lang === "ar" ? "التنقل الرئيسي" : "Main navigation"} className="grid grid-cols-3 gap-2 border-t border-border px-4 py-4 sm:grid-cols-4 xl:hidden">
           {links.map((x) => (
-            <Button key={x.to} asChild variant="ghost" className="mobile-nav-link">
+            <Button key={x.l} asChild variant="ghost" className="mobile-nav-link">
             <Link
-              key={x.to}
               to={x.to}
+              hash={"hash" in x ? x.hash : ""}
               onClick={() => setOpen(false)}
               activeProps={{ className: "site-nav-active", "aria-current": "page" }}
-              activeOptions={{ exact: x.to === "/" }}
+              activeOptions={{ exact: x.to === "/", includeHash: true }}
             >
               <span className="nav-icon"><x.icon strokeWidth={1.7} aria-hidden="true" /></span>
               <span>{x.l}</span>

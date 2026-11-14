@@ -52,10 +52,20 @@ function Index() {
       <HeroSlider />
       <PriceTicker />
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-16 lg:grid-cols-2">
+      <section id="prices" className="mx-auto grid max-w-7xl scroll-mt-48 gap-6 px-4 py-16 lg:grid-cols-2">
         <PriceTable />
         <div className="space-y-6">
           <PriceChart />
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-16">
+        <SectionTitle title={t("products")} />
+        <ProductCatalog limit={6} />
+        <div className="mt-8 text-center">
+          <Link to="/products" className="text-gold hover:underline">
+            {t("viewAll")}
+          </Link>
         </div>
       </section>
 
@@ -98,16 +108,6 @@ function Index() {
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-16">
-        <SectionTitle title={t("products")} />
-        <ProductCatalog limit={6} />
-        <div className="mt-8 text-center">
-          <Link to="/products" className="text-gold hover:underline">
-            {t("viewAll")}
-          </Link>
         </div>
       </section>
 

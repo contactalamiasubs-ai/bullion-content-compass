@@ -1,5 +1,7 @@
 # Gold Center updates
 
+- [x] Place homepage products immediately after prices and order the shared navigation with prices followed by products; desktop and mobile price scrolling and catalog navigation verified.
+
 - [x] Refine shopping and navigation icons with consistent circular controls, readable labels, active states and mobile layout; shopping navigation and menu verified at 320/390/812/1280 widths, Arabic/English and dark/light themes.
 
 - [x] Add browser-saved product favorites and quantity cart, live totals, and WhatsApp order/inquiry handoff; catalog, detail, persistence, removal and mobile verified; actual message sending remains the visitor's action in WhatsApp.
