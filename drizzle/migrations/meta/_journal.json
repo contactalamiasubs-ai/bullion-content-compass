@@ -36,6 +36,13 @@
       "when": 1794654315240,
       "tag": "0004_tighten_price_updates_and_contact_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794655720077,
+      "tag": "0005_product_groups_and_categories",
+      "breakpoints": true
     }
   ]
 }

@@ -2,7 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { MessageCircle, ArrowRight } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
-import { productQuery, productsQuery, settingsQuery, whatsappLink } from "@/lib/data";
+import {
+  productQuery,
+  productsQuery,
+  settingsQuery,
+  whatsappLink,
+  productGroupsQuery,
+  productCategoriesQuery,
+} from "@/lib/data";
 import { fallbackImages, ProductCard } from "@/components/site";
 import { Button } from "@/components/ui/button";
 
@@ -29,6 +36,8 @@ function ProductPage() {
   const { data: p, isLoading } = useQuery(productQuery(id));
   const { data: s } = useQuery(settingsQuery);
   const { data: all = [] } = useQuery(productsQuery);
+  const { data: groups = [] } = useQuery(productGroupsQuery);
+  const { data: categories = [] } = useQuery(productCategoriesQuery);
   if (isLoading) return <main className="min-h-[60vh]" />;
   if (!p || !p.active)
     return (
@@ -42,6 +51,8 @@ function ProductPage() {
       </main>
     );
   const name = pick(p, "name", lang);
+  const category = categories.find((item) => item.id === p.category_id);
+  const group = groups.find((item) => item.id === category?.group_id);
   const desc = pick(p, "description", lang);
   const msg = lang === "ar" ? `مرحبًا، أريد طلب: ${name}` : `Hello, I'd like to order: ${name}`;
   const related = all.filter((x) => x.active && x.id !== p.id).slice(0, 4);
@@ -60,6 +71,11 @@ function ProductPage() {
           className="aspect-square w-full rounded-xl border border-border object-cover"
         />
         <div className="flex flex-col justify-center">
+          {category && (
+            <p className="mb-3 text-sm text-muted-foreground">
+              {pick(group, "name", lang)} / {pick(category, "name", lang)}
+            </p>
+          )}
           <h1 className="mb-4 text-4xl font-bold text-gold-gradient">{name}</h1>
           {p.price != null && (
             <p className="mb-6 text-2xl font-semibold text-gold" dir="ltr">

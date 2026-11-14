@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Trash2, Save, Upload, Search, ChevronDown, ImageOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadImage } from "@/lib/data";
+import { uploadImage, productGroupsQuery, productCategoriesQuery } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { WhatsappField } from "@/components/admin/whatsapp-field";
@@ -12,11 +12,65 @@ import { validateWhatsappNumber } from "@/lib/whatsapp";
 export type Field = {
   name: string;
   label: string;
-  type?: "text" | "textarea" | "number" | "image" | "bool" | "select" | "date" | "whatsapp";
+  type?:
+    | "text"
+    | "textarea"
+    | "number"
+    | "image"
+    | "bool"
+    | "select"
+    | "date"
+    | "whatsapp"
+    | "group"
+    | "category";
   options?: string[];
 };
 
 const inp = "w-full rounded-md border border-input bg-background px-3 py-2 text-sm";
+
+function CategoryInput({
+  f,
+  value,
+  onChange,
+}: {
+  f: Field;
+  value: unknown;
+  onChange: (v: unknown) => void;
+}) {
+  const groups = useQuery(productGroupsQuery);
+  const categories = useQuery(productCategoriesQuery);
+  const options =
+    f.type === "group"
+      ? groups.data?.map((group) => ({ id: group.id, label: group.name_ar }))
+      : categories.data?.map((category) => ({
+          id: category.id,
+          label: `${groups.data?.find((group) => group.id === category.group_id)?.name_ar ?? ""} / ${category.name_ar}`,
+        }));
+  const error = groups.error || categories.error;
+  return (
+    <div>
+      <select
+        aria-label={f.label}
+        className={inp}
+        value={typeof value === "string" ? value : ""}
+        disabled={groups.isLoading || categories.isLoading || !!error}
+        onChange={(event) => onChange(event.target.value || null)}
+      >
+        <option value="">{f.type === "group" ? "اختر القسم الرئيسي" : "بدون قسم"}</option>
+        {options?.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      {error && (
+        <p role="alert" className="mt-1 text-xs text-destructive">
+          تعذر تحميل الأقسام: {error.message}
+        </p>
+      )}
+    </div>
+  );
+}
 
 function FieldInput({
   f,
@@ -29,6 +83,9 @@ function FieldInput({
 }) {
   const [busy, setBusy] = useState(false);
   switch (f.type) {
+    case "group":
+    case "category":
+      return <CategoryInput f={f} value={value} onChange={onChange} />;
     case "whatsapp":
       return <WhatsappField label={f.label} value={value} onChange={onChange} />;
     case "textarea":
@@ -176,6 +233,8 @@ type AnyTable =
   | "sections"
   | "services"
   | "products"
+  | "product_groups"
+  | "product_categories"
   | "posts";
 
 async function readRows(table: AnyTable, order: string, ascending: boolean) {
@@ -204,6 +263,11 @@ function refreshContent(
   void qc.invalidateQueries({ queryKey });
   void qc.invalidateQueries({ queryKey: ["admin-overview"] });
   if (table === "posts") void qc.invalidateQueries({ queryKey: ["post"] });
+  if (table === "product_groups" || table === "product_categories") {
+    void qc.invalidateQueries({ queryKey: ["product-groups"] });
+    void qc.invalidateQueries({ queryKey: ["product-categories"] });
+    void qc.invalidateQueries({ queryKey: ["products"] });
+  }
 }
 
 /** Single-row form (site_settings). */
@@ -303,6 +367,10 @@ function RowCard({
   const [busy, setBusy] = useState(false);
   useEffect(() => setRow(initial), [initial]);
   const save = async () => {
+    if (fields.some((field) => field.type === "group" && !row[field.name])) {
+      toast.error("اختر القسم الرئيسي قبل الحفظ");
+      return;
+    }
     setBusy(true);
     try {
       const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
@@ -423,6 +491,10 @@ export function ListEditor({
   } = useQuery({ queryKey: ["admin", table], queryFn: () => readRows(table, order, ascending) });
   const refresh = () => refreshContent(qc, table, queryKey);
   const add = async () => {
+    if (table === "product_categories" && !newRow?.["group_id"]) {
+      toast.error("أضف قسمًا رئيسيًا أولًا");
+      return;
+    }
     setAdding(true);
     try {
       const { error } = await supabase.from(table).insert((newRow ?? {}) as never);

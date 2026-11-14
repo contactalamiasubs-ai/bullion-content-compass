@@ -53,6 +53,14 @@ export const productsQuery = queryOptions({
   queryKey: ["products"],
   queryFn: () => q(supabase.from("products").select("*").order("sort")),
 });
+export const productGroupsQuery = queryOptions({
+  queryKey: ["product-groups"],
+  queryFn: () => q(supabase.from("product_groups").select("*").order("sort")),
+});
+export const productCategoriesQuery = queryOptions({
+  queryKey: ["product-categories"],
+  queryFn: () => q(supabase.from("product_categories").select("*").order("sort")),
+});
 export const productQuery = (id: string) =>
   queryOptions({
     queryKey: ["products", id],

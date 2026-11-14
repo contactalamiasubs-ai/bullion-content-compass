@@ -1,5 +1,6 @@
 # Gold Center updates
 
+- [x] Add dashboard-managed main product groups and subcategories, link products, and verify public filtering and authenticated saves. Temporary group/branch removed and original product category restored; existing products left for the administrator to classify.
 - [x] Verify WhatsApp order buttons escape embedded previews and preserve the saved number and product message on desktop/mobile; actual WhatsApp handoff page checked, message sending requires the visitor's WhatsApp account.
 - [x] Validate dashboard WhatsApp numbers, preview actual product links before saving, and verify authenticated save/readback; original number restored after testing.
 - [x] Verify product and contact WhatsApp links navigate without opening a blocked popup; destination verified on desktop/mobile, external WhatsApp handoff requires the user's device.

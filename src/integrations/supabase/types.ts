@@ -188,9 +188,63 @@ export type Database = {
         }
         Relationships: []
       }
+      product_categories: {
+        Row: {
+          group_id: string
+          id: string
+          name_ar: string
+          name_en: string
+          sort: number
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          name_ar: string
+          name_en?: string
+          sort?: number
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          name_ar?: string
+          name_en?: string
+          sort?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_categories_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "product_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_groups: {
+        Row: {
+          id: string
+          name_ar: string
+          name_en: string
+          sort: number
+        }
+        Insert: {
+          id?: string
+          name_ar: string
+          name_en?: string
+          sort?: number
+        }
+        Update: {
+          id?: string
+          name_ar?: string
+          name_en?: string
+          sort?: number
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           active: boolean
+          category_id: string | null
           created_at: string
           description_ar: string | null
           description_en: string | null
@@ -203,6 +257,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          category_id?: string | null
           created_at?: string
           description_ar?: string | null
           description_en?: string | null
@@ -215,6 +270,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          category_id?: string | null
           created_at?: string
           description_ar?: string | null
           description_en?: string | null
@@ -225,7 +281,15 @@ export type Database = {
           price?: number | null
           sort?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sections: {
         Row: {

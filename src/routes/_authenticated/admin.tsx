@@ -22,7 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SingleEditor, ListEditor, type Field } from "@/components/admin/editors";
 import { useServerFn } from "@tanstack/react-start";
 import { refreshVerifiedPrices } from "@/lib/prices.functions";
-import { verifiedPricesQuery } from "@/lib/data";
+import { verifiedPricesQuery, productGroupsQuery } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -57,6 +57,8 @@ const tabs = [
   { id: "sections", l: "أقسام الموقع", i: FileText },
   { id: "services", l: "الخدمات", i: Briefcase },
   { id: "products", l: "المنتجات", i: Package },
+  { id: "product-groups", l: "أقسام المنتجات الرئيسية", i: Package },
+  { id: "product-categories", l: "أقسام المنتجات الفرعية", i: Coins },
   { id: "posts", l: "المدونة والأخبار", i: Newspaper },
   { id: "messages", l: "رسائل التواصل", i: Mail },
 ] as const;
@@ -178,7 +180,39 @@ function Admin() {
 type TabId = (typeof tabs)[number]["id"];
 
 function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void }) {
+  const { data: groups = [] } = useQuery(productGroupsQuery);
   switch (tab) {
+    case "product-groups":
+      return (
+        <ListEditor
+          table="product_groups"
+          order="sort"
+          titleField="name_ar"
+          queryKey={["product-groups"]}
+          newRow={{ name_ar: "قسم جديد", name_en: "New group", sort: 99 }}
+          fields={[...bi("name", "اسم القسم"), { name: "sort", label: "الترتيب", type: "number" }]}
+        />
+      );
+    case "product-categories":
+      return (
+        <ListEditor
+          table="product_categories"
+          order="sort"
+          titleField="name_ar"
+          queryKey={["product-categories"]}
+          newRow={{
+            name_ar: "قسم فرعي جديد",
+            name_en: "New category",
+            group_id: groups[0]?.id,
+            sort: 99,
+          }}
+          fields={[
+            { name: "group_id", label: "القسم الرئيسي", type: "group" },
+            ...bi("name", "اسم القسم الفرعي"),
+            { name: "sort", label: "الترتيب", type: "number" },
+          ]}
+        />
+      );
     case "overview":
       return <Overview onSelect={onSelect} />;
     case "source":
@@ -314,6 +348,7 @@ function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void 
           newRow={{ name_ar: "منتج جديد", name_en: "New product", sort: 99 }}
           fields={[
             ...bi("name", "الاسم"),
+            { name: "category_id", label: "قسم المنتج", type: "category" },
             ...bi("description", "الوصف", "textarea"),
             { name: "price", label: "السعر (اختياري)", type: "number" },
             { name: "image_url", label: "الصورة", type: "image" },

@@ -44,3 +44,4 @@ use the editor.
 - Dashboard entry links use the same-origin `/admin` path in the shared header and footer; the managed authenticated layout remains the login gate so links work across hosting domains without weakening access.
 - WhatsApp links use native target="_blank" anchors (rel noopener) with non-blocking optional analytics, because wa.me refuses to load inside frames and embedded previews block top-window navigation.
 - The generic settings editor validates WhatsApp numbers with international numbering metadata and stores normalized digits; its product preview reuses the public link builder to match actual ordering destinations.
+- Product taxonomy uses separate main-group and subcategory tables; products reference a subcategory, and generic editors manage all three. Restrict deletion of linked categories/groups to prevent accidental uncategorization.
