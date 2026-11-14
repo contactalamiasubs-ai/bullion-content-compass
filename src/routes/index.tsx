@@ -2,14 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { FileText, BookOpen, Download, ShieldCheck, Smartphone } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
-import { settingsQuery, sectionsQuery, servicesQuery, productsQuery, postsQuery } from "@/lib/data";
+import { ProductCatalog } from "@/components/product-catalog";
+import { settingsQuery, sectionsQuery, servicesQuery, postsQuery } from "@/lib/data";
 import {
   HeroSlider,
   PriceTicker,
   PriceTable,
   PriceChart,
   ZakatCalculator,
-  ProductCard,
   PostCard,
   SectionTitle,
   fallbackImages,
@@ -40,7 +40,6 @@ function Index() {
   const { data: s } = useQuery(settingsQuery);
   const { data: sec } = useQuery(sectionsQuery);
   const { data: services = [] } = useQuery(servicesQuery);
-  const { data: products = [] } = useQuery(productsQuery);
   const { data: posts = [] } = useQuery(postsQuery());
   const hub = [
     { i: FileText, l: t("dailyReport"), to: "/news" as const },
@@ -104,14 +103,7 @@ function Index() {
 
       <section className="mx-auto max-w-7xl px-4 py-16">
         <SectionTitle title={t("products")} />
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-          {products
-            .filter((p) => p.active)
-            .slice(0, 6)
-            .map((p, i) => (
-              <ProductCard key={p.id} p={p} idx={i} />
-            ))}
-        </div>
+        <ProductCatalog limit={6} />
         <div className="mt-8 text-center">
           <Link to="/products" className="text-gold hover:underline">
             {t("viewAll")}
