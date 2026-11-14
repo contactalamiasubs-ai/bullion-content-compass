@@ -10,6 +10,27 @@ import { ProductCard } from "@/components/site";
 function CategoryIcon({ name, main = false }: { name: string; main?: boolean }) {
   const normalized = name.trim().toLowerCase();
   const size = main ? "size-10" : "size-7";
+  if (/فضة|الفضة|silver/.test(normalized)) {
+    return (
+      <svg
+        viewBox="0 0 32 32"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        aria-hidden="true"
+        className={size}
+      >
+        <path d="m5 17 4-5h13l5 5v9H5z" fill="currentColor" fillOpacity="0.18" />
+        <path d="M5 17h22M9 12l4 5m9-5-3 5M13 17v9m6-9v9" />
+        <path d="m9 9 3-5h10l3 5v3H9z" fill="currentColor" fillOpacity="0.3" />
+        <path d="M9 9h16m-13-5 3 5m7-5-3 5" />
+        <path d="M15 20h2m-2 3h2" strokeWidth="1.8" />
+        <path d="M28 3v5m-2.5-2.5h5" />
+      </svg>
+    );
+  }
   if (/سبائك|bars|bullion|ذهب|gold/.test(normalized)) {
     return (
       <svg
@@ -31,8 +52,6 @@ function CategoryIcon({ name, main = false }: { name: string; main?: boolean }) 
     return <Coins aria-hidden="true" className={size} strokeWidth={1.5} />;
   if (/هدايا|gifts/.test(normalized))
     return <Gift aria-hidden="true" className={size} strokeWidth={1.5} />;
-  if (/فضة|الفضة|silver/.test(normalized))
-    return <Coins aria-hidden="true" className={size} strokeWidth={1.25} />;
   return <Gem aria-hidden="true" className={size} strokeWidth={1.5} />;
 }
 
