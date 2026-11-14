@@ -49,3 +49,6 @@ use the editor.
 - Gram-linked products explicitly select their pricing metal, independently of editable category names; silver uses one configured gram rate and no karat so taxonomy renaming cannot change pricing.
 
 - Home and catalog pages share ProductCatalog for category medallions and product filtering so dashboard-managed taxonomy renders consistently on both.
+
+- Visitor favorites and cart persist only product IDs and quantities in a hydration-safe shared browser provider; cart views resolve active catalog rows and current shared prices before native WhatsApp handoff, preventing stale stored prices and requiring no visitor account.
+- Shopping interface copy comes from bilingual shopping-prefixed sections managed by the existing dashboard editor so labels remain editable without dedicated forms.

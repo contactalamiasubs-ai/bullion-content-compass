@@ -17,6 +17,7 @@ import { LangProvider } from "@/lib/i18n";
 import { Header, Footer, Popup } from "@/components/site";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { ShoppingProvider } from "@/components/shopping-provider";
 
 function NotFoundComponent() {
   return (
@@ -138,11 +139,13 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <LangProvider>
+        <ShoppingProvider>
         {!bare && <Header />}
         {!bare && <Popup />}
         <Outlet />
         {!bare && <Footer />}
         <Toaster />
+        </ShoppingProvider>
       </LangProvider>
     </QueryClientProvider>
   );

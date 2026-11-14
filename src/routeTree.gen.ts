@@ -14,7 +14,9 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ServicesRouteImport } from './routes/services'
@@ -46,9 +48,19 @@ const BlogRoute = BlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsRoute = NewsRouteImport.update({
@@ -87,7 +99,9 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
+  '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
+  '/favorites': typeof FavoritesRoute
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
   '/services': typeof ServicesRoute
@@ -100,7 +114,9 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
+  '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
+  '/favorites': typeof FavoritesRoute
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
   '/services': typeof ServicesRoute
@@ -115,7 +131,9 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
+  '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
+  '/favorites': typeof FavoritesRoute
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
   '/services': typeof ServicesRoute
@@ -130,7 +148,9 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/blog'
+    | '/cart'
     | '/contact'
+    | '/favorites'
     | '/news'
     | '/products'
     | '/services'
@@ -143,7 +163,9 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/blog'
+    | '/cart'
     | '/contact'
+    | '/favorites'
     | '/news'
     | '/products'
     | '/services'
@@ -157,7 +179,9 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/blog'
+    | '/cart'
     | '/contact'
+    | '/favorites'
     | '/news'
     | '/products'
     | '/services'
@@ -172,7 +196,9 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   BlogRoute: typeof BlogRoute
+  CartRoute: typeof CartRoute
   ContactRoute: typeof ContactRoute
+  FavoritesRoute: typeof FavoritesRoute
   NewsRoute: typeof NewsRoute
   ProductsRoute: typeof ProductsRoute
   ServicesRoute: typeof ServicesRoute
@@ -217,11 +243,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/news': {
@@ -286,7 +326,9 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   BlogRoute: BlogRoute,
+  CartRoute: CartRoute,
   ContactRoute: ContactRoute,
+  FavoritesRoute: FavoritesRoute,
   NewsRoute: NewsRoute,
   ProductsRoute: ProductsRoute,
   ServicesRoute: ServicesRoute,

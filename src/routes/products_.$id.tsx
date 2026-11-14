@@ -13,6 +13,7 @@ import {
 import { fallbackImages, ProductCard } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { productPrice } from "@/lib/product-pricing";
+import { FavoriteButton, AddToCartButton } from "@/components/product-shopping-actions";
 
 export const Route = createFileRoute("/products_/$id")({
   head: () => ({
@@ -78,7 +79,10 @@ function ProductPage() {
               {pick(group, "name", lang)} / {pick(category, "name", lang)}
             </p>
           )}
-          <h1 className="mb-4 text-4xl font-bold text-gold-gradient">{name}</h1>
+          <div className="mb-4 flex items-start justify-between gap-4">
+            <h1 className="min-w-0 break-words text-4xl font-bold text-gold-gradient">{name}</h1>
+            <FavoriteButton id={p.id} />
+          </div>
           {price != null && (
             <p className="mb-6 text-2xl font-semibold text-gold" dir="ltr">
               {price.toLocaleString("en", { maximumFractionDigits: 2 })} EGP
@@ -87,6 +91,7 @@ function ProductPage() {
           {desc && (
             <p className="mb-8 whitespace-pre-line leading-loose text-muted-foreground">{desc}</p>
           )}
+          <div className="mb-3 max-w-sm"><AddToCartButton id={p.id} /></div>
           <Button
             asChild
             className="inline-flex h-auto w-fit items-center gap-2 bg-gold-gradient px-8 py-3 font-semibold text-primary-foreground"

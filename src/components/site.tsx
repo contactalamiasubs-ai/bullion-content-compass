@@ -25,7 +25,11 @@ import {
   LockKeyhole,
   Sun,
   Moon,
+  Heart,
+  ShoppingBag,
 } from "lucide-react";
+import { useShopping, useShoppingText } from "@/components/shopping-provider";
+import { FavoriteButton, AddToCartButton } from "@/components/product-shopping-actions";
 import { Button } from "@/components/ui/button";
 import { productPrice, type ProductPricing } from "@/lib/product-pricing";
 import { useLang, pick } from "@/lib/i18n";
@@ -61,6 +65,9 @@ export function Header() {
   const { t, lang, setLang } = useLang();
   const { data: s } = useQuery(settingsQuery);
   const [open, setOpen] = useState(false);
+  const { state } = useShopping();
+  const shoppingText = useShoppingText();
+  const cartCount = Object.values(state.cart).reduce((sum, quantity) => sum + quantity, 0);
   const links = [
     { to: "/", l: t("home") },
     { to: "/about", l: t("about") },
@@ -73,7 +80,16 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur">
       <div className="border-b border-border/60 bg-card">
-        <div className="mx-auto flex max-w-7xl justify-end px-4 py-1">
+        <div className="mx-auto flex max-w-7xl items-center justify-end gap-3 px-4 py-1">
+          {([{ to: "/favorites", icon: Heart, label: shoppingText("favorites"), count: state.favorites.length },
+            { to: "/cart", icon: ShoppingBag, label: shoppingText("cart"), count: cartCount }] as const).map((item) => (
+            <Button key={item.to} asChild variant="ghost" size="sm" className="gap-1.5 text-gold">
+              <Link to={item.to} onClick={() => setOpen(false)} aria-label={`${item.label} (${item.count})`} title={item.label}>
+                <item.icon /><span className="hidden sm:inline">{item.label}</span>
+                <span className="min-w-4 text-center text-xs" aria-hidden="true">{item.count}</span>
+              </Link>
+            </Button>
+          ))}
           <Button asChild variant="ghost" size="sm" className="text-gold">
             <Link to="/admin" onClick={() => setOpen(false)}>
               <LockKeyhole aria-hidden="true" />
@@ -642,6 +658,8 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
       ref={cardRef}
       className="group overflow-hidden rounded-xl border border-border bg-card transition hover:border-gold/60 hover:shadow-gold"
     >
+      <div className="relative">
+      <div className="absolute end-2 top-2 z-10"><FavoriteButton id={p.id} /></div>
       <Link
         to="/products/$id"
         params={{ id: p.id }}
@@ -654,6 +672,7 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
       </Link>
+      </div>
       <div className="p-4">
         <Link to="/products/$id" params={{ id: p.id }} className="hover:text-gold">
           <h3 className="mb-1 line-clamp-2 min-h-12 text-base">{name}</h3>
@@ -663,6 +682,7 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
             {fmt(price, "en")} EGP
           </p>
         )}
+        <div className="mb-2"><AddToCartButton id={p.id} /></div>
         <Button
           asChild
           className="flex h-auto w-full items-center justify-center gap-2 bg-gold-gradient py-2 text-sm font-semibold text-primary-foreground"

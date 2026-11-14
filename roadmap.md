@@ -1,5 +1,7 @@
 # Gold Center updates
 
+- [x] Add browser-saved product favorites and quantity cart, live totals, and WhatsApp order/inquiry handoff; catalog, detail, persistence, removal and mobile verified; actual message sending remains the visitor's action in WhatsApp.
+
 - [x] Add dashboard silver gram rate and metal selection with no silver karat; authenticated save and catalog/detail total verified (100 × 70 + 250 = 7,250 EGP), test product removed and original rate restored.
 
 - [x] Center and refine main and subcategory icons with double-ring medallions; filtering, desktop centering, mobile, light theme and English verified.
