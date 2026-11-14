@@ -52,3 +52,4 @@ use the editor.
 
 - Visitor favorites and cart persist only product IDs and quantities in a hydration-safe shared browser provider; cart views resolve active catalog rows and current shared prices before native WhatsApp handoff, preventing stale stored prices and requiring no visitor account.
 - Shopping interface copy comes from bilingual shopping-prefixed sections managed by the existing dashboard editor so labels remain editable without dedicated forms.
+- Product availability uses one shared four-state helper across catalog, details and live cart resolution; only available products enter order totals, while other states use WhatsApp reservation or inquiry.

@@ -1,4 +1,5 @@
 import { productPrice, type GramRates, type ProductPricing } from "@/lib/product-pricing";
+import { canOrderProduct } from "@/lib/product-availability";
 
 export type ShoppingState = { favorites: string[]; cart: Record<string, number> };
 export const emptyShopping: ShoppingState = { favorites: [], cart: {} };
@@ -37,9 +38,9 @@ export function toggleFavorite(ids: string[], id: string) {
   return ids.includes(id) ? ids.filter((item) => item !== id) : [...ids, id];
 }
 
-type CartProduct = ProductPricing & { id: string; active: boolean; name_ar: string; name_en: string };
+type CartProduct = ProductPricing & { id: string; active: boolean; name_ar: string; name_en: string; availability?: string | null };
 export function cartLines<T extends CartProduct>(products: T[], cart: Record<string, number>, rates?: GramRates | null) {
-  return products.filter((p) => p.active && (cart[p.id] ?? 0) > 0).map((product) => {
+  return products.filter((p) => p.active && canOrderProduct(p) && (cart[p.id] ?? 0) > 0).map((product) => {
     const quantity = cart[product.id] ?? 0;
     const price = productPrice(product, rates);
     return { product, quantity, price, total: price == null ? null : Math.round(price * quantity * 100) / 100 };

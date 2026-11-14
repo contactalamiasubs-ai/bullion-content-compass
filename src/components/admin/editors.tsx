@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { WhatsappField } from "@/components/admin/whatsapp-field";
 import { validateWhatsappNumber } from "@/lib/whatsapp";
+import { availabilityStates } from "@/lib/product-availability";
 
 export type Field = {
   name: string;
@@ -24,7 +25,8 @@ export type Field = {
     | "group"
     | "category"
     | "karat"
-    | "metal";
+    | "metal"
+    | "availability";
   options?: string[];
 };
 
@@ -85,6 +87,13 @@ function FieldInput({
 }) {
   const [busy, setBusy] = useState(false);
   switch (f.type) {
+    case "availability":
+      return <select aria-label={f.label} className={inp} value={String(value ?? "available")}
+        onChange={(event) => onChange(event.target.value)}>
+        {availabilityStates.map((state, index) => <option key={state} value={state}>
+          {["متوافر", "غير متوافر", "التواصل للحجز", "قادم قريبًا"][index]}
+        </option>)}
+      </select>;
     case "metal":
       return (
         <select aria-label={f.label} className={inp} value={String(value ?? "gold")}

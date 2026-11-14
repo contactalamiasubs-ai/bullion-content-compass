@@ -364,6 +364,7 @@ function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void 
             ...bi("name", "الاسم"),
             { name: "category_id", label: "قسم المنتج", type: "category" },
             ...bi("description", "الوصف", "textarea"),
+            { name: "availability", label: "حالة توافر المنتج", type: "availability" },
             { name: "gram_pricing", label: "ربط السعر بسعر الجرام", type: "bool" },
             { name: "pricing_metal", label: "المعدن المستخدم لحساب السعر", type: "metal" },
             { name: "weight_grams", label: "الوزن بالجرام", type: "number" },

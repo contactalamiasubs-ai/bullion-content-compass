@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN availability text NOT NULL DEFAULT 'available' CHECK (availability IN ('available', 'unavailable', 'reservation', 'coming_soon'));

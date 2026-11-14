@@ -1,5 +1,7 @@
 # Gold Center updates
 
+- [x] Add four dashboard-managed availability states to cards/details; authenticated saves and public readback verified for all four and original state restored. Connect standalone catalog from price lists and mobile navigation, show bar specifications, and exclude non-available products from live order totals; 24 relevant tests passed.
+
 - [x] Place homepage products immediately after prices and order the shared navigation with prices followed by products; desktop and mobile price scrolling and catalog navigation verified.
 
 - [x] Refine shopping and navigation icons with consistent circular controls, readable labels, active states and mobile layout; shopping navigation and menu verified at 320/390/812/1280 widths, Arabic/English and dark/light themes.

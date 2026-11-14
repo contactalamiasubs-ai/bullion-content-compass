@@ -14,19 +14,27 @@ import { fallbackImages, ProductCard } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { productPrice } from "@/lib/product-pricing";
 import { FavoriteButton, AddToCartButton } from "@/components/product-shopping-actions";
+import { ProductAvailability } from "@/components/product-availability";
+import { canOrderProduct, productAvailability } from "@/lib/product-availability";
+import { useShoppingText } from "@/components/shopping-provider";
 
 export const Route = createFileRoute("/products_/$id")({
-  head: () => ({
+  loader: ({ params, context }) => context.queryClient.ensureQueryData(productQuery(params.id)),
+  head: ({ loaderData }) => ({
     meta: [
-      { title: "تفاصيل المنتج | جولد سنتر" },
+      { title: loaderData?.active ? `${loaderData.name_ar} | جولد سنتر` : "تفاصيل المنتج | جولد سنتر" },
       {
         name: "description",
-        content: "تفاصيل المنتج وسعره، واطلبه مباشرة عبر واتساب من جولد سنتر.",
+        content: loaderData?.description_ar || "تفاصيل المنتج وسعره، واطلبه مباشرة عبر واتساب من جولد سنتر.",
       },
-      { property: "og:title", content: "تفاصيل المنتج | جولد سنتر" },
-      { property: "og:description", content: "تفاصيل المنتج واطلبه عبر واتساب." },
+      { property: "og:title", content: loaderData?.active ? `${loaderData.name_ar} | جولد سنتر` : "تفاصيل المنتج | جولد سنتر" },
+      { property: "og:description", content: loaderData?.description_ar || "تفاصيل المنتج واطلبه عبر واتساب." },
       { property: "og:type", content: "product" },
       { name: "twitter:card", content: "summary_large_image" },
+      ...(loaderData?.active && loaderData.image_url?.startsWith("https://") ? [
+        { property: "og:image", content: loaderData.image_url },
+        { name: "twitter:image", content: loaderData.image_url },
+      ] : []),
     ],
   }),
   component: ProductPage,
@@ -35,6 +43,7 @@ export const Route = createFileRoute("/products_/$id")({
 function ProductPage() {
   const { id } = Route.useParams();
   const { lang, t } = useLang();
+  const shoppingText = useShoppingText();
   const { data: p, isLoading } = useQuery(productQuery(id));
   const { data: s } = useQuery(settingsQuery);
   const { data: all = [] } = useQuery(productsQuery);
@@ -57,7 +66,11 @@ function ProductPage() {
   const category = categories.find((item) => item.id === p.category_id);
   const group = groups.find((item) => item.id === category?.group_id);
   const desc = pick(p, "description", lang);
-  const msg = lang === "ar" ? `مرحبًا، أريد طلب: ${name}` : `Hello, I'd like to order: ${name}`;
+  const available = canOrderProduct(p);
+  const reservation = productAvailability(p.availability) === "reservation";
+  const msg = lang === "ar"
+    ? `مرحبًا، أريد ${available ? "طلب" : reservation ? "حجز" : "الاستفسار عن"}: ${name}`
+    : `Hello, I'd like to ${available ? "order" : reservation ? "reserve" : "inquire about"}: ${name}`;
   const related = all.filter((x) => x.active && x.id !== p.id).slice(0, 4);
   return (
     <main className="mx-auto max-w-7xl px-4 py-12">
@@ -74,6 +87,7 @@ function ProductPage() {
           className="aspect-square w-full rounded-xl border border-border object-cover"
         />
         <div className="flex flex-col justify-center">
+          <div><ProductAvailability value={p.availability} /></div>
           {category && (
             <p className="mb-3 text-sm text-muted-foreground">
               {pick(group, "name", lang)} / {pick(category, "name", lang)}
@@ -91,7 +105,17 @@ function ProductPage() {
           {desc && (
             <p className="mb-8 whitespace-pre-line leading-loose text-muted-foreground">{desc}</p>
           )}
-          <div className="mb-3 max-w-sm"><AddToCartButton id={p.id} /></div>
+          <dl className="mb-8 grid grid-cols-2 gap-x-6 text-sm">
+            {[
+              [shoppingText("metal"), shoppingText(p.pricing_metal === "silver" ? "silver" : "gold")],
+              [shoppingText("weight"), p.weight_grams],
+              [shoppingText("karat"), p.pricing_metal === "silver" ? null : p.karat],
+              [shoppingText("making_charge"), p.gram_pricing ? p.making_charge : null],
+            ].filter(([, value]) => value != null).map(([label, value]) => <div key={String(label)} className="border-b border-border py-3">
+              <dt className="mb-1 text-muted-foreground">{label}</dt><dd className="font-semibold">{value}</dd>
+            </div>)}
+          </dl>
+          {available && <div className="mb-3 max-w-sm"><AddToCartButton id={p.id} /></div>}
           <Button
             asChild
             className="inline-flex h-auto w-fit items-center gap-2 bg-gold-gradient px-8 py-3 font-semibold text-primary-foreground"
@@ -111,7 +135,7 @@ function ProductPage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <MessageCircle className="h-5 w-5" /> {t("buyWhatsapp")}
+              <MessageCircle className="h-5 w-5" /> {available ? t("buyWhatsapp") : shoppingText(reservation ? "reserve_product" : "inquire_product")}
             </a>
           </Button>
         </div>

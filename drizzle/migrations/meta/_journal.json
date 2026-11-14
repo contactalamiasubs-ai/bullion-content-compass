@@ -64,6 +64,13 @@
       "when": 1794659280192,
       "tag": "0008_silver_product_gram_pricing",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794664984222,
+      "tag": "0009_product_availability",
+      "breakpoints": true
     }
   ]
 }

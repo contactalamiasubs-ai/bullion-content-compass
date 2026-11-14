@@ -39,6 +39,8 @@ import { useShopping, useShoppingText } from "@/components/shopping-provider";
 import { FavoriteButton, AddToCartButton } from "@/components/product-shopping-actions";
 import { Button } from "@/components/ui/button";
 import { productPrice, type ProductPricing } from "@/lib/product-pricing";
+import { ProductAvailability } from "@/components/product-availability";
+import { canOrderProduct, productAvailability } from "@/lib/product-availability";
 import { useLang, pick } from "@/lib/i18n";
 import {
   settingsQuery,
@@ -499,6 +501,11 @@ export function PriceTable() {
           })}
         </p>
       )}
+      <div className="border-t border-border p-3">
+        <Button asChild variant="outline" className="w-full whitespace-normal text-gold">
+          <Link to="/products"><Gem aria-hidden="true" />{t("products")}<ChevronLeft className="ltr:rotate-180" aria-hidden="true" /></Link>
+        </Button>
+      </div>
     </div>
   );
 }
@@ -643,6 +650,7 @@ export function ZakatCalculator() {
 }
 
 type ProductRow = ProductPricing & {
+  availability?: string | null;
   id: string;
   name_ar: string;
   name_en: string;
@@ -653,6 +661,7 @@ type ProductRow = ProductPricing & {
 };
 export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
   const { t, lang } = useLang();
+  const shoppingText = useShoppingText();
   const { data: s } = useQuery(settingsQuery);
   const cardRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -672,7 +681,11 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
   }, [p.id]);
   const name = pick(p, "name", lang);
   const price = productPrice(p, s);
-  const msg = lang === "ar" ? `مرحبًا، أريد طلب: ${name}` : `Hello, I'd like to order: ${name}`;
+  const available = canOrderProduct(p);
+  const reservation = productAvailability(p.availability) === "reservation";
+  const msg = lang === "ar"
+    ? `مرحبًا، أريد ${available ? "طلب" : reservation ? "حجز" : "الاستفسار عن"}: ${name}`
+    : `Hello, I'd like to ${available ? "order" : reservation ? "reserve" : "inquire about"}: ${name}`;
   return (
     <div
       ref={cardRef}
@@ -694,6 +707,7 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
       </Link>
       </div>
       <div className="p-4">
+        <ProductAvailability value={p.availability} />
         <Link to="/products/$id" params={{ id: p.id }} className="hover:text-gold">
           <h3 className="mb-1 line-clamp-2 min-h-12 text-base">{name}</h3>
         </Link>
@@ -702,7 +716,7 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
             {fmt(price, "en")} EGP
           </p>
         )}
-        <div className="mb-2"><AddToCartButton id={p.id} /></div>
+        {available && <div className="mb-2"><AddToCartButton id={p.id} /></div>}
         <Button
           asChild
           className="flex h-auto w-full items-center justify-center gap-2 bg-gold-gradient py-2 text-sm font-semibold text-primary-foreground"
@@ -722,7 +736,7 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <MessageCircle className="h-4 w-4" /> {t("buyWhatsapp")}
+            <MessageCircle className="h-4 w-4" /> {available ? t("buyWhatsapp") : shoppingText(reservation ? "reserve_product" : "inquire_product")}
           </a>
         </Button>
       </div>
