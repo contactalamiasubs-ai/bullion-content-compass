@@ -175,3 +175,98 @@
 @utility shadow-gold {
   box-shadow: var(--shadow-gold);
 }
+
+@layer components {
+  .category-choice {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 96px;
+    min-height: 140px;
+    gap: 14px;
+    padding: 8px 4px 12px;
+    white-space: normal;
+    background: transparent;
+    color: inherit;
+  }
+  .category-choice:hover {
+    background: transparent;
+  }
+  .category-medallion {
+    display: grid;
+    place-items: center;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1px solid color-mix(in oklch, currentColor 40%, transparent);
+    outline: 1px solid color-mix(in oklch, currentColor 15%, transparent);
+    outline-offset: 5px;
+    background: color-mix(in oklch, currentColor 6%, var(--background));
+    transition:
+      transform 200ms ease,
+      background 200ms ease,
+      border-color 200ms ease;
+  }
+  .category-choice .category-medallion svg {
+    width: 40px;
+    height: 40px;
+  }
+  .category-choice[aria-pressed="true"] .category-medallion {
+    border-color: currentColor;
+    background: color-mix(in oklch, currentColor 15%, var(--background));
+    outline-color: color-mix(in oklch, currentColor 45%, transparent);
+  }
+  .category-label {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+    padding-bottom: 7px;
+  }
+  .category-choice[aria-pressed="true"] .category-label::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: calc(50% - 10px);
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+  }
+  .category-choice-sub {
+    width: 76px;
+    min-height: 112px;
+    gap: 10px;
+    color: inherit;
+    font-size: 13px;
+  }
+  .category-choice-sub .category-medallion {
+    width: 56px;
+    height: 56px;
+    outline-offset: 4px;
+  }
+  .category-choice-sub .category-medallion svg {
+    width: 28px;
+    height: 28px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .category-choice:hover .category-medallion {
+      transform: translateY(-4px);
+    }
+  }
+}
+
+/* Preserve the category artwork sizes over the Button's generic icon utilities. */
+.category-choice .category-medallion svg {
+  width: 40px;
+  height: 40px;
+}
+.category-choice-sub .category-medallion svg {
+  width: 28px;
+  height: 28px;
+}
+.category-choice:hover {
+  background: transparent;
+  color: inherit;
+}

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Coins, Gift, Gem, LayoutGrid, Layers3 } from "lucide-react";
+import { Coins, Gift, Gem, LayoutGrid } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
 import { productsQuery, productGroupsQuery, productCategoriesQuery } from "@/lib/data";
 import { matchesProductCategory } from "@/lib/product-categories";
@@ -24,8 +24,8 @@ export const Route = createFileRoute("/products")({
 
 function CategoryIcon({ name, main = false }: { name: string; main?: boolean }) {
   const normalized = name.trim().toLowerCase();
-  const size = main ? "size-8" : "size-5";
-  if (/سبائك|bars|bullion/.test(normalized)) {
+  const size = main ? "size-10" : "size-7";
+  if (/سبائك|bars|bullion|ذهب|gold/.test(normalized)) {
     return (
       <svg
         viewBox="0 0 32 32"
@@ -47,7 +47,7 @@ function CategoryIcon({ name, main = false }: { name: string; main?: boolean }) 
   if (/هدايا|gifts/.test(normalized))
     return <Gift aria-hidden="true" className={size} strokeWidth={1.5} />;
   if (/فضة|الفضة|silver/.test(normalized))
-    return <Layers3 aria-hidden="true" className={size} strokeWidth={1.5} />;
+    return <Coins aria-hidden="true" className={size} strokeWidth={1.25} />;
   return <Gem aria-hidden="true" className={size} strokeWidth={1.5} />;
 }
 
@@ -65,6 +65,10 @@ function Products() {
     ? selectedCategory
     : "";
   const branches = (categories.data ?? []).filter((category) => category.group_id === groupId);
+  const selectedMain = groups.data?.find((group) => group.id === groupId);
+  const branchTone = /فضة|الفضة|silver/i.test(`${selectedMain?.name_ar} ${selectedMain?.name_en}`)
+    ? "text-silver"
+    : "text-gold";
   const visible = (products.data ?? []).filter(
     (product) =>
       product.active && matchesProductCategory(product, categories.data ?? [], groupId, categoryId),
@@ -77,74 +81,68 @@ function Products() {
       <section className="mx-auto max-w-7xl px-4 py-10">
         <nav
           aria-label={lang === "ar" ? "أقسام المنتجات" : "Product groups"}
-          className="mb-5 flex flex-wrap gap-3 border-b border-border pb-6"
+          className="mb-6 flex flex-wrap justify-center gap-x-6 gap-y-4 border-b border-border pb-8 sm:gap-x-12"
         >
           <Button
             variant="ghost"
-            className={`group h-auto min-h-28 min-w-24 flex-col gap-3 rounded-lg px-5 py-3 transition-colors sm:min-w-32 [&_svg]:size-8 ${!groupId ? "bg-accent text-gold" : "text-muted-foreground hover:text-gold"}`}
+            className={`category-choice group ${!groupId ? "text-gold" : "text-muted-foreground hover:text-gold"}`}
             aria-pressed={!groupId}
             onClick={() => {
               setGroup("");
               setCategory("");
             }}
           >
-            <span className="grid size-14 shrink-0 place-items-center rounded-full border border-current/25 bg-current/5">
-              <LayoutGrid aria-hidden="true" className="size-7" strokeWidth={1.5} />
+            <span className="category-medallion">
+              <LayoutGrid aria-hidden="true" className="size-9" strokeWidth={1.25} />
             </span>
-            {t("viewAll")}
+            <span className="category-label">{t("viewAll")}</span>
           </Button>
           {groups.data?.map((group) => (
             <Button
               key={group.id}
               variant="ghost"
-              className={`group h-auto min-h-28 min-w-24 flex-col gap-3 rounded-lg px-5 py-3 transition-colors sm:min-w-32 [&_svg]:size-8 ${groupId === group.id ? "bg-accent" : "hover:bg-accent/50"} ${/فضة|الفضة|silver/i.test(`${group.name_ar} ${group.name_en}`) ? "text-silver" : "text-gold"}`}
+              className={`category-choice group ${/فضة|الفضة|silver/i.test(`${group.name_ar} ${group.name_en}`) ? "text-silver" : "text-gold"}`}
               aria-pressed={groupId === group.id}
               onClick={() => {
                 setGroup(group.id);
                 setCategory("");
               }}
             >
-              <span className="grid size-14 shrink-0 place-items-center rounded-full border border-current/25 bg-current/5 transition-transform motion-safe:group-hover:-translate-y-1">
+              <span className="category-medallion">
                 <CategoryIcon name={`${group.name_ar} ${group.name_en}`} main />
               </span>
-              {pick(group, "name", lang)}
+              <span className="category-label">{pick(group, "name", lang)}</span>
             </Button>
           ))}
         </nav>
         {groupId && (
           <nav
             aria-label={lang === "ar" ? "الأقسام الفرعية" : "Subcategories"}
-            className="mb-8 flex flex-wrap gap-2"
+            className={`mb-10 flex flex-wrap justify-center gap-x-3 gap-y-4 sm:gap-x-8 ${branchTone}`}
           >
             <Button
-              variant={!categoryId ? "secondary" : "ghost"}
+              variant="ghost"
               aria-pressed={!categoryId}
               onClick={() => setCategory("")}
-              className="min-h-12 gap-2.5 px-3 [&_svg]:size-5"
+              className="category-choice category-choice-sub group"
             >
-              <LayoutGrid aria-hidden="true" className="size-5" strokeWidth={1.5} />
-              {t("viewAll")}
+              <span className="category-medallion">
+                <LayoutGrid aria-hidden="true" className="size-7" strokeWidth={1.25} />
+              </span>
+              <span className="category-label">{t("viewAll")}</span>
             </Button>
             {branches.map((category) => (
               <Button
                 key={category.id}
-                variant={categoryId === category.id ? "secondary" : "ghost"}
+                variant="ghost"
                 aria-pressed={categoryId === category.id}
                 onClick={() => setCategory(category.id)}
-                className="min-h-12 gap-2.5 px-3 [&_svg]:size-5"
+                className="category-choice category-choice-sub group"
               >
-                <span
-                  className={
-                    /فضة|الفضة|silver/i.test(
-                      `${groups.data?.find((group) => group.id === groupId)?.name_ar} ${groups.data?.find((group) => group.id === groupId)?.name_en}`,
-                    )
-                      ? "text-silver"
-                      : "text-gold"
-                  }
-                >
+                <span className="category-medallion">
                   <CategoryIcon name={`${category.name_ar} ${category.name_en}`} />
                 </span>
-                {pick(category, "name", lang)}
+                <span className="category-label">{pick(category, "name", lang)}</span>
               </Button>
             ))}
           </nav>

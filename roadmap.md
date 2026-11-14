@@ -1,5 +1,7 @@
 # Gold Center updates
 
+- [x] Center and refine main and subcategory icons with double-ring medallions; filtering, desktop centering, mobile, light theme and English verified.
+
 - [x] Add a fixed per-product making charge to gram-linked prices; authenticated save/reload, negative validation, catalog/detail totals and mobile layout verified; original product values restored.
 
 - [x] Add dashboard-controlled 21K/24K gram rates and per-product weight/karat linkage; authenticated saves, catalog/detail prices, changed rate, and mobile dashboard verified; original test values restored.
