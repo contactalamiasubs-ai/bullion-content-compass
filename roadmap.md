@@ -1,5 +1,7 @@
 # Gold Center updates
 
+- [x] Add a fixed per-product making charge to gram-linked prices; authenticated save/reload, negative validation, catalog/detail totals and mobile layout verified; original product values restored.
+
 - [x] Add dashboard-controlled 21K/24K gram rates and per-product weight/karat linkage; authenticated saves, catalog/detail prices, changed rate, and mobile dashboard verified; original test values restored.
 
 - [x] Remove the visitor product assistant at the user's request while preserving the catalog.

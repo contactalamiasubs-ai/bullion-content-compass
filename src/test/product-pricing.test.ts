@@ -3,6 +3,40 @@ import { productPrice } from "@/lib/product-pricing";
 
 describe("product gram pricing", () => {
   const rates = { gold_gram_21: 4500, gold_gram_24: 5200 };
+  it("adds the fixed coin making charge once to the gold value", () => {
+    expect(
+      productPrice(
+        { price: null, gram_pricing: true, weight_grams: 8, karat: 21, making_charge: 250 },
+        rates,
+      ),
+    ).toBe(36250);
+  });
+  it("adds a decimal bar making charge and follows changed gram rates", () => {
+    const bar = {
+      price: null,
+      gram_pricing: true,
+      weight_grams: 10,
+      karat: 24,
+      making_charge: 125.75,
+    };
+    expect(productPrice(bar, rates)).toBe(52125.75);
+    expect(productPrice(bar, { ...rates, gold_gram_24: 5300 })).toBe(53125.75);
+  });
+  it("preserves a manual final price without adding making charge twice", () => {
+    expect(productPrice({ price: 1000, gram_pricing: false, making_charge: 250 }, rates)).toBe(
+      1000,
+    );
+  });
+  it("rejects invalid making charges", () => {
+    for (const making_charge of [-1, Infinity, NaN]) {
+      expect(
+        productPrice(
+          { price: null, gram_pricing: true, weight_grams: 8, karat: 21, making_charge },
+          rates,
+        ),
+      ).toBeNull();
+    }
+  });
   it("calculates 21K using its gram rate and weight", () => {
     expect(productPrice({ price: 99, gram_pricing: true, weight_grams: 8, karat: 21 }, rates)).toBe(
       36000,

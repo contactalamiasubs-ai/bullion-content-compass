@@ -3,12 +3,14 @@ export type ProductPricing = {
   gram_pricing?: boolean;
   weight_grams?: number | null;
   karat?: number | null;
+  making_charge?: number | null;
 };
 export type GramRates = { gold_gram_21: number | null; gold_gram_24: number | null };
 
 export function productPrice(product: ProductPricing, rates?: GramRates | null): number | null {
   if (!product.gram_pricing) return product.price;
   const weight = product.weight_grams;
+  const makingCharge = product.making_charge ?? 0;
   const rate =
     product.karat === 21 ? rates?.gold_gram_21 : product.karat === 24 ? rates?.gold_gram_24 : null;
   if (
@@ -17,9 +19,11 @@ export function productPrice(product: ProductPricing, rates?: GramRates | null):
     weight <= 0 ||
     rate == null ||
     !Number.isFinite(rate) ||
-    rate <= 0
+    rate <= 0 ||
+    !Number.isFinite(makingCharge) ||
+    makingCharge < 0
   )
     return null;
-  const price = Math.round(weight * rate * 100) / 100;
+  const price = Math.round((weight * rate + makingCharge) * 100) / 100;
   return Number.isFinite(price) ? price : null;
 }

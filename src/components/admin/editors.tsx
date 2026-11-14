@@ -388,6 +388,16 @@ function RowCard({
     }
     if (
       table === "products" &&
+      row["making_charge"] != null &&
+      (typeof row["making_charge"] !== "number" ||
+        !Number.isFinite(row["making_charge"]) ||
+        row["making_charge"] < 0)
+    ) {
+      toast.error("أدخل مصنعية صفرًا أو مبلغًا أكبر من صفر");
+      return;
+    }
+    if (
+      table === "products" &&
       row["gram_pricing"] &&
       (!(typeof row["weight_grams"] === "number" && row["weight_grams"] > 0) ||
         ![21, 24].includes(Number(row["karat"])))
@@ -398,6 +408,7 @@ function RowCard({
     setBusy(true);
     try {
       const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
+      if (table === "products") patch["making_charge"] = row["making_charge"] ?? 0;
       const { data: saved, error } = await supabase
         .from(table)
         .update(patch as never)

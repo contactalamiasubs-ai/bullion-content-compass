@@ -252,6 +252,7 @@ export type Database = {
           id: string
           image_url: string | null
           karat: number | null
+          making_charge: number
           name_ar: string
           name_en: string
           price: number | null
@@ -268,6 +269,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           karat?: number | null
+          making_charge?: number
           name_ar: string
           name_en: string
           price?: number | null
@@ -284,6 +286,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           karat?: number | null
+          making_charge?: number
           name_ar?: string
           name_en?: string
           price?: number | null

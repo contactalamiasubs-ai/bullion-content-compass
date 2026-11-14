@@ -366,6 +366,7 @@ function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void 
             { name: "gram_pricing", label: "ربط السعر بسعر الجرام", type: "bool" },
             { name: "weight_grams", label: "الوزن بالجرام", type: "number" },
             { name: "karat", label: "عيار الذهب", type: "karat" },
+            { name: "making_charge", label: "المصنعية للمنتج بالكامل (EGP)", type: "number" },
             { name: "price", label: "السعر اليدوي (عند إيقاف الربط)", type: "number" },
             { name: "image_url", label: "الصورة", type: "image" },
             { name: "sort", label: "الترتيب", type: "number" },
