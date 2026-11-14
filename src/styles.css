@@ -33,6 +33,7 @@
   --color-ring: var(--ring);
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
+  --color-silver: var(--silver);
   --color-success: var(--success);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -72,6 +73,7 @@
   --ring: oklch(0.78 0.13 80);
   --gold: oklch(0.8 0.14 82);
   --gold-soft: oklch(0.88 0.09 88);
+  --silver: oklch(0.82 0.015 250);
   --success: oklch(0.72 0.15 150);
   --gradient-gold: linear-gradient(
     135deg,
@@ -121,6 +123,7 @@
   --ring: oklch(0.62 0.13 75);
   --gold: oklch(0.6 0.13 72);
   --gold-soft: oklch(0.7 0.1 80);
+  --silver: oklch(0.48 0.025 250);
   --gradient-gold: linear-gradient(
     135deg,
     oklch(0.72 0.12 85),
