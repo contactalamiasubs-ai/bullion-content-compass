@@ -192,6 +192,7 @@ function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void 
           fields={[
             { name: "gold_gram_21", label: "سعر جرام الذهب عيار 21 (EGP)", type: "number" },
             { name: "gold_gram_24", label: "سعر جرام الذهب عيار 24 (EGP)", type: "number" },
+            { name: "silver_gram", label: "سعر جرام الفضة (EGP)", type: "number" },
           ]}
         />
       );
@@ -364,6 +365,7 @@ function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void 
             { name: "category_id", label: "قسم المنتج", type: "category" },
             ...bi("description", "الوصف", "textarea"),
             { name: "gram_pricing", label: "ربط السعر بسعر الجرام", type: "bool" },
+            { name: "pricing_metal", label: "المعدن المستخدم لحساب السعر", type: "metal" },
             { name: "weight_grams", label: "الوزن بالجرام", type: "number" },
             { name: "karat", label: "عيار الذهب", type: "karat" },
             { name: "making_charge", label: "المصنعية للمنتج بالكامل (EGP)", type: "number" },

@@ -57,6 +57,13 @@
       "when": 1794657894596,
       "tag": "0007_add_product_making_charge",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794659280192,
+      "tag": "0008_silver_product_gram_pricing",
+      "breakpoints": true
     }
   ]
 }

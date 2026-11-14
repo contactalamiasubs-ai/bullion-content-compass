@@ -46,5 +46,6 @@ use the editor.
 - The generic settings editor validates WhatsApp numbers with international numbering metadata and stores normalized digits; its product preview reuses the public link builder to match actual ordering destinations.
 - Product taxonomy uses separate main-group and subcategory tables; products reference a subcategory, and generic editors manage all three. Restrict deletion of linked categories/groups to prevent accidental uncategorization.
 - Product gram pricing is opt-in and calculated through one shared helper from weight times the matching configured rate plus a fixed per-product making charge; retain final manual prices for unlinked products and never fall back to them for incomplete linked prices, so catalog and detail totals remain consistent.
+- Gram-linked products explicitly select their pricing metal, independently of editable category names; silver uses one configured gram rate and no karat so taxonomy renaming cannot change pricing.
 
 - Home and catalog pages share ProductCatalog for category medallions and product filtering so dashboard-managed taxonomy renders consistently on both.

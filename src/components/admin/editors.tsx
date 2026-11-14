@@ -23,7 +23,8 @@ export type Field = {
     | "whatsapp"
     | "group"
     | "category"
-    | "karat";
+    | "karat"
+    | "metal";
   options?: string[];
 };
 
@@ -84,6 +85,14 @@ function FieldInput({
 }) {
   const [busy, setBusy] = useState(false);
   switch (f.type) {
+    case "metal":
+      return (
+        <select aria-label={f.label} className={inp} value={String(value ?? "gold")}
+          onChange={(event) => onChange(event.target.value)}>
+          <option value="gold">ذهب</option>
+          <option value="silver">فضة</option>
+        </select>
+      );
     case "karat":
       return (
         <select
@@ -400,15 +409,18 @@ function RowCard({
       table === "products" &&
       row["gram_pricing"] &&
       (!(typeof row["weight_grams"] === "number" && row["weight_grams"] > 0) ||
-        ![21, 24].includes(Number(row["karat"])))
+        (row["pricing_metal"] !== "silver" && ![21, 24].includes(Number(row["karat"]))))
     ) {
-      toast.error("أدخل وزنًا أكبر من صفر واختر عيار 21 أو 24 قبل تفعيل الربط");
+      toast.error(row["pricing_metal"] === "silver" ? "أدخل وزنًا أكبر من صفر قبل تفعيل الربط" : "أدخل وزنًا أكبر من صفر واختر عيار 21 أو 24 قبل تفعيل الربط");
       return;
     }
     setBusy(true);
     try {
       const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
-      if (table === "products") patch["making_charge"] = row["making_charge"] ?? 0;
+      if (table === "products") {
+        patch["making_charge"] = row["making_charge"] ?? 0;
+        if (row["pricing_metal"] === "silver") patch["karat"] = null;
+      }
       const { data: saved, error } = await supabase
         .from(table)
         .update(patch as never)
@@ -477,7 +489,7 @@ function RowCard({
       </Button>
       {open && (
         <div className="space-y-4 border-t border-border p-4">
-          <FormGrid fields={fields} row={row} set={(k, v) => setRow({ ...row, [k]: v })} />
+          <FormGrid fields={fields.filter((f) => !(f.type === "karat" && row["pricing_metal"] === "silver"))} row={row} set={(k, v) => setRow({ ...row, [k]: v })} />
           <div className="flex gap-2">
             <Button disabled={busy} onClick={save}>
               <Save /> {busy ? "جارٍ التنفيذ…" : "حفظ"}

@@ -1,5 +1,7 @@
 # Gold Center updates
 
+- [x] Add dashboard silver gram rate and metal selection with no silver karat; authenticated save and catalog/detail total verified (100 × 70 + 250 = 7,250 EGP), test product removed and original rate restored.
+
 - [x] Center and refine main and subcategory icons with double-ring medallions; filtering, desktop centering, mobile, light theme and English verified.
 
 - [x] Add a fixed per-product making charge to gram-linked prices; authenticated save/reload, negative validation, catalog/detail totals and mobile layout verified; original product values restored.

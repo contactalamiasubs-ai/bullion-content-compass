@@ -3,6 +3,17 @@ import { productPrice } from "@/lib/product-pricing";
 
 describe("product gram pricing", () => {
   const rates = { gold_gram_21: 4500, gold_gram_24: 5200 };
+  it("prices silver without any karat and adds the fixed making charge once", () => {
+    expect(productPrice({ price: 99, gram_pricing: true, pricing_metal: "silver", weight_grams: 100, karat: null, making_charge: 250 }, { ...rates, silver_gram: 70 })).toBe(7250);
+  });
+  it("propagates the silver gram rate independently of gold rates", () => {
+    const silver = { price: null, gram_pricing: true, pricing_metal: "silver", weight_grams: 10, making_charge: 50 };
+    expect(productPrice(silver, { ...rates, silver_gram: 70 })).toBe(750);
+    expect(productPrice(silver, { ...rates, silver_gram: 80 })).toBe(850);
+  });
+  it("does not substitute gold or manual prices for a missing silver rate", () => {
+    expect(productPrice({ price: 99, gram_pricing: true, pricing_metal: "silver", weight_grams: 10, karat: 24 }, rates)).toBeNull();
+  });
   it("adds the fixed coin making charge once to the gold value", () => {
     expect(
       productPrice(

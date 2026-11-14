@@ -256,6 +256,7 @@ export type Database = {
           name_ar: string
           name_en: string
           price: number | null
+          pricing_metal: string
           sort: number
           weight_grams: number | null
         }
@@ -273,6 +274,7 @@ export type Database = {
           name_ar: string
           name_en: string
           price?: number | null
+          pricing_metal?: string
           sort?: number
           weight_grams?: number | null
         }
@@ -290,6 +292,7 @@ export type Database = {
           name_ar?: string
           name_en?: string
           price?: number | null
+          pricing_metal?: string
           sort?: number
           weight_grams?: number | null
         }
@@ -382,6 +385,7 @@ export type Database = {
           popup_title_ar: string | null
           popup_title_en: string | null
           price_source_enabled: boolean
+          silver_gram: number | null
           silver_source_url: string
           silver_usd: number
           site_name_ar: string
@@ -413,6 +417,7 @@ export type Database = {
           popup_title_ar?: string | null
           popup_title_en?: string | null
           price_source_enabled?: boolean
+          silver_gram?: number | null
           silver_source_url?: string
           silver_usd?: number
           site_name_ar?: string
@@ -444,6 +449,7 @@ export type Database = {
           popup_title_ar?: string | null
           popup_title_en?: string | null
           price_source_enabled?: boolean
+          silver_gram?: number | null
           silver_source_url?: string
           silver_usd?: number
           site_name_ar?: string
