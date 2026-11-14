@@ -9,8 +9,8 @@ export function FavoriteButton({ id }: { id: string }) {
   const label = text(selected ? "remove_favorite" : "add_favorite");
   return <Button type="button" size="icon" variant="outline" disabled={!ready}
     aria-label={label} title={label} aria-pressed={selected} onClick={() => favorite(id)}
-    className={selected ? "shrink-0 border-gold bg-background text-gold" : "shrink-0 bg-background text-muted-foreground"}>
-    <Heart className={selected ? "fill-current" : ""} />
+    className={`favorite-control ${selected ? "favorite-selected" : ""}`}>
+    <Heart strokeWidth={1.7} className={selected ? "fill-current" : ""} />
   </Button>;
 }
 
@@ -19,8 +19,8 @@ export function AddToCartButton({ id }: { id: string }) {
   const text = useShoppingText();
   const count = state.cart[id] ?? 0;
   return <Button type="button" variant="outline" disabled={!ready} onClick={() => add(id)}
-    aria-label={text("add_cart")} className="h-auto min-h-10 w-full whitespace-normal border-gold/40 text-gold">
-    {count ? <Check /> : <ShoppingBag />}
+    aria-label={text("add_cart")} className="h-auto min-h-11 w-full whitespace-normal border-gold/40 text-gold">
+    <span className="cart-action-icon">{count ? <Check strokeWidth={1.7} /> : <ShoppingBag strokeWidth={1.7} />}</span>
     <span>{text(count ? "add_more" : "add_cart")}{count > 0 && ` (${count})`}</span>
   </Button>;
 }

@@ -177,6 +177,95 @@
 }
 
 @layer components {
+  .shopping-shortcut {
+    height: auto;
+    min-height: 48px;
+    padding: 0;
+    gap: 9px;
+    color: var(--foreground);
+    background: transparent;
+  }
+  .shopping-shortcut:hover { background: transparent; color: var(--gold); }
+  .shortcut-icon, .nav-icon, .cart-action-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1px solid color-mix(in oklch, var(--gold) 30%, var(--border));
+    background: color-mix(in oklch, var(--gold) 7%, var(--background));
+    color: var(--gold);
+    transition: background 180ms ease, border-color 180ms ease;
+  }
+  .shortcut-icon { position: relative; width: 44px; height: 44px; }
+  .shortcut-count {
+    position: absolute;
+    inset-block-start: -5px;
+    inset-inline-end: -6px;
+    display: grid;
+    place-items: center;
+    min-width: 20px;
+    height: 20px;
+    padding-inline: 4px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border: 2px solid var(--card);
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .site-nav-link {
+    flex-direction: column;
+    height: auto;
+    min-width: 66px;
+    gap: 5px;
+    padding: 3px 7px;
+    font-size: 12px;
+    color: var(--muted-foreground);
+    background: transparent;
+  }
+  .nav-icon { width: 34px; height: 34px; border-color: transparent; background: transparent; color: inherit; }
+  .site-nav-link:hover, .mobile-nav-link:hover { color: var(--gold); background: transparent; }
+  .site-nav-active { color: var(--gold); }
+  .site-nav-active .nav-icon, .shopping-shortcut[data-status="active"] .shortcut-icon {
+    border-color: color-mix(in oklch, var(--gold) 50%, var(--border));
+    background: color-mix(in oklch, var(--gold) 14%, var(--background));
+    color: var(--gold);
+  }
+  .site-tool { height: 44px; width: 44px; border-radius: 50%; color: var(--muted-foreground); }
+  .site-tool:hover { border-color: var(--gold); color: var(--gold); }
+  .mobile-nav-link {
+    display: flex;
+    flex-direction: column;
+    min-height: 82px;
+    height: auto;
+    gap: 6px;
+    padding: 8px 4px;
+    white-space: normal;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted-foreground);
+  }
+  .mobile-nav-link .nav-icon { width: 40px; height: 40px; border-color: var(--border); background: var(--card); }
+  .mobile-nav-link.site-nav-active { color: var(--gold); }
+  .favorite-control {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--background);
+    border-color: color-mix(in oklch, var(--gold) 35%, var(--border));
+    color: var(--gold);
+  }
+  .favorite-control.favorite-selected { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+  .cart-action-icon { width: 26px; height: 26px; }
+  @media (max-width: 480px) {
+    .shopping-shortcut { flex-direction: column; gap: 5px; min-width: 62px; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .shortcut-icon, .favorite-control { transition: transform 180ms ease, background 180ms ease; }
+    .shopping-shortcut:hover .shortcut-icon, .favorite-control:hover { transform: translateY(-2px); }
+  }
   .category-choice {
     display: flex;
     flex-direction: column;
@@ -269,4 +358,24 @@
 .category-choice:hover {
   background: transparent;
   color: inherit;
+}
+
+/* Ensure navigational artwork stays legible over generic button sizing. */
+.shortcut-icon svg, .favorite-control svg { width: 22px; height: 22px; }
+.nav-icon svg { width: 20px; height: 20px; }
+.mobile-nav-link .nav-icon svg { width: 22px; height: 22px; }
+
+/* Keep dedicated controls' geometry above base button utility defaults. */
+.shopping-shortcut { height: auto; min-height: 48px; padding: 0; gap: 9px; background: transparent; }
+.shopping-shortcut:hover { background: transparent; color: var(--gold); }
+.favorite-control { width: 44px; height: 44px; border-radius: 50%; color: var(--gold); background: var(--background); }
+.favorite-control.favorite-selected { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+.favorite-control.favorite-selected:hover { background: var(--primary); color: var(--primary-foreground); }
+.site-tool { width: 44px; height: 44px; border-radius: 50%; }
+.site-nav-link { height: auto; padding: 3px 7px; gap: 5px; background: transparent; color: var(--muted-foreground); }
+.mobile-nav-link { height: auto; min-height: 82px; padding: 8px 4px; gap: 6px; white-space: normal; }
+.site-nav-link.site-nav-active, .mobile-nav-link.site-nav-active { color: var(--gold); }
+.site-nav-link:hover, .mobile-nav-link:hover { background: transparent; color: var(--gold); }
+@media (max-width: 480px) {
+  .shopping-shortcut { flex-direction: column; gap: 5px; min-width: 62px; }
 }

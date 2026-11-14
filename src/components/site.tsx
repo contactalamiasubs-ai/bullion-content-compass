@@ -27,6 +27,12 @@ import {
   Moon,
   Heart,
   ShoppingBag,
+  House,
+  Gem,
+  BookOpen,
+  Newspaper,
+  Handshake,
+  Info,
 } from "lucide-react";
 import { useShopping, useShoppingText } from "@/components/shopping-provider";
 import { FavoriteButton, AddToCartButton } from "@/components/product-shopping-actions";
@@ -69,37 +75,41 @@ export function Header() {
   const shoppingText = useShoppingText();
   const cartCount = Object.values(state.cart).reduce((sum, quantity) => sum + quantity, 0);
   const links = [
-    { to: "/", l: t("home") },
-    { to: "/about", l: t("about") },
-    { to: "/services", l: t("services") },
-    { to: "/products", l: t("products") },
-    { to: "/blog", l: t("blog") },
-    { to: "/news", l: t("news") },
-    { to: "/contact", l: t("contact") },
+    { to: "/", l: t("home"), icon: House },
+    { to: "/about", l: t("about"), icon: Info },
+    { to: "/services", l: t("services"), icon: Handshake },
+    { to: "/products", l: t("products"), icon: Gem },
+    { to: "/blog", l: t("blog"), icon: BookOpen },
+    { to: "/news", l: t("news"), icon: Newspaper },
+    { to: "/contact", l: t("contact"), icon: MessageCircle },
   ] as const;
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur">
       <div className="border-b border-border/60 bg-card">
-        <div className="mx-auto flex max-w-7xl items-center justify-end gap-3 px-4 py-1">
-          {([{ to: "/favorites", icon: Heart, label: shoppingText("favorites"), count: state.favorites.length },
-            { to: "/cart", icon: ShoppingBag, label: shoppingText("cart"), count: cartCount }] as const).map((item) => (
-            <Button key={item.to} asChild variant="ghost" size="sm" className="gap-1.5 text-gold">
-              <Link to={item.to} onClick={() => setOpen(false)} aria-label={`${item.label} (${item.count})`} title={item.label}>
-                <item.icon /><span className="hidden sm:inline">{item.label}</span>
-                <span className="min-w-4 text-center text-xs" aria-hidden="true">{item.count}</span>
-              </Link>
-            </Button>
-          ))}
-          <Button asChild variant="ghost" size="sm" className="text-gold">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2">
+          <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-gold">
             <Link to="/admin" onClick={() => setOpen(false)}>
               <LockKeyhole aria-hidden="true" />
               {lang === "ar" ? "لوحة التحكم" : "Dashboard"}
             </Link>
           </Button>
+          <div className="flex items-center gap-5 sm:gap-7">
+          {([{ to: "/favorites", icon: Heart, label: shoppingText("favorites"), count: state.favorites.length },
+            { to: "/cart", icon: ShoppingBag, label: shoppingText("cart"), count: cartCount }] as const).map((item) => (
+            <Button key={item.to} asChild variant="ghost" className="shopping-shortcut">
+              <Link to={item.to} onClick={() => setOpen(false)} aria-label={`${item.label} (${item.count})`} title={item.label}>
+                <span className="shortcut-icon"><item.icon strokeWidth={1.7} aria-hidden="true" />
+                  {item.count > 0 && <span className="shortcut-count" aria-hidden="true">{item.count > 99 ? "99+" : item.count}</span>}
+                </span>
+                <span className="text-xs sm:text-sm">{item.label}</span>
+              </Link>
+            </Button>
+          ))}
+          </div>
         </div>
       </div>
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
+      <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-3 px-4 py-3">
+        <Link to="/" className="flex min-w-0 items-center gap-2">
           {s?.logo_url ? (
             <img src={s.logo_url} alt={pick(s, "site_name", lang)} className="h-10 w-auto" />
           ) : (
@@ -107,47 +117,55 @@ export function Header() {
               Au
             </span>
           )}
-          <span className="font-display text-xl font-bold text-gold-gradient">
+          <span className="min-w-0 break-words font-display text-lg font-bold text-gold-gradient sm:text-xl">
             {pick(s, "site_name", lang)}
           </span>
         </Link>
-        <nav className="hidden items-center gap-6 lg:flex">
+        <div className="hidden items-center gap-2 xl:flex" role="navigation" aria-label={lang === "ar" ? "التنقل الرئيسي" : "Main navigation"}>
           {links.map((x) => (
+            <Button asChild variant="ghost" key={x.to} className="site-nav-link">
             <Link
               key={x.to}
               to={x.to}
-              className="text-sm text-muted-foreground transition hover:text-gold"
-              activeProps={{ className: "text-gold" }}
+              title={x.l}
+              activeProps={{ className: "site-nav-active", "aria-current": "page" }}
               activeOptions={{ exact: x.to === "/" }}
             >
-              {x.l}
+              <span className="nav-icon"><x.icon strokeWidth={1.7} aria-hidden="true" /></span>
+              <span>{x.l}</span>
             </Link>
+            </Button>
           ))}
-        </nav>
-        <div className="flex items-center gap-2">
+        </div>
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <ThemeToggle />
-          <button
+          <Button variant="outline"
             onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-            className="rounded-md border border-border px-3 py-1.5 text-sm hover:border-gold hover:text-gold"
+            aria-label={lang === "ar" ? "English" : "العربية"}
+            className="h-11 min-w-11 rounded-full px-2 text-xs hover:border-gold hover:text-gold"
           >
             {lang === "ar" ? "EN" : "عربي"}
-          </button>
-          <button className="lg:hidden" onClick={() => setOpen(!open)} aria-label="menu">
+          </Button>
+          <Button variant="outline" size="icon" className="site-tool xl:hidden" onClick={() => setOpen(!open)} aria-label={lang === "ar" ? "القائمة" : "Menu"} aria-expanded={open} aria-controls="mobile-navigation">
             {open ? <X /> : <Menu />}
-          </button>
+          </Button>
         </div>
       </div>
       {open && (
-        <nav className="flex flex-col gap-1 border-t border-border px-4 py-3 lg:hidden">
+        <nav id="mobile-navigation" aria-label={lang === "ar" ? "التنقل الرئيسي" : "Main navigation"} className="grid grid-cols-3 gap-2 border-t border-border px-4 py-4 sm:grid-cols-4 xl:hidden">
           {links.map((x) => (
+            <Button key={x.to} asChild variant="ghost" className="mobile-nav-link">
             <Link
               key={x.to}
               to={x.to}
               onClick={() => setOpen(false)}
-              className="py-2 text-muted-foreground hover:text-gold"
+              activeProps={{ className: "site-nav-active", "aria-current": "page" }}
+              activeOptions={{ exact: x.to === "/" }}
             >
-              {x.l}
+              <span className="nav-icon"><x.icon strokeWidth={1.7} aria-hidden="true" /></span>
+              <span>{x.l}</span>
             </Link>
+            </Button>
           ))}
         </nav>
       )}
@@ -783,13 +801,13 @@ export function ThemeToggle() {
       ? "الوضع الساطع"
       : "Light mode";
   return (
-    <button
+    <Button variant="outline" size="icon"
       onClick={toggle}
       aria-label={label}
       title={label}
-      className="grid h-9 w-9 place-items-center rounded-md border border-border hover:border-gold hover:text-gold"
+      className="site-tool"
     >
       {light ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-    </button>
+    </Button>
   );
 }

@@ -1,5 +1,7 @@
 # Gold Center updates
 
+- [x] Refine shopping and navigation icons with consistent circular controls, readable labels, active states and mobile layout; shopping navigation and menu verified at 320/390/812/1280 widths, Arabic/English and dark/light themes.
+
 - [x] Add browser-saved product favorites and quantity cart, live totals, and WhatsApp order/inquiry handoff; catalog, detail, persistence, removal and mobile verified; actual message sending remains the visitor's action in WhatsApp.
 
 - [x] Add dashboard silver gram rate and metal selection with no silver karat; authenticated save and catalog/detail total verified (100 × 70 + 250 = 7,250 EGP), test product removed and original rate restored.
