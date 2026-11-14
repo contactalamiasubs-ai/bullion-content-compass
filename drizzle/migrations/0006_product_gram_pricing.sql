@@ -1,0 +1,5 @@
+ALTER TABLE public.site_settings ADD COLUMN gold_gram_21 numeric, ADD COLUMN gold_gram_24 numeric;
+ALTER TABLE public.site_settings ADD CONSTRAINT gold_gram_21_positive CHECK (gold_gram_21 IS NULL OR (gold_gram_21 > 0 AND gold_gram_21 < 1000000000)), ADD CONSTRAINT gold_gram_24_positive CHECK (gold_gram_24 IS NULL OR (gold_gram_24 > 0 AND gold_gram_24 < 1000000000));
+ALTER TABLE public.products ADD COLUMN gram_pricing boolean NOT NULL DEFAULT false, ADD COLUMN weight_grams numeric, ADD COLUMN karat integer;
+ALTER TABLE public.products ADD CONSTRAINT product_weight_positive CHECK (weight_grams IS NULL OR (weight_grams > 0 AND weight_grams < 1000000000)), ADD CONSTRAINT product_karat_supported CHECK (karat IS NULL OR karat IN (21,24)), ADD CONSTRAINT product_gram_pricing_complete CHECK (NOT gram_pricing OR (weight_grams IS NOT NULL AND karat IS NOT NULL));
+COMMENT ON COLUMN public.products.gram_pricing IS 'Opt-in price calculated from weight_grams and site_settings gold gram rate for karat; manual price preserved for other products.';

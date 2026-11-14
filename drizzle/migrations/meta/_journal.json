@@ -43,6 +43,13 @@
       "when": 1794655720077,
       "tag": "0005_product_groups_and_categories",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794656993792,
+      "tag": "0006_product_gram_pricing",
+      "breakpoints": true
     }
   ]
 }

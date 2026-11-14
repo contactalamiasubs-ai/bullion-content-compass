@@ -12,6 +12,7 @@ import {
 } from "@/lib/data";
 import { fallbackImages, ProductCard } from "@/components/site";
 import { Button } from "@/components/ui/button";
+import { productPrice } from "@/lib/product-pricing";
 
 export const Route = createFileRoute("/products_/$id")({
   head: () => ({
@@ -51,6 +52,7 @@ function ProductPage() {
       </main>
     );
   const name = pick(p, "name", lang);
+  const price = productPrice(p, s);
   const category = categories.find((item) => item.id === p.category_id);
   const group = groups.find((item) => item.id === category?.group_id);
   const desc = pick(p, "description", lang);
@@ -77,9 +79,9 @@ function ProductPage() {
             </p>
           )}
           <h1 className="mb-4 text-4xl font-bold text-gold-gradient">{name}</h1>
-          {p.price != null && (
+          {price != null && (
             <p className="mb-6 text-2xl font-semibold text-gold" dir="ltr">
-              {Number(p.price).toLocaleString("en")} EGP
+              {price.toLocaleString("en", { maximumFractionDigits: 2 })} EGP
             </p>
           )}
           {desc && (

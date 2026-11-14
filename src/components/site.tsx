@@ -27,6 +27,7 @@ import {
   Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { productPrice, type ProductPricing } from "@/lib/product-pricing";
 import { useLang, pick } from "@/lib/i18n";
 import {
   settingsQuery,
@@ -605,7 +606,7 @@ export function ZakatCalculator() {
   );
 }
 
-type ProductRow = {
+type ProductRow = ProductPricing & {
   id: string;
   name_ar: string;
   name_en: string;
@@ -634,6 +635,7 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
     return () => observer.disconnect();
   }, [p.id]);
   const name = pick(p, "name", lang);
+  const price = productPrice(p, s);
   const msg = lang === "ar" ? `مرحبًا، أريد طلب: ${name}` : `Hello, I'd like to order: ${name}`;
   return (
     <div
@@ -656,9 +658,9 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
         <Link to="/products/$id" params={{ id: p.id }} className="hover:text-gold">
           <h3 className="mb-1 line-clamp-2 min-h-12 text-base">{name}</h3>
         </Link>
-        {p.price != null && (
+        {price != null && (
           <p className="mb-3 font-semibold text-gold" dir="ltr">
-            {fmt(p.price, "en")} EGP
+            {fmt(price, "en")} EGP
           </p>
         )}
         <Button

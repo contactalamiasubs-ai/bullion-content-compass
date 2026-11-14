@@ -52,6 +52,7 @@ const tabs = [
   { id: "popup", l: "النافذة المنبثقة", i: Images },
   { id: "slides", l: "السلايدر", i: Images },
   { id: "prices", l: "الأسعار", i: Coins },
+  { id: "gram-rates", l: "سعر جرام المنتجات", i: Coins },
   { id: "source", l: "مصدر الأسعار والتوثيق", i: Coins },
   { id: "history", l: "سجل الأسعار", i: LineChart },
   { id: "sections", l: "أقسام الموقع", i: FileText },
@@ -182,6 +183,18 @@ type TabId = (typeof tabs)[number]["id"];
 function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void }) {
   const { data: groups = [] } = useQuery(productGroupsQuery);
   switch (tab) {
+    case "gram-rates":
+      return (
+        <SingleEditor
+          table="site_settings"
+          id={1}
+          queryKey={["settings"]}
+          fields={[
+            { name: "gold_gram_21", label: "سعر جرام الذهب عيار 21 (EGP)", type: "number" },
+            { name: "gold_gram_24", label: "سعر جرام الذهب عيار 24 (EGP)", type: "number" },
+          ]}
+        />
+      );
     case "product-groups":
       return (
         <ListEditor
@@ -350,7 +363,10 @@ function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void 
             ...bi("name", "الاسم"),
             { name: "category_id", label: "قسم المنتج", type: "category" },
             ...bi("description", "الوصف", "textarea"),
-            { name: "price", label: "السعر (اختياري)", type: "number" },
+            { name: "gram_pricing", label: "ربط السعر بسعر الجرام", type: "bool" },
+            { name: "weight_grams", label: "الوزن بالجرام", type: "number" },
+            { name: "karat", label: "عيار الذهب", type: "karat" },
+            { name: "price", label: "السعر اليدوي (عند إيقاف الربط)", type: "number" },
             { name: "image_url", label: "الصورة", type: "image" },
             { name: "sort", label: "الترتيب", type: "number" },
             { name: "active", label: "ظاهر", type: "bool" },

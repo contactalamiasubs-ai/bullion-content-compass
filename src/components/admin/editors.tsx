@@ -22,7 +22,8 @@ export type Field = {
     | "date"
     | "whatsapp"
     | "group"
-    | "category";
+    | "category"
+    | "karat";
   options?: string[];
 };
 
@@ -83,6 +84,19 @@ function FieldInput({
 }) {
   const [busy, setBusy] = useState(false);
   switch (f.type) {
+    case "karat":
+      return (
+        <select
+          aria-label={f.label}
+          className={inp}
+          value={value == null ? "" : String(value)}
+          onChange={(event) => onChange(event.target.value ? Number(event.target.value) : null)}
+        >
+          <option value="">بدون عيار</option>
+          <option value="21">21</option>
+          <option value="24">24</option>
+        </select>
+      );
     case "group":
     case "category":
       return <CategoryInput f={f} value={value} onChange={onChange} />;
@@ -263,6 +277,7 @@ function refreshContent(
   void qc.invalidateQueries({ queryKey });
   void qc.invalidateQueries({ queryKey: ["admin-overview"] });
   if (table === "posts") void qc.invalidateQueries({ queryKey: ["post"] });
+  if (table === "site_settings") void qc.invalidateQueries({ queryKey: ["products"] });
   if (table === "product_groups" || table === "product_categories") {
     void qc.invalidateQueries({ queryKey: ["product-groups"] });
     void qc.invalidateQueries({ queryKey: ["product-categories"] });
@@ -369,6 +384,15 @@ function RowCard({
   const save = async () => {
     if (fields.some((field) => field.type === "group" && !row[field.name])) {
       toast.error("اختر القسم الرئيسي قبل الحفظ");
+      return;
+    }
+    if (
+      table === "products" &&
+      row["gram_pricing"] &&
+      (!(typeof row["weight_grams"] === "number" && row["weight_grams"] > 0) ||
+        ![21, 24].includes(Number(row["karat"])))
+    ) {
+      toast.error("أدخل وزنًا أكبر من صفر واختر عيار 21 أو 24 قبل تفعيل الربط");
       return;
     }
     setBusy(true);

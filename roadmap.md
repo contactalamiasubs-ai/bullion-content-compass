@@ -1,5 +1,7 @@
 # Gold Center updates
 
+- [x] Add dashboard-controlled 21K/24K gram rates and per-product weight/karat linkage; authenticated saves, catalog/detail prices, changed rate, and mobile dashboard verified; original test values restored.
+
 - [x] Remove the visitor product assistant at the user's request while preserving the catalog.
 
 - [x] Add dashboard-managed main product groups and subcategories, link products, and verify public filtering and authenticated saves. Temporary group/branch removed and original product category restored; existing products left for the administrator to classify.

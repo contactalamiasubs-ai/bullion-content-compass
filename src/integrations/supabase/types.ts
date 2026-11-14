@@ -248,12 +248,15 @@ export type Database = {
           created_at: string
           description_ar: string | null
           description_en: string | null
+          gram_pricing: boolean
           id: string
           image_url: string | null
+          karat: number | null
           name_ar: string
           name_en: string
           price: number | null
           sort: number
+          weight_grams: number | null
         }
         Insert: {
           active?: boolean
@@ -261,12 +264,15 @@ export type Database = {
           created_at?: string
           description_ar?: string | null
           description_en?: string | null
+          gram_pricing?: boolean
           id?: string
           image_url?: string | null
+          karat?: number | null
           name_ar: string
           name_en: string
           price?: number | null
           sort?: number
+          weight_grams?: number | null
         }
         Update: {
           active?: boolean
@@ -274,12 +280,15 @@ export type Database = {
           created_at?: string
           description_ar?: string | null
           description_en?: string | null
+          gram_pricing?: boolean
           id?: string
           image_url?: string | null
+          karat?: number | null
           name_ar?: string
           name_en?: string
           price?: number | null
           sort?: number
+          weight_grams?: number | null
         }
         Relationships: [
           {
@@ -355,6 +364,8 @@ export type Database = {
           app_link: string | null
           email: string | null
           facebook: string | null
+          gold_gram_21: number | null
+          gold_gram_24: number | null
           gold_source_url: string
           gold_usd: number
           id: number
@@ -384,6 +395,8 @@ export type Database = {
           app_link?: string | null
           email?: string | null
           facebook?: string | null
+          gold_gram_21?: number | null
+          gold_gram_24?: number | null
           gold_source_url?: string
           gold_usd?: number
           id?: number
@@ -413,6 +426,8 @@ export type Database = {
           app_link?: string | null
           email?: string | null
           facebook?: string | null
+          gold_gram_21?: number | null
+          gold_gram_24?: number | null
           gold_source_url?: string
           gold_usd?: number
           id?: number
