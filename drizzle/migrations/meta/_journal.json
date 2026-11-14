@@ -29,6 +29,13 @@
       "when": 1794589548278,
       "tag": "0003_restrict_media_read",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794654315240,
+      "tag": "0004_tighten_price_updates_and_contact_policies",
+      "breakpoints": true
     }
   ]
 }
