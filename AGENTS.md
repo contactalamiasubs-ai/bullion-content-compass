@@ -45,4 +45,3 @@ use the editor.
 - WhatsApp links use native target="_blank" anchors (rel noopener) with non-blocking optional analytics, because wa.me refuses to load inside frames and embedded previews block top-window navigation.
 - The generic settings editor validates WhatsApp numbers with international numbering metadata and stores normalized digits; its product preview reuses the public link builder to match actual ordering destinations.
 - Product taxonomy uses separate main-group and subcategory tables; products reference a subcategory, and generic editors manage all three. Restrict deletion of linked categories/groups to prevent accidental uncategorization.
-- Visitor recommendations run in a public server function with anonymous catalog reads; validate every suggested ID against live active products and the visitor's budget, and keep assistant labels in sections for existing dashboard editing.

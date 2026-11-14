@@ -7,7 +7,6 @@ import { productsQuery, productGroupsQuery, productCategoriesQuery } from "@/lib
 import { matchesProductCategory } from "@/lib/product-categories";
 import { Button } from "@/components/ui/button";
 import { PageHero, ProductCard } from "@/components/site";
-import { ProductAssistant } from "@/components/product-assistant";
 
 export const Route = createFileRoute("/products")({
   head: () => ({
@@ -76,7 +75,6 @@ function Products() {
     <main>
       <PageHero title={t("products")} />
       <section className="mx-auto max-w-7xl px-4 py-10">
-        <ProductAssistant />
         <nav
           aria-label={lang === "ar" ? "أقسام المنتجات" : "Product groups"}
           className="mb-5 flex flex-wrap gap-3 border-b border-border pb-6"
