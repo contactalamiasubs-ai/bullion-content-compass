@@ -29,3 +29,5 @@
 - [x] Track product views, WhatsApp clicks, and zakat calculations.
 - [ ] Verify signup/password login and end-to-end AI refresh in a separate requested check; authenticated administrator access and edits verified with a managed session.
 - [x] Run relevant tests and save changes.
+
+- [ ] Add administrator-managed user invitations, full admin or scoped section permissions, enforce access at database/server boundaries, and verify signed-in account management and restricted access.

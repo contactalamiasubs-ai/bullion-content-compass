@@ -6,9 +6,9 @@ export const refreshVerifiedPrices = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    const { data: allowed, error: roleError } = await supabase.rpc("has_role", {
+    const { data: allowed, error: roleError } = await supabase.rpc("has_dashboard_permission", {
       _user_id: userId,
-      _role: "admin",
+      _permission: "prices",
     });
     if (roleError || !allowed) throw new Error("غير مسموح");
     const { data: settings, error } = await supabase

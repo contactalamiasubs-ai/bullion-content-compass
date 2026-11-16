@@ -41,6 +41,21 @@ export type Database = {
         }
         Relationships: []
       }
+      dashboard_access: {
+        Row: {
+          permissions: string[]
+          user_id: string
+        }
+        Insert: {
+          permissions?: string[]
+          user_id: string
+        }
+        Update: {
+          permissions?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
       metal_prices: {
         Row: {
           buy: number
@@ -540,6 +555,10 @@ export type Database = {
         Args: { _update_id: string }
         Returns: undefined
       }
+      has_dashboard_permission: {
+        Args: { _permission: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -561,6 +580,10 @@ export type Database = {
           summary_en: string
           verified_at: string
         }[]
+      }
+      set_dashboard_access: {
+        Args: { _admin: boolean; _permissions: string[]; _user_id: string }
+        Returns: undefined
       }
     }
     Enums: {

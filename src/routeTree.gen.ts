@@ -20,6 +20,7 @@ import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as SetPasswordRouteImport } from './routes/set-password'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProductsIdRouteImport } from './routes/products_.$id'
@@ -78,6 +79,11 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SetPasswordRoute = SetPasswordRouteImport.update({
+  id: '/set-password',
+  path: '/set-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
   '/services': typeof ServicesRoute
+  '/set-password': typeof SetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/products/$id': typeof ProductsIdRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
   '/services': typeof ServicesRoute
+  '/set-password': typeof SetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/products/$id': typeof ProductsIdRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
   '/services': typeof ServicesRoute
+  '/set-password': typeof SetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/products_/$id': typeof ProductsIdRoute
@@ -154,6 +163,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/products'
     | '/services'
+    | '/set-password'
     | '/admin'
     | '/posts/$slug'
     | '/products/$id'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/products'
     | '/services'
+    | '/set-password'
     | '/admin'
     | '/posts/$slug'
     | '/products/$id'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/products'
     | '/services'
+    | '/set-password'
     | '/_authenticated/admin'
     | '/posts/$slug'
     | '/products_/$id'
@@ -202,6 +214,7 @@ export interface RootRouteChildren {
   NewsRoute: typeof NewsRoute
   ProductsRoute: typeof ProductsRoute
   ServicesRoute: typeof ServicesRoute
+  SetPasswordRoute: typeof SetPasswordRoute
   PostsSlugRoute: typeof PostsSlugRoute
   ProductsIdRoute: typeof ProductsIdRoute
 }
@@ -285,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/set-password': {
+      id: '/set-password'
+      path: '/set-password'
+      fullPath: '/set-password'
+      preLoaderRoute: typeof SetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -332,6 +352,7 @@ const rootRouteChildren: RootRouteChildren = {
   NewsRoute: NewsRoute,
   ProductsRoute: ProductsRoute,
   ServicesRoute: ServicesRoute,
+  SetPasswordRoute: SetPasswordRoute,
   PostsSlugRoute: PostsSlugRoute,
   ProductsIdRoute: ProductsIdRoute,
 }

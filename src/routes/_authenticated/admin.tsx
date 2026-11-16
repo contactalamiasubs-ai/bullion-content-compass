@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   RefreshCw,
   Trash2,
+  UsersRound,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SingleEditor, ListEditor, type Field } from "@/components/admin/editors";
@@ -25,6 +26,8 @@ import { refreshVerifiedPrices } from "@/lib/prices.functions";
 import { verifiedPricesQuery, productGroupsQuery } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Users } from "@/components/admin/users";
+import { canAccessTab, type DashboardAccess } from "@/lib/dashboard-permissions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -48,6 +51,7 @@ const bi = (base: string, label: string, type: Field["type"] = "text"): Field[] 
 
 const tabs = [
   { id: "overview", l: "نظرة عامة", i: LayoutDashboard },
+  { id: "users", l: "المستخدمون والصلاحيات", i: UsersRound },
   { id: "settings", l: "الإعدادات العامة", i: Settings },
   { id: "popup", l: "النافذة المنبثقة", i: Images },
   { id: "slides", l: "السلايدر", i: Images },
@@ -69,14 +73,21 @@ function Admin() {
   const nav = useNavigate();
   const qc = useQueryClient();
   const [tab, setTab] = useState<(typeof tabs)[number]["id"]>("overview");
-  const { data: isAdmin, isLoading } = useQuery({
-    queryKey: ["is-admin", user.id],
+  const { data: access, isLoading, error: accessError } = useQuery({
+    queryKey: ["dashboard-access", user.id],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" });
-      if (error) throw error;
-      return data ?? false;
+      const [roles, grants] = await Promise.all([
+        supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }),
+        supabase.from("dashboard_access").select("permissions").eq("user_id", user.id).maybeSingle(),
+      ]);
+      if (roles.error || grants.error) throw roles.error ?? grants.error;
+      return { admin: roles.data ?? false, permissions: grants.data?.permissions ?? [] };
     },
+    staleTime: 0,
+    refetchInterval: 30000,
   });
+  const visibleTabs = tabs.filter((item) => access && canAccessTab(access, item.id));
+  const activeTab = visibleTabs.some((item) => item.id === tab) ? tab : "overview";
   const signOut = async () => {
     await qc.cancelQueries();
     qc.clear();
@@ -89,11 +100,11 @@ function Admin() {
         جارٍ التحميل...
       </div>
     );
-  if (!isAdmin)
+  if (accessError || !access || !visibleTabs.length)
     return (
       <div dir="rtl" className="grid min-h-screen place-items-center text-center">
         <div>
-          <p className="mb-4">هذا الحساب ليس له صلاحية المسؤول.</p>
+          <p role={accessError ? "alert" : undefined} className="mb-4">{accessError ? "تعذر التحقق من صلاحيات الحساب؛ حاول مرة أخرى." : "هذا الحساب ليس له صلاحية دخول لوحة التحكم."}</p>
           <Button onClick={signOut} variant="outline">
             تسجيل الخروج
           </Button>
@@ -106,13 +117,13 @@ function Admin() {
         <h1 className="mb-1 text-2xl text-gold-gradient">جولد سنتر</h1>
         <p className="mb-6 text-xs text-muted-foreground">إدارة الموقع</p>
         <nav aria-label="أقسام لوحة التحكم" className="min-h-0 flex-1 space-y-1 overflow-y-auto">
-          {tabs.map((t) => (
+          {visibleTabs.map((t) => (
             <Button
               variant="ghost"
               key={t.id}
-              aria-current={tab === t.id ? "page" : undefined}
+              aria-current={activeTab === t.id ? "page" : undefined}
               onClick={() => setTab(t.id)}
-              className={`h-auto min-h-10 w-full justify-start whitespace-normal px-3 py-2 text-sm ${tab === t.id ? "bg-sidebar-accent text-gold" : "text-sidebar-foreground"}`}
+              className={`h-auto min-h-10 w-full justify-start whitespace-normal px-3 py-2 text-sm ${activeTab === t.id ? "bg-sidebar-accent text-gold" : "text-sidebar-foreground"}`}
             >
               <t.i className="h-4 w-4" /> {t.l}
             </Button>
@@ -161,18 +172,18 @@ function Admin() {
         </header>
         <select
           aria-label="قسم لوحة التحكم"
-          value={tab}
+          value={activeTab}
           onChange={(e) => setTab(e.target.value as typeof tab)}
           className="mb-4 w-full rounded-md border border-input bg-background px-3 py-2 md:hidden"
         >
-          {tabs.map((t) => (
+          {visibleTabs.map((t) => (
             <option key={t.id} value={t.id}>
               {t.l}
             </option>
           ))}
         </select>
-        <h2 className="mb-6 text-2xl">{tabs.find((t) => t.id === tab)?.l}</h2>
-        <Panel key={tab} tab={tab} onSelect={setTab} />
+        <h2 className="mb-6 text-2xl">{tabs.find((t) => t.id === activeTab)?.l}</h2>
+        <Panel key={activeTab} tab={activeTab} onSelect={setTab} access={access} actorId={user.id} />
       </main>
     </div>
   );
@@ -180,9 +191,11 @@ function Admin() {
 
 type TabId = (typeof tabs)[number]["id"];
 
-function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void }) {
+function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab: TabId) => void; access: DashboardAccess; actorId: string }) {
   const { data: groups = [] } = useQuery(productGroupsQuery);
   switch (tab) {
+    case "users":
+      return access.admin ? <Users actorId={actorId} /> : null;
     case "gram-rates":
       return (
         <SingleEditor
@@ -229,7 +242,7 @@ function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void 
         />
       );
     case "overview":
-      return <Overview onSelect={onSelect} />;
+      return <Overview onSelect={onSelect} access={access} />;
     case "source":
       return <PriceSource />;
     case "settings":
@@ -467,9 +480,10 @@ function PriceSource() {
   );
 }
 
-function Overview({ onSelect }: { onSelect: (tab: TabId) => void }) {
+function Overview({ onSelect, access }: { onSelect: (tab: TabId) => void; access: DashboardAccess }) {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["admin-overview"],
+    enabled: access.admin,
     queryFn: async () => {
       const results = await Promise.all([
         supabase.from("products").select("id", { count: "exact", head: true }),
@@ -492,7 +506,7 @@ function Overview({ onSelect }: { onSelect: (tab: TabId) => void }) {
       <div className="flex items-center justify-between gap-3">
         <p className="flex items-center gap-2 text-sm text-success">
           <ShieldCheck className="h-4 w-4" />
-          حساب مسؤول
+          {access.admin ? "حساب مسؤول" : "حساب بصلاحيات محددة"}
         </p>
         <Button
           variant="ghost"
@@ -510,7 +524,7 @@ function Overview({ onSelect }: { onSelect: (tab: TabId) => void }) {
         </p>
       )}
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-        {metrics.map((metric, index) => (
+        {metrics.filter((metric) => canAccessTab(access, metric.tab)).map((metric) => (
           <Button
             key={metric.tab}
             variant="outline"
@@ -522,7 +536,7 @@ function Overview({ onSelect }: { onSelect: (tab: TabId) => void }) {
               <metric.icon />
             </span>
             <span className="text-3xl font-semibold text-gold">
-              {isLoading || error ? "—" : data?.[index]}
+              {isLoading || error || !access.admin ? "—" : data?.[metrics.findIndex((item) => item.tab === metric.tab)]}
             </span>
           </Button>
         ))}
@@ -531,7 +545,7 @@ function Overview({ onSelect }: { onSelect: (tab: TabId) => void }) {
         <h3 className="mb-4 text-xl">إدارة المحتوى</h3>
         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {tabs
-            .filter((t) => t.id !== "overview")
+            .filter((t) => t.id !== "overview" && canAccessTab(access, t.id))
             .map((t) => (
               <Button
                 key={t.id}

@@ -36,9 +36,9 @@ use the editor.
 - All site content (texts, prices, slides, products, posts) lives in Cloud tables with `_ar`/`_en` columns; UI reads them via `pick()` in `src/lib/i18n.tsx` so every text stays editable from /admin.
 - Admin dashboard uses the generic `ListEditor`/`SingleEditor` in `src/components/admin/editors.tsx`; add new editable tables by declaring fields there, not by writing new forms.
 - Admin editor mutations invalidate the public collection, post detail and overview queries, and expose pending/error states so saved content is reflected without silent failures.
-- Writes are admin-only via `has_role(auth.uid(),'admin')` RLS; the first signed-up user becomes admin through a trigger.
+- Writes use full-admin or scoped dashboard permission RLS; settings updates also validate changed fields so price access cannot edit unrelated settings. The first signed-up user becomes admin through a trigger.
 - The `media` bucket is private (workspace blocks public buckets); uploads store a 10-year signed URL.
-- Price refresh is an admin-authenticated server function; only exact Gold API XAU/XAG HTTPS endpoints are allowed to prevent SSRF, and validated USD-per-ounce quotes must match AI output exactly before publication.
+- Price refresh requires authenticated price permission; only exact Gold API XAU/XAG HTTPS endpoints are allowed to prevent SSRF, and validated USD-per-ounce quotes must match AI output exactly before publication.
 - Price audit records retain source timestamps, payload and model response ID; manual prices are not labeled source-verified.
 - Visitor events use the injected optional track global at visible product exposure and existing interaction handlers; no personal data or calculator holdings are collected.
 - Dashboard entry links use the same-origin `/admin` path in the shared header and footer; the managed authenticated layout remains the login gate so links work across hosting domains without weakening access.
@@ -53,3 +53,5 @@ use the editor.
 - Visitor favorites and cart persist only product IDs and quantities in a hydration-safe shared browser provider; cart views resolve active catalog rows and current shared prices before native WhatsApp handoff, preventing stale stored prices and requiring no visitor account.
 - Shopping interface copy comes from bilingual shopping-prefixed sections managed by the existing dashboard editor so labels remain editable without dedicated forms.
 - Product availability uses one shared four-state helper across catalog, details and live cart resolution; only available products enter order totals, while other states use WhatsApp reservation or inquiry.
+- Account management uses authenticated server functions with a full-admin check before privileged Auth reads/invitations; atomic access changes run through an admin-authorized SQL function to prevent self-demotion and concurrent removal of the final admin.
+- Team access lives separately in dashboard_access; the shared permission map filters dashboard navigation, while RLS and server checks enforce access independently of the UI.
