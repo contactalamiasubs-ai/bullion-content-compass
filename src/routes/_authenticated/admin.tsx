@@ -28,6 +28,7 @@ import { pick } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Users } from "@/components/admin/users";
+import { Customers } from "@/components/admin/customers";
 import { canAccessTab, type DashboardAccess } from "@/lib/dashboard-permissions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -53,6 +54,7 @@ const bi = (base: string, label: string, type: Field["type"] = "text"): Field[] 
 const tabs = [
   { id: "overview", l: "نظرة عامة", i: LayoutDashboard },
   { id: "users", l: "المستخدمون والصلاحيات", i: UsersRound },
+  { id: "customers", l: "العملاء ونشاطهم", i: UsersRound },
   { id: "settings", l: "الإعدادات العامة", i: Settings },
   { id: "popup", l: "النافذة المنبثقة", i: Images },
   { id: "slides", l: "السلايدر", i: Images },
@@ -197,6 +199,8 @@ type TabId = (typeof tabs)[number]["id"];
 function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab: TabId) => void; access: DashboardAccess; actorId: string }) {
   const { data: groups = [] } = useQuery(productGroupsQuery);
   switch (tab) {
+    case "customers":
+      return access.admin ? <Customers /> : null;
     case "users":
       return access.admin ? <Users actorId={actorId} /> : null;
     case "gram-rates":

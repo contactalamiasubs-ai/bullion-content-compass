@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { MessageCircle, ArrowRight } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
@@ -16,7 +17,7 @@ import { productPrice } from "@/lib/product-pricing";
 import { FavoriteButton, AddToCartButton } from "@/components/product-shopping-actions";
 import { ProductAvailability } from "@/components/product-availability";
 import { canOrderProduct, productAvailability } from "@/lib/product-availability";
-import { useShoppingText } from "@/components/shopping-provider";
+import { useShopping, useShoppingText } from "@/components/shopping-provider";
 
 export const Route = createFileRoute("/products_/$id")({
   loader: ({ params, context }) => context.queryClient.ensureQueryData(productQuery(params.id)),
@@ -42,6 +43,8 @@ export const Route = createFileRoute("/products_/$id")({
 
 function ProductPage() {
   const { id } = Route.useParams();
+  const { view, ready } = useShopping();
+  useEffect(() => { if (ready) view(id); }, [id, view, ready]);
   const { lang, t } = useLang();
   const shoppingText = useShoppingText();
   const { data: p, isLoading } = useQuery(productQuery(id));

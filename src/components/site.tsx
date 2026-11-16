@@ -34,6 +34,7 @@ import {
   Newspaper,
   Handshake,
   Info,
+  UserRound,
 } from "lucide-react";
 import { useShopping, useShoppingText } from "@/components/shopping-provider";
 import { FavoriteButton, AddToCartButton } from "@/components/product-shopping-actions";
@@ -74,7 +75,7 @@ export function Header() {
   const { t, lang, setLang } = useLang();
   const { data: s } = useQuery(settingsQuery);
   const [open, setOpen] = useState(false);
-  const { state } = useShopping();
+  const { state, user } = useShopping();
   const shoppingText = useShoppingText();
   const cartCount = Object.values(state.cart).reduce((sum, quantity) => sum + quantity, 0);
   const links = [
@@ -88,6 +89,7 @@ export function Header() {
     { to: "/contact", l: t("contact"), icon: MessageCircle },
   ] as const;
   const shortcuts = [
+    { to: "/account", icon: UserRound, label: shoppingText(user ? "account" : "customer_login"), count: 0 },
     { to: "/admin", icon: LockKeyhole, label: lang === "ar" ? "لوحة التحكم" : "Dashboard", count: 0 },
     { to: "/favorites", icon: Heart, label: shoppingText("favorites"), count: state.favorites.length },
     { to: "/cart", icon: ShoppingBag, label: shoppingText("cart"), count: cartCount },
@@ -140,7 +142,7 @@ export function Header() {
             {shortcuts.map((item) => (
               <Button key={item.to} asChild variant="ghost" className="main-nav-shortcut">
                 <Link to={item.to} onClick={() => setOpen(false)}
-                  aria-label={item.to === "/admin" ? item.label : `${item.label} (${item.count})`} title={item.label}
+                  aria-label={item.to === "/admin" || item.to === "/account" ? item.label : `${item.label} (${item.count})`} title={item.label}
                   activeProps={{ className: "site-nav-active", "aria-current": "page" }}>
                   <span className="relative grid h-8 w-8 shrink-0 place-items-center">
                     <item.icon strokeWidth={1.7} aria-hidden="true" />
@@ -652,6 +654,7 @@ type ProductRow = ProductPricing & {
 };
 export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
   const { t, lang } = useLang();
+  const { view, ready } = useShopping();
   const shoppingText = useShoppingText();
   const { data: s } = useQuery(settingsQuery);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -661,7 +664,8 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
-          window.__lovableEvents?.track?.("project.product_viewed", { product_id: p.id });
+          view(p.id);
+          try { window.__lovableEvents?.track?.("project.product_viewed", { product_id: p.id }); } catch { /* Optional analytics. */ }
           observer.disconnect();
         }
       },
@@ -669,7 +673,7 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
     );
     observer.observe(element);
     return () => observer.disconnect();
-  }, [p.id]);
+  }, [p.id, view, ready]);
   const name = pick(p, "name", lang);
   const price = productPrice(p, s);
   const available = canOrderProduct(p);

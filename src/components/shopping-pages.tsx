@@ -11,7 +11,7 @@ import { cartLines, cartTotal, cartMessage } from "@/lib/shopping";
 import { validateWhatsappNumber } from "@/lib/whatsapp";
 
 export function ShoppingPage({ mode }: { mode: "cart" | "favorites" }) {
-  const { state, ready, quantity, clear } = useShopping();
+  const { state, ready, user, syncError, retry, quantity, clear } = useShopping();
   const text = useShoppingText();
   const { lang } = useLang();
   const products = useQuery(productsQuery);
@@ -35,6 +35,10 @@ export function ShoppingPage({ mode }: { mode: "cart" | "favorites" }) {
         <span className="text-base text-muted-foreground">({count})</span>
       </h1>
       <Button asChild variant="ghost"><Link to="/products"><ArrowRight className="ltr:rotate-180" />{text("browse")}</Link></Button>
+    </div>
+    <div className="mb-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+      {syncError ? <><p role="alert" className="text-destructive">{text("sync_error")}</p><Button onClick={retry} variant="outline">{text("retry")}</Button></>
+        : user ? <p>{text("account_saved")}</p> : <Button asChild variant="outline"><Link to="/account">{text("customer_login")}</Link></Button>}
     </div>
     {loading ? <p role="status" className="py-16 text-center text-muted-foreground">{text("loading")}</p>
       : error ? <div role="alert" className="space-y-4 py-16 text-center"><p className="text-destructive">{text("error")}</p><Button variant="outline" onClick={() => { void products.refetch(); void settings.refetch(); }}>{text("retry")}</Button></div>

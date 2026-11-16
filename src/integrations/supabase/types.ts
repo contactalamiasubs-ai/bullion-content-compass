@@ -41,6 +41,77 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_activity: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          product_id: string | null
+          quantity: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          product_id?: string | null
+          quantity?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          product_id?: string | null
+          quantity?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_activity_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_shopping: {
+        Row: {
+          cart: Json
+          favorites: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cart?: Json
+          favorites?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cart?: Json
+          favorites?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_shopping_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dashboard_access: {
         Row: {
           permissions: string[]
@@ -324,6 +395,30 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string
+          email: string
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string
+          id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       sections: {
         Row: {
           body_ar: string | null
@@ -558,6 +653,15 @@ export type Database = {
         Args: { _update_id: string }
         Returns: undefined
       }
+      customer_shopping_action: {
+        Args: {
+          _action: string
+          _guest?: Json
+          _product_id?: string
+          _quantity?: number
+        }
+        Returns: Json
+      }
       has_dashboard_permission: {
         Args: { _permission: string; _user_id: string }
         Returns: boolean
@@ -583,6 +687,10 @@ export type Database = {
           summary_en: string
           verified_at: string
         }[]
+      }
+      record_customer_view: {
+        Args: { _product_id: string }
+        Returns: undefined
       }
       set_dashboard_access: {
         Args: { _admin: boolean; _permissions: string[]; _user_id: string }

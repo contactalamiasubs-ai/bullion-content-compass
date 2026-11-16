@@ -402,3 +402,8 @@
 @media (min-width: 640px) {
   .main-nav-shortcut { width: 78px; font-size: 12px; }
 }
+
+:root { --google-background: #131314; --google-border: #8E918F; --google-text: #E3E3E3; }
+.light { --google-background: #FFFFFF; --google-border: #747775; --google-text: #1F1F1F; }
+.google-sign-in, .google-sign-in:hover { background: var(--google-background); border: 1px solid var(--google-border); color: var(--google-text); padding: 10px 12px; gap: 10px; font: 500 14px/20px "Google Sans", var(--font-sans); height: auto; }
+@media (max-width: 639px) { .main-nav-shortcut { width: 50px; } }
