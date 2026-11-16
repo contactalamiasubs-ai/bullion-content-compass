@@ -30,4 +30,4 @@
 - [ ] Verify signup/password login and end-to-end AI refresh in a separate requested check; authenticated administrator access and edits verified with a managed session.
 - [x] Run relevant tests and save changes.
 
-- [ ] Add administrator-managed user invitations, full admin or scoped section permissions, enforce access at database/server boundaries, and verify signed-in account management and restricted access.
+- [x] Add administrator-managed invitations and scoped permissions. Verified account listing, permission save/reload, product member CRUD, denied price writes and escalation, admin promotion and access revocation on a temporary member; 25 tests passed and desktop/mobile checked. Invitation email receipt and acceptance require the recipient's mailbox and were not exercised.
