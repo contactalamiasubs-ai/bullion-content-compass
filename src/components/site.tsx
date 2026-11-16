@@ -209,42 +209,39 @@ export function Footer() {
             )}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          <Link to="/about" className="text-muted-foreground hover:text-gold">
-            {t("about")}
-          </Link>
-          <Link to="/services" className="text-muted-foreground hover:text-gold">
-            {t("services")}
-          </Link>
-          <Link to="/products" className="text-muted-foreground hover:text-gold">
-            {t("products")}
-          </Link>
-          <Link to="/blog" className="text-muted-foreground hover:text-gold">
-            {t("blog")}
-          </Link>
-          <Link to="/news" className="text-muted-foreground hover:text-gold">
-            {t("news")}
-          </Link>
-          <Link to="/contact" className="text-muted-foreground hover:text-gold">
-            {t("contact")}
-          </Link>
-          <Link to="/admin" className="text-muted-foreground hover:text-gold">
-            {lang === "ar" ? "لوحة التحكم" : "Dashboard"}
-          </Link>
-        </div>
+        <nav aria-label={lang === "ar" ? "روابط أسفل الصفحة" : "Footer navigation"} className="grid grid-cols-2 content-start gap-x-3 gap-y-2 text-sm">
+          {([
+            { to: "/about", label: t("about"), icon: Info },
+            { to: "/services", label: t("services"), icon: Handshake },
+            { to: "/products", label: t("products"), icon: Gem },
+            { to: "/blog", label: t("blog"), icon: BookOpen },
+            { to: "/news", label: t("news"), icon: Newspaper },
+            { to: "/contact", label: t("contact"), icon: MessageCircle },
+            { to: "/admin", label: lang === "ar" ? "لوحة التحكم" : "Dashboard", icon: LockKeyhole },
+          ] as const).map((item) => (
+            <Button key={item.to} asChild variant="ghost" className="h-auto min-h-12 min-w-0 justify-start gap-2 rounded-md px-1.5 py-2 text-muted-foreground hover:text-gold">
+              <Link to={item.to}>
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border bg-secondary text-gold">
+                  <item.icon aria-hidden="true" strokeWidth={1.7} />
+                </span>
+                <span className="min-w-0 whitespace-normal break-words text-start">{item.label}</span>
+              </Link>
+            </Button>
+          ))}
+        </nav>
         <div className="space-y-2 text-sm text-muted-foreground">
           {s?.phone && (
             <p className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-gold" /> <span dir="ltr">{s.phone}</span>
+              <Phone className="h-4 w-4 shrink-0 text-gold" /> <span dir="ltr">{s.phone}</span>
             </p>
           )}
           {s?.email && (
             <p className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-gold" /> {s.email}
+              <Mail className="h-4 w-4 shrink-0 text-gold" /> <span className="break-all">{s.email}</span>
             </p>
           )}
           <p className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-gold" /> {pick(s, "address", lang)}
+            <MapPin className="h-4 w-4 shrink-0 text-gold" /> {pick(s, "address", lang)}
           </p>
         </div>
       </div>
