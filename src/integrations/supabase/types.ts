@@ -386,6 +386,7 @@ export type Database = {
           address_ar: string | null
           address_en: string | null
           app_link: string | null
+          contact_channels: string
           email: string | null
           facebook: string | null
           gold_gram_18: number | null
@@ -419,6 +420,7 @@ export type Database = {
           address_ar?: string | null
           address_en?: string | null
           app_link?: string | null
+          contact_channels?: string
           email?: string | null
           facebook?: string | null
           gold_gram_18?: number | null
@@ -452,6 +454,7 @@ export type Database = {
           address_ar?: string | null
           address_en?: string | null
           app_link?: string | null
+          contact_channels?: string
           email?: string | null
           facebook?: string | null
           gold_gram_18?: number | null

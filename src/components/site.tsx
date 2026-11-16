@@ -42,6 +42,7 @@ import { productPrice, type ProductPricing } from "@/lib/product-pricing";
 import { ProductAvailability } from "@/components/product-availability";
 import { canOrderProduct, productAvailability } from "@/lib/product-availability";
 import { useLang, pick } from "@/lib/i18n";
+import { contactChannels } from "@/lib/contact-channels";
 import {
   settingsQuery,
   slidesQuery,
@@ -180,6 +181,7 @@ export function Header() {
 export function Footer() {
   const { t, lang } = useLang();
   const { data: s } = useQuery(settingsQuery);
+  const channels = contactChannels(s?.contact_channels);
   return (
     <footer className="mt-20 border-t border-border bg-card">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:grid-cols-3">
@@ -248,10 +250,10 @@ export function Footer() {
               <Phone className="h-4 w-4 text-gold" /> <span dir="ltr">{s.phone}</span>
             </p>
           )}
-          {s?.email && (
-            <p className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-gold" /> {s.email}
-            </p>
+          {channels.email && s?.email && (
+            <a href={`mailto:${s.email}`} className="flex items-center gap-2 break-all hover:text-gold">
+              <Mail className="h-4 w-4 shrink-0 text-gold" /> {s.email}
+            </a>
           )}
           <p className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-gold" /> {pick(s, "address", lang)}
@@ -261,7 +263,7 @@ export function Footer() {
       <p className="border-t border-border py-4 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} {pick(s, "site_name", lang)} — {t("rights")}
       </p>
-      {s?.whatsapp_number && (
+      {channels.whatsapp && s?.whatsapp_number && (
         <a
           href={whatsappLink(s.whatsapp_number, "")}
           onClick={() => {

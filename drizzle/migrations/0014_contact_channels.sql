@@ -1,0 +1,1 @@
+ALTER TABLE public.site_settings ADD COLUMN contact_channels text NOT NULL DEFAULT 'both' CHECK (contact_channels IN ('whatsapp', 'email', 'both'));

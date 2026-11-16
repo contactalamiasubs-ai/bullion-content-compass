@@ -4,6 +4,11 @@ import { toast } from "sonner";
 import { useLang } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHero } from "@/components/site";
+import { useQuery } from "@tanstack/react-query";
+import { settingsQuery, whatsappLink } from "@/lib/data";
+import { contactChannels } from "@/lib/contact-channels";
+import { Button } from "@/components/ui/button";
+import { Mail, MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -21,6 +26,8 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const { t } = useLang();
+  const { data: settings } = useQuery(settingsQuery);
+  const channels = contactChannels(settings?.contact_channels);
   const [f, setF] = useState({ name: "", email: "", phone: "", message: "" });
   const [busy, setBusy] = useState(false);
   const submit = async (e: React.FormEvent) => {
@@ -41,6 +48,26 @@ function Contact() {
   return (
     <main>
       <PageHero title={t("contact")} />
+      <div className="mx-auto flex max-w-xl flex-wrap justify-center gap-3 px-4 pt-12">
+        {channels.whatsapp && settings?.whatsapp_number && (
+          <Button asChild variant="outline">
+            <a href={whatsappLink(settings.whatsapp_number, "")} target="_blank" rel="noopener noreferrer"
+              onClick={() => {
+                try { window.__lovableEvents?.track?.("project.whatsapp_clicked", { placement: "contact" }); }
+                catch { /* analytics is optional */ }
+              }}>
+              <MessageCircle /> WhatsApp
+            </a>
+          </Button>
+        )}
+        {channels.email && settings?.email && (
+          <Button asChild variant="outline" className="h-auto min-h-9 max-w-full">
+            <a href={`mailto:${settings.email}`} className="break-all whitespace-normal">
+              <Mail className="shrink-0" /> {settings.email}
+            </a>
+          </Button>
+        )}
+      </div>
       <form onSubmit={submit} className="mx-auto max-w-xl space-y-4 px-4 py-12">
         <input
           required
@@ -75,12 +102,13 @@ function Contact() {
           value={f.message}
           onChange={(e) => setF({ ...f, message: e.target.value })}
         />
-        <button
+        <Button
+          type="submit"
           disabled={busy}
           className="w-full rounded-md bg-gold-gradient py-3 font-semibold text-primary-foreground disabled:opacity-60"
         >
           {t("send")}
-        </button>
+        </Button>
       </form>
     </main>
   );
