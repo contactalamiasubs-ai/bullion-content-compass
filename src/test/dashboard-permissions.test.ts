@@ -1,7 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { assertCanChangeAccess, canAccessTab, inviteSchema, updateAccessSchema } from "@/lib/dashboard-permissions";
+import { assertCanChangeAccess, assertCanDeleteAccount, canAccessTab, deleteAccountSchema, inviteSchema, updateAccessSchema } from "@/lib/dashboard-permissions";
 
 describe("Dashboard permissions", () => {
+  it("cannot delete the current account", () => {
+    expect(() => assertCanDeleteAccount("actor", "actor", true, 2)).toThrow();
+  });
+  it("cannot delete the final administrator", () => {
+    expect(() => assertCanDeleteAccount("actor", "other", true, 1)).toThrow();
+    expect(() => assertCanDeleteAccount("actor", "other", true, 2)).not.toThrow();
+  });
+  it("can delete another non-admin account", () => {
+    expect(() => assertCanDeleteAccount("actor", "other", false, 1)).not.toThrow();
+  });
+  it("deletion requires a valid account ID", () => {
+    expect(deleteAccountSchema.safeParse({ userId: "invalid" }).success).toBe(false);
+  });
   it("full admins can manage accounts", () => {
     expect(canAccessTab({ admin: true, permissions: [] }, "users")).toBe(true);
   });

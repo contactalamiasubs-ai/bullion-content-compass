@@ -55,3 +55,4 @@ use the editor.
 - Product availability uses one shared four-state helper across catalog, details and live cart resolution; only available products enter order totals, while other states use WhatsApp reservation or inquiry.
 - Account management uses authenticated server functions with a full-admin check before privileged Auth reads/invitations; atomic access changes run through an admin-authorized SQL function to prevent self-demotion and concurrent removal of the final admin.
 - Team access lives separately in dashboard_access; the shared permission map filters dashboard navigation, while RLS and server checks enforce access independently of the UI.
+- User deletion requires full-admin authorization and a self-deletion guard; a user_roles deletion trigger shares the access-change advisory lock to preserve the final admin even during concurrent Auth deletion.

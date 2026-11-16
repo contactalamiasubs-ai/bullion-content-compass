@@ -92,6 +92,13 @@
       "when": 1794835666036,
       "tag": "0012_dashboard_user_permissions",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1794838606107,
+      "tag": "0013_guard_admin_account_deletion",
+      "breakpoints": true
     }
   ]
 }

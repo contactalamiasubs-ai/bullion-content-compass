@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { MailPlus, Save, ShieldCheck, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { MailPlus, Save, ShieldCheck, ChevronLeft, ChevronRight, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel } from "@/components/ui/alert-dialog";
 import { permissionKeys, permissionLabels, type Permission } from "@/lib/dashboard-permissions";
-import { inviteDashboardUser, listDashboardUsers, updateDashboardAccess } from "@/lib/users.functions";
+import { deleteDashboardUser, inviteDashboardUser, listDashboardUsers, updateDashboardAccess } from "@/lib/users.functions";
 
 const inp = "w-full rounded-md border border-input bg-background px-3 py-2 text-sm";
 function AccessFields({ admin, permissions, onAdmin, onPermissions, disabled = false }: {
@@ -27,6 +28,8 @@ function AccessFields({ admin, permissions, onAdmin, onPermissions, disabled = f
 type Account = Awaited<ReturnType<typeof listDashboardUsers>>["users"][number];
 function AccountRow({ account, actorId, onSaved }: { account: Account; actorId: string; onSaved: () => void }) {
   const update = useServerFn(updateDashboardAccess);
+  const remove = useServerFn(deleteDashboardUser);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [admin, setAdmin] = useState(account.admin);
   const [permissions, setPermissions] = useState<Permission[]>(permissionKeys.filter((key) => account.permissions.includes(key)));
   const [busy, setBusy] = useState(false);
@@ -37,12 +40,28 @@ function AccountRow({ account, actorId, onSaved }: { account: Account; actorId: 
       <span className="text-xs text-muted-foreground">{account.confirmed ? "حساب مفعّل" : "بانتظار قبول الدعوة أو تأكيد البريد"}</span>
     </div>
     <AccessFields admin={admin} permissions={permissions} onAdmin={setAdmin} onPermissions={setPermissions} disabled={busy || self} />
-    <Button disabled={busy || self} onClick={async () => {
+    <div className="flex flex-wrap items-center gap-3"><Button disabled={busy || self} onClick={async () => {
       setBusy(true);
       try { await update({ data: { userId: account.id, admin, permissions } }); toast.success("تم حفظ الصلاحيات"); onSaved(); }
       catch (error) { toast.error(error instanceof Error ? error.message : "تعذر الحفظ"); }
       finally { setBusy(false); }
     }}><Save />{busy ? "جارٍ الحفظ…" : "حفظ الصلاحيات"}</Button>
+    <AlertDialog open={confirmDelete} onOpenChange={(open) => { if (!busy) setConfirmDelete(open); }}>
+      <AlertDialogTrigger asChild><Button variant="destructive" disabled={busy || self}><Trash2 />حذف المستخدم</Button></AlertDialogTrigger>
+      <AlertDialogContent dir="rtl" className="max-w-[calc(100%-2rem)] sm:max-w-lg">
+        <AlertDialogTitle>حذف المستخدم نهائيًا؟</AlertDialogTitle>
+        <AlertDialogDescription>سيُحذف حساب <span dir="ltr" className="break-all">{account.email}</span> وصلاحياته، ولن يتمكن من تسجيل الدخول بهذا الحساب. لا يمكن التراجع عن الحذف.</AlertDialogDescription>
+        <AlertDialogFooter className="gap-2">
+          <AlertDialogCancel disabled={busy}>إلغاء</AlertDialogCancel>
+          <Button variant="destructive" disabled={busy} onClick={async () => {
+            setBusy(true);
+            try { await remove({ data: { userId: account.id } }); setConfirmDelete(false); toast.success("تم حذف المستخدم وصلاحياته"); onSaved(); }
+            catch (error) { toast.error(error instanceof Error ? error.message : "تعذر حذف المستخدم"); }
+            finally { setBusy(false); }
+          }}><Trash2 />{busy ? "جارٍ الحذف…" : "تأكيد الحذف"}</Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog></div>
   </article>;
 }
 

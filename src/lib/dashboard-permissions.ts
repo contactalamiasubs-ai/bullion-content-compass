@@ -16,6 +16,7 @@ export const accessSchema = z.object({
 });
 export const inviteSchema = accessSchema.extend({ email: z.string().trim().email().max(255) });
 export const updateAccessSchema = accessSchema.extend({ userId: z.string().uuid() });
+export const deleteAccountSchema = z.object({ userId: z.string().uuid() });
 export type DashboardAccess = { admin: boolean; permissions: string[] };
 
 const tabPermissions: Record<string, Permission> = {
@@ -32,4 +33,8 @@ export function canAccessTab(access: DashboardAccess, tab: string) {
 }
 export function assertCanChangeAccess(actorId: string, targetId: string, admin: boolean) {
   if (actorId === targetId && !admin) throw new Error("لا يمكنك إلغاء صلاحية المسؤول لحسابك");
+}
+export function assertCanDeleteAccount(actorId: string, targetId: string, targetAdmin: boolean, adminCount: number) {
+  if (actorId === targetId) throw new Error("لا يمكنك حذف حسابك الحالي");
+  if (targetAdmin && adminCount <= 1) throw new Error("يجب الاحتفاظ بمسؤول واحد على الأقل");
 }

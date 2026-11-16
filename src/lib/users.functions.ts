@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { assertCanChangeAccess, inviteSchema, updateAccessSchema } from "./dashboard-permissions";
+import { assertCanChangeAccess, assertCanDeleteAccount, deleteAccountSchema, inviteSchema, updateAccessSchema } from "./dashboard-permissions";
 
 export const listDashboardUsers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -38,6 +38,23 @@ export const updateDashboardAccess = createServerFn({ method: "POST" })
       _user_id: data.userId, _admin: data.admin, _permissions: data.permissions,
     });
     if (error) throw new Error(error.message);
+    return { success: true };
+  });
+
+export const deleteDashboardUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(deleteAccountSchema)
+  .handler(async ({ data, context }) => {
+    const { data: allowed, error } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (error || !allowed) throw new Error("غير مسموح بحذف المستخدمين");
+    assertCanDeleteAccount(context.userId, data.userId, false, 0);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: admins, error: rolesError } = await supabaseAdmin.from("user_roles").select("user_id").eq("role", "admin");
+    if (rolesError) throw new Error("تعذر التحقق من صلاحيات الحساب");
+    assertCanDeleteAccount(context.userId, data.userId, admins.some((row) => row.user_id === data.userId), admins.length);
+    // The database trigger locks against concurrent access changes and final-admin deletion.
+    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (deleteError) throw new Error("تعذر حذف الحساب؛ حدّث القائمة وحاول مرة أخرى. لا يمكن حذف آخر مسؤول.");
     return { success: true };
   });
 
