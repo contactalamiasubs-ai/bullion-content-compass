@@ -771,12 +771,12 @@ export function PostCard({ p, idx }: { p: PostRow; idx: number }) {
   );
 }
 
-export function PageHero({ title }: { title: string }) {
+export function PageHero({ title, centered = false }: { title: string; centered?: boolean }) {
   return (
     <section className="relative h-56 overflow-hidden">
       <img src={s1} alt="" className="absolute inset-0 h-full w-full object-cover opacity-40" />
       <div className="absolute inset-0 bg-hero-fade" />
-      <div className="relative mx-auto flex h-full max-w-7xl items-end px-4 pb-8">
+      <div className={`relative mx-auto flex h-full max-w-7xl px-4 ${centered ? "items-center justify-center text-center" : "items-end pb-8"}`}>
         <h1 className="text-4xl font-bold text-gold-gradient">{title}</h1>
       </div>
     </section>

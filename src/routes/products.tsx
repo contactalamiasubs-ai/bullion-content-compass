@@ -21,7 +21,7 @@ function Products() {
   const { t } = useLang();
   return (
     <main>
-      <PageHero title={t("products")} />
+      <PageHero title={t("products")} centered />
       <section className="mx-auto max-w-7xl px-4 py-10">
         <ProductCatalog />
       </section>
