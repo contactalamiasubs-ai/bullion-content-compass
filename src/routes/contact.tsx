@@ -40,7 +40,7 @@ function Contact() {
   const inp = "w-full rounded-md border border-input bg-background px-3 py-2.5";
   return (
     <main>
-      <PageHero title={t("contact")} />
+      <PageHero title={t("contact")} centered />
       <form onSubmit={submit} className="mx-auto max-w-xl space-y-4 px-4 py-12">
         <input
           required
