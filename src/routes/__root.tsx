@@ -18,7 +18,6 @@ import { Header, Footer, Popup } from "@/components/site";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ShoppingProvider } from "@/components/shopping-provider";
-import { ShoppingFlash } from "@/components/shopping-flash";
 
 function NotFoundComponent() {
   return (
@@ -145,7 +144,6 @@ function RootComponent() {
         {!bare && <Popup />}
         <Outlet />
         {!bare && <Footer />}
-        {!bare && <ShoppingFlash />}
         <Toaster />
         </ShoppingProvider>
       </LangProvider>
