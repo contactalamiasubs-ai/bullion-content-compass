@@ -74,7 +74,7 @@ export function Header() {
   const { t, lang, setLang } = useLang();
   const { data: s } = useQuery(settingsQuery);
   const [open, setOpen] = useState(false);
-  const { state, openPanel } = useShopping();
+  const { state } = useShopping();
   const shoppingText = useShoppingText();
   const cartCount = Object.values(state.cart).reduce((sum, quantity) => sum + quantity, 0);
   const links = [
@@ -99,9 +99,9 @@ export function Header() {
           </Button>
           <div className="flex items-center gap-5 sm:gap-7">
           {([{ to: "/favorites", icon: Heart, label: shoppingText("favorites"), count: state.favorites.length },
-            { to: "/cart", icon: ShoppingBag, label: shoppingText("cart"), count: cartCount }] as const).filter((item) => item.count > 0).map((item) => (
-            <Button key={item.to} asChild variant="ghost" className="shopping-shortcut animate-in fade-in zoom-in-75 duration-300">
-              <Link to={item.to} onClick={(e) => { e.preventDefault(); setOpen(false); openPanel(item.to === "/cart" ? "cart" : "favorites"); }} aria-label={`${item.label} (${item.count})`} title={item.label}>
+            { to: "/cart", icon: ShoppingBag, label: shoppingText("cart"), count: cartCount }] as const).map((item) => (
+            <Button key={item.to} asChild variant="ghost" className="shopping-shortcut">
+              <Link to={item.to} onClick={() => setOpen(false)} aria-label={`${item.label} (${item.count})`} title={item.label}>
                 <span className="shortcut-icon"><item.icon strokeWidth={1.7} aria-hidden="true" />
                   {item.count > 0 && <span className="shortcut-count" aria-hidden="true">{item.count > 99 ? "99+" : item.count}</span>}
                 </span>

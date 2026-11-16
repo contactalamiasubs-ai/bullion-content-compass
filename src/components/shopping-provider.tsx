@@ -11,14 +11,11 @@ const ShoppingContext = createContext<{
   add: (id: string) => void;
   quantity: (id: string, quantity: number) => void;
   clear: () => void;
-  panel: "cart" | "favorites" | null;
-  openPanel: (panel: "cart" | "favorites" | null) => void;
 } | null>(null);
 
 export function ShoppingProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ShoppingState>(emptyShopping);
   const [ready, setReady] = useState(false);
-  const [panel, openPanel] = useState<"cart" | "favorites" | null>(null);
   useEffect(() => {
     try { setState(readShopping(localStorage.getItem(shoppingStorageKey))); } catch { /* Private browsing can block storage. */ }
     setReady(true);
@@ -33,15 +30,9 @@ export function ShoppingProvider({ children }: { children: ReactNode }) {
     try { localStorage.setItem(shoppingStorageKey, JSON.stringify(state)); } catch { /* Keep this session usable when storage is blocked. */ }
   }, [state, ready]);
   return <ShoppingContext.Provider value={{
-    state, ready, panel, openPanel,
-    favorite: (id) => {
-      if (!state.favorites.includes(id)) openPanel("favorites");
-      setState((prev) => ({ ...prev, favorites: toggleFavorite(prev.favorites, id) }));
-    },
-    add: (id) => {
-      openPanel("cart");
-      setState((prev) => ({ ...prev, cart: setCartQuantity(prev.cart, id, (prev.cart[id] ?? 0) + 1) }));
-    },
+    state, ready,
+    favorite: (id) => setState((prev) => ({ ...prev, favorites: toggleFavorite(prev.favorites, id) })),
+    add: (id) => setState((prev) => ({ ...prev, cart: setCartQuantity(prev.cart, id, (prev.cart[id] ?? 0) + 1) })),
     quantity: (id, quantity) => setState((prev) => ({ ...prev, cart: setCartQuantity(prev.cart, id, quantity) })),
     clear: () => setState((prev) => ({ ...prev, cart: {} })),
   }}>{children}</ShoppingContext.Provider>;
