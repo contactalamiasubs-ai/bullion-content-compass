@@ -373,6 +373,7 @@ export type Database = {
           app_link: string | null
           email: string | null
           facebook: string | null
+          gold_gram_18: number | null
           gold_gram_21: number | null
           gold_gram_24: number | null
           gold_source_url: string
@@ -405,6 +406,7 @@ export type Database = {
           app_link?: string | null
           email?: string | null
           facebook?: string | null
+          gold_gram_18?: number | null
           gold_gram_21?: number | null
           gold_gram_24?: number | null
           gold_source_url?: string
@@ -437,6 +439,7 @@ export type Database = {
           app_link?: string | null
           email?: string | null
           facebook?: string | null
+          gold_gram_18?: number | null
           gold_gram_21?: number | null
           gold_gram_24?: number | null
           gold_source_url?: string

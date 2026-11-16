@@ -6,7 +6,7 @@ export type ProductPricing = {
   making_charge?: number | null;
   pricing_metal?: string;
 };
-export type GramRates = { gold_gram_21: number | null; gold_gram_24: number | null; silver_gram?: number | null };
+export type GramRates = { gold_gram_18?: number | null; gold_gram_21: number | null; gold_gram_24: number | null; silver_gram?: number | null };
 
 export function productPrice(product: ProductPricing, rates?: GramRates | null): number | null {
   if (!product.gram_pricing) return product.price;
@@ -15,7 +15,7 @@ export function productPrice(product: ProductPricing, rates?: GramRates | null):
   const rate =
     product.pricing_metal === "silver"
       ? rates?.silver_gram
-      : product.karat === 21 ? rates?.gold_gram_21 : product.karat === 24 ? rates?.gold_gram_24 : null;
+      : product.karat === 18 ? rates?.gold_gram_18 : product.karat === 21 ? rates?.gold_gram_21 : product.karat === 24 ? rates?.gold_gram_24 : null;
   if (
     weight == null ||
     !Number.isFinite(weight) ||

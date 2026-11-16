@@ -111,6 +111,7 @@ function FieldInput({
           onChange={(event) => onChange(event.target.value ? Number(event.target.value) : null)}
         >
           <option value="">بدون عيار</option>
+          <option value="18">18</option>
           <option value="21">21</option>
           <option value="24">24</option>
         </select>
@@ -418,9 +419,9 @@ function RowCard({
       table === "products" &&
       row["gram_pricing"] &&
       (!(typeof row["weight_grams"] === "number" && row["weight_grams"] > 0) ||
-        (row["pricing_metal"] !== "silver" && ![21, 24].includes(Number(row["karat"]))))
+        (row["pricing_metal"] !== "silver" && ![18, 21, 24].includes(Number(row["karat"]))))
     ) {
-      toast.error(row["pricing_metal"] === "silver" ? "أدخل وزنًا أكبر من صفر قبل تفعيل الربط" : "أدخل وزنًا أكبر من صفر واختر عيار 21 أو 24 قبل تفعيل الربط");
+      toast.error(row["pricing_metal"] === "silver" ? "أدخل وزنًا أكبر من صفر قبل تفعيل الربط" : "أدخل وزنًا أكبر من صفر واختر عيار 18 أو 21 أو 24 قبل تفعيل الربط");
       return;
     }
     setBusy(true);

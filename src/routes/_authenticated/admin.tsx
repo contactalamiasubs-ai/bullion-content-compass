@@ -190,6 +190,7 @@ function Panel({ tab, onSelect }: { tab: string; onSelect: (tab: TabId) => void 
           id={1}
           queryKey={["settings"]}
           fields={[
+            { name: "gold_gram_18", label: "سعر جرام الذهب عيار 18 (EGP)", type: "number" },
             { name: "gold_gram_21", label: "سعر جرام الذهب عيار 21 (EGP)", type: "number" },
             { name: "gold_gram_24", label: "سعر جرام الذهب عيار 24 (EGP)", type: "number" },
             { name: "silver_gram", label: "سعر جرام الفضة (EGP)", type: "number" },

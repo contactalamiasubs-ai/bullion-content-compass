@@ -48,6 +48,19 @@ describe("product gram pricing", () => {
       ).toBeNull();
     }
   });
+  it("calculates 18K using its own gram rate", () => {
+    expect(
+      productPrice(
+        { price: null, gram_pricing: true, weight_grams: 10, karat: 18, making_charge: 100 },
+        { ...rates, gold_gram_18: 3900 },
+      ),
+    ).toBe(39100);
+  });
+  it("does not substitute another karat rate when the 18K rate is missing", () => {
+    expect(
+      productPrice({ price: 99, gram_pricing: true, weight_grams: 10, karat: 18 }, rates),
+    ).toBeNull();
+  });
   it("calculates 21K using its gram rate and weight", () => {
     expect(productPrice({ price: 99, gram_pricing: true, weight_grams: 8, karat: 21 }, rates)).toBe(
       36000,
