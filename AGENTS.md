@@ -59,3 +59,4 @@ use the editor.
 - Dashboard company labels read the shared settings query through pick() so settings saves update dashboard branding without a separate company name.
 - Header branding and display controls use a constrained grid; persistent account/shopping shortcuts live in the main navigation alongside a collapsible section menu below desktop width to avoid mobile crowding.
 - Customer profiles mirror Auth identity via triggers; shopping mutations merge guest data once and run atomically per account. Disclosed account activity is separate from anonymous analytics; only owners and full admins can read customer data.
+- Customer management lives at the protected, unnested /admin/customers route; dashboard desktop links and mobile selection navigate there to support refreshable page URLs.
