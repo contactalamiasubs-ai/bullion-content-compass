@@ -23,7 +23,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { SingleEditor, ListEditor, type Field } from "@/components/admin/editors";
 import { useServerFn } from "@tanstack/react-start";
 import { refreshVerifiedPrices } from "@/lib/prices.functions";
-import { verifiedPricesQuery, productGroupsQuery } from "@/lib/data";
+import { verifiedPricesQuery, productGroupsQuery, settingsQuery } from "@/lib/data";
+import { pick } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Users } from "@/components/admin/users";
@@ -72,6 +73,8 @@ function Admin() {
   const { user } = Route.useRouteContext();
   const nav = useNavigate();
   const qc = useQueryClient();
+  const { data: settings } = useQuery(settingsQuery);
+  const companyName = pick(settings, "site_name", "ar");
   const [tab, setTab] = useState<(typeof tabs)[number]["id"]>("overview");
   const { data: access, isLoading, error: accessError } = useQuery({
     queryKey: ["dashboard-access", user.id],
@@ -114,7 +117,7 @@ function Admin() {
   return (
     <div dir="rtl" className="flex min-h-screen">
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-e border-sidebar-border bg-sidebar p-4 md:flex">
-        <h1 className="mb-1 text-2xl text-gold-gradient">جولد سنتر</h1>
+        <h1 className="mb-1 break-words text-2xl text-gold-gradient">{companyName}</h1>
         <p className="mb-6 text-xs text-muted-foreground">إدارة الموقع</p>
         <nav aria-label="أقسام لوحة التحكم" className="min-h-0 flex-1 space-y-1 overflow-y-auto">
           {visibleTabs.map((t) => (
@@ -147,7 +150,7 @@ function Admin() {
       <main className="min-w-0 flex-1 p-4 md:p-8">
         <header className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
           <div className="min-w-0">
-            <p className="text-xs text-gold">لوحة تحكم جولد سنتر</p>
+            <p className="break-words text-xs text-gold">لوحة تحكم {companyName}</p>
             <p dir="ltr" className="mt-1 break-all text-sm text-muted-foreground">
               {user.email}
             </p>
