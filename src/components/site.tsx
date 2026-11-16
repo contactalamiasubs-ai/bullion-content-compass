@@ -98,7 +98,11 @@ export function Header() {
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3">
           <Link to="/" className="flex min-w-0 items-center gap-2" onClick={() => setOpen(false)}>
             {s?.logo_url ? (
-              <img src={s.logo_url} alt={pick(s, "site_name", lang)} className="h-10 w-10 shrink-0 object-contain sm:h-12 sm:w-12" />
+              <img
+                src={s.logo_url}
+                alt={pick(s, "site_name", lang)}
+                className="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-gold/40 sm:h-12 sm:w-12"
+              />
             ) : (
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold-gradient font-display text-lg font-bold text-primary-foreground">Au</span>
             )}
