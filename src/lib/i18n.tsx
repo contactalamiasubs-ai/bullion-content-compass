@@ -27,6 +27,7 @@ const dict = {
   readMore: { ar: "اقرأ المزيد", en: "Read more" },
   viewAll: { ar: "عرض الكل", en: "View all" },
   infoHub: { ar: "مركز المعلومات", en: "Information hub" },
+  companyInfo: { ar: "معلومات الشركة", en: "Company information" },
   dailyReport: { ar: "التقرير اليومي", en: "Daily report" },
   goldGuide: { ar: "دليل الذهب", en: "Gold guide" },
   catalog: { ar: "تحميل الكتالوج", en: "Download catalog" },
