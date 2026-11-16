@@ -1,7 +1,5 @@
 # Gold Center updates
 
-- [x] Add dashboard-selected WhatsApp/email/both contact visibility; all three authenticated saves and public contact/footer links verified, original choice restored, mobile checked and three tests passed.
-
 - [x] Add confirmed full-admin user deletion with self/final-admin protection and permission cleanup; cancellation and actual temporary-account deletion persisted after dashboard reload, desktop/mobile checked, and 12 relevant tests passed.
 
 - [x] Add four dashboard-managed availability states to cards/details; authenticated saves and public readback verified for all four and original state restored. Connect standalone catalog from price lists and mobile navigation, show bar specifications, and exclude non-available products from live order totals; 24 relevant tests passed.

@@ -257,7 +257,6 @@ function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab
           fields={[
             ...bi("site_name", "اسم الموقع"),
             { name: "logo_url", label: "اللوجو", type: "image" },
-            { name: "contact_channels", label: "وسائل التواصل الظاهرة", type: "contact-channels" },
             { name: "whatsapp_number", label: "رقم واتساب (بالكود الدولي)", type: "whatsapp" },
             { name: "phone", label: "الهاتف" },
             { name: "email", label: "البريد" },

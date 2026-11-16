@@ -57,4 +57,3 @@ use the editor.
 - Team access lives separately in dashboard_access; the shared permission map filters dashboard navigation, while RLS and server checks enforce access independently of the UI.
 - User deletion requires full-admin authorization and a self-deletion guard; a user_roles deletion trigger shares the access-change advisory lock to preserve the final admin even during concurrent Auth deletion.
 - Dashboard company labels read the shared settings query through pick() so settings saves update dashboard branding without a separate company name.
-- Contact visibility uses one settings-backed helper for the contact page and footer; it does not change product ordering or contact-form message storage.

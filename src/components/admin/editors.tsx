@@ -26,8 +26,7 @@ export type Field = {
     | "category"
     | "karat"
     | "metal"
-    | "availability"
-    | "contact-channels";
+    | "availability";
   options?: string[];
 };
 
@@ -88,15 +87,6 @@ function FieldInput({
 }) {
   const [busy, setBusy] = useState(false);
   switch (f.type) {
-    case "contact-channels":
-      return (
-        <select aria-label={f.label} className={inp} value={String(value ?? "both")}
-          onChange={(event) => onChange(event.target.value)}>
-          <option value="whatsapp">واتساب فقط</option>
-          <option value="email">البريد الإلكتروني فقط</option>
-          <option value="both">واتساب والبريد الإلكتروني</option>
-        </select>
-      );
     case "availability":
       return <select aria-label={f.label} className={inp} value={String(value ?? "available")}
         onChange={(event) => onChange(event.target.value)}>
