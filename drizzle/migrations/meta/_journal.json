@@ -71,6 +71,13 @@
       "when": 1794664984222,
       "tag": "0009_product_availability",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794829472192,
+      "tag": "0010_restrict_price_updates_read",
+      "breakpoints": true
     }
   ]
 }

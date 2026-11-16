@@ -544,6 +544,21 @@ export type Database = {
         }
         Returns: boolean
       }
+      latest_verified_price: {
+        Args: never
+        Returns: {
+          gold_source_at: string
+          gold_source_url: string
+          gold_usd: number
+          id: string
+          silver_source_at: string
+          silver_source_url: string
+          silver_usd: number
+          summary_ar: string
+          summary_en: string
+          verified_at: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
