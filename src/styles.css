@@ -379,3 +379,26 @@
 @media (max-width: 480px) {
   .shopping-shortcut { flex-direction: column; gap: 5px; min-width: 62px; }
 }
+
+.main-nav-shortcut {
+  display: flex;
+  flex-direction: column;
+  width: 62px;
+  min-height: 56px;
+  height: auto;
+  gap: 3px;
+  padding: 4px 2px;
+  white-space: normal;
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--muted-foreground);
+  border-radius: 6px;
+}
+.main-nav-shortcut:hover, .main-nav-shortcut.site-nav-active {
+  color: var(--gold);
+  background: var(--accent);
+}
+.main-nav-shortcut svg { width: 21px; height: 21px; }
+@media (min-width: 640px) {
+  .main-nav-shortcut { width: 78px; font-size: 12px; }
+}

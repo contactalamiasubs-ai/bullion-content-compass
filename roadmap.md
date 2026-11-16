@@ -1,5 +1,7 @@
 # Gold Center updates
 
+- [x] Move dashboard/favorites/cart shortcuts into the main navigation and remove the separate top strip; Arabic layouts checked at 320/394/890/1280/1536 widths, English mobile and navigation verified with no overflow or runtime errors; eight relevant tests passed.
+
 - [x] Add confirmed full-admin user deletion with self/final-admin protection and permission cleanup; cancellation and actual temporary-account deletion persisted after dashboard reload, desktop/mobile checked, and 12 relevant tests passed.
 
 - [x] Add four dashboard-managed availability states to cards/details; authenticated saves and public readback verified for all four and original state restored. Connect standalone catalog from price lists and mobile navigation, show bar specifications, and exclude non-available products from live order totals; 24 relevant tests passed.
