@@ -94,7 +94,6 @@ export function Header() {
   ] as const;
   const shortcuts = [
     { to: "/account", icon: UserRound, label: shoppingText(user ? "account" : "customer_login"), count: 0 },
-    { to: "/admin", icon: LockKeyhole, label: lang === "ar" ? "لوحة التحكم" : "Dashboard", count: 0 },
     { to: "/favorites", icon: Heart, label: shoppingText("favorites"), count: state.favorites.length },
     { to: "/cart", icon: ShoppingBag, label: shoppingText("cart"), count: cartCount },
   ] as const;
@@ -146,7 +145,7 @@ export function Header() {
             {shortcuts.map((item) => (
               <Button key={item.to} asChild variant="ghost" className="main-nav-shortcut">
                 <Link to={item.to} onClick={() => setOpen(false)}
-                  aria-label={item.to === "/admin" || item.to === "/account" ? item.label : `${item.label} (${item.count})`} title={item.label}
+                  aria-label={item.to === "/account" ? item.label : `${item.label} (${item.count})`} title={item.label}
                   activeProps={{ className: "site-nav-active", "aria-current": "page" }}>
                   <span className="relative grid h-8 w-8 shrink-0 place-items-center">
                     <item.icon strokeWidth={1.7} aria-hidden="true" />
