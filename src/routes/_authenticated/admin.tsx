@@ -21,6 +21,7 @@ import {
   ScanLine,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { BullionChecksExportButton } from "@/components/admin/bullion-checks-export";
 import { SingleEditor, ListEditor, type Field } from "@/components/admin/editors";
 import { useServerFn } from "@tanstack/react-start";
 import { refreshVerifiedPrices } from "@/lib/prices.functions";
@@ -214,6 +215,7 @@ function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab
           { name: "serial_bg_image", label: "صورة الخلفية (اختياري)", type: "image" },
         ]} />
         <h3 className="text-lg font-semibold">طلبات الفحص المرسلة</h3>
+        <BullionChecksExportButton />
         <ListEditor table="bullion_checks" order="created_at" titleField="email" queryKey={["bullion-checks"]} canAdd={false}
           fields={[{ name: "name", label: "الاسم" }, { name: "email", label: "البريد" }, { name: "serial", label: "السيريال" }]} />
         <BullionImport />
