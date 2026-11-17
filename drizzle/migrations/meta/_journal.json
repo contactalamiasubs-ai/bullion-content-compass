@@ -162,6 +162,13 @@
       "when": 1794930777725,
       "tag": "0022_add_x_social_link",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1794931863193,
+      "tag": "0023_tighten_bullion_checks_insert",
+      "breakpoints": true
     }
   ]
 }
