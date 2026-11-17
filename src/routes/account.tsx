@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { UserRound, Heart, ShoppingBag, LogOut, ShieldCheck } from "lucide-react";
+import { UserRound, Heart, LogOut, ShieldCheck, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GoogleSignIn } from "@/components/google-sign-in";
+import { LoginPanel } from "@/components/login-panel";
 import { useShopping, useShoppingText } from "@/components/shopping-provider";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang, pick } from "@/lib/i18n";
@@ -27,19 +27,10 @@ function Account() {
     return result.data;
   } });
   const qc = useQueryClient(); const nav = useNavigate();
+  if (!user) return <LoginPanel />;
   return <main className="mx-auto min-h-[60vh] max-w-3xl px-4 py-12">
     <h1 className="mb-10 text-center text-3xl text-gold-gradient sm:text-4xl">{text(user ? "account" : "customer_login")}</h1>
-    {!authReady ? <p role="status" className="text-center">{text("loading")}</p> : !user ? <div className="relative mx-auto max-w-md overflow-hidden rounded-3xl border border-gold/30 bg-card p-8 text-center shadow-gold sm:p-10">
-      <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 size-56 -translate-x-1/2 rounded-full bg-gold/15 blur-3xl" />
-      <div className="relative mx-auto mb-6 grid size-24 place-items-center rounded-full border-2 border-gold/50 bg-background ring-4 ring-gold/10"><UserRound className="size-12 text-gold" /></div>
-      <div className="relative mb-6 grid grid-cols-3 gap-3 text-xs text-muted-foreground">
-        <span className="flex flex-col items-center gap-2 rounded-xl border border-border p-3"><Heart className="size-5 text-gold" />{text("favorites")}</span>
-        <span className="flex flex-col items-center gap-2 rounded-xl border border-border p-3"><ShoppingBag className="size-5 text-gold" />{text("cart")}</span>
-        <span className="flex flex-col items-center gap-2 rounded-xl border border-border p-3"><ShieldCheck className="size-5 text-gold" />{text("account")}</span>
-      </div>
-      <p className="relative mb-8 whitespace-pre-line text-sm leading-loose text-muted-foreground">{pick(sections.data?.["shopping_customer_notice"], "body", lang)}</p>
-      <div className="relative flex justify-center"><GoogleSignIn /></div>
-    </div> : <div className="space-y-8">
+    {!authReady ? <p role="status" className="text-center">{text("loading")}</p> : <div className="space-y-8">
       <div className="flex flex-wrap items-center gap-4 border-b border-border pb-6">
         {profile.data?.avatar_url?.startsWith("https://") ? <img referrerPolicy="no-referrer" src={profile.data.avatar_url} alt="" className="size-16 rounded-full object-cover" /> : <UserRound className="size-12 text-gold" />}
         <div className="min-w-0 flex-1"><h2 className="break-words text-xl">{profile.data?.display_name}</h2><p className="break-all text-sm text-muted-foreground" dir="ltr">{user.email}</p></div>

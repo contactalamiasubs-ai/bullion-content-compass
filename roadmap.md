@@ -1,4 +1,5 @@
 # Gold Center updates
+- [x] Implement supplied luxury login design with existing email/Google auth, signup, public recovery and session preference; desktop/mobile, rejected credentials, actual account session and signout verified. Google consent and email delivery require the customer's Google account/mailbox.
 
 - [x] Add Google customer accounts with name/photo/email, account-saved shopping, disclosed product activity and full-admin customer inspection; customer add/reload/signout/relogin and admin readback verified, mobile no overflow. Google enabled; actual Google consent requires the customer's Google account.
 

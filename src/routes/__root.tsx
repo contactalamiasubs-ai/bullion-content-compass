@@ -123,7 +123,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { pathname } = useLocation();
-  const bare = pathname.startsWith("/admin") || pathname.startsWith("/auth") || pathname === "/set-password";
+  const bare = pathname.startsWith("/admin") || pathname.startsWith("/auth") || pathname === "/set-password" || pathname === "/reset-password" || pathname === "/account";
 
   return (
     <QueryClientProvider client={queryClient}>

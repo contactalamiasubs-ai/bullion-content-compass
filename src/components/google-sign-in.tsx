@@ -3,15 +3,26 @@ import { toast } from "sonner";
 import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { useShoppingText } from "@/components/shopping-provider";
+import { useNavigate } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import { rememberLogin, type LoginDestination } from "@/lib/login";
 
-export function GoogleSignIn() {
+export function GoogleSignIn({ destination = "/account", remember = true }: { destination?: LoginDestination; remember?: boolean }) {
+  const nav = useNavigate();
   const [busy, setBusy] = useState(false);
   const text = useShoppingText();
   return <Button disabled={busy} className="google-sign-in" onClick={async () => {
     setBusy(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/account`, extraParams: { prompt: "select_account" } });
-      if (result.error) toast.error(result.error.message);
+      rememberLogin(remember);
+      sessionStorage.setItem("gold-center-login-destination", destination);
+      const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth/callback`, extraParams: { prompt: "select_account" } });
+      if (result.error) { toast.error(text("auth_error")); return; }
+      if (result.redirected) return;
+      const verified = await supabase.auth.getUser();
+      if (!verified.data.user || verified.error) { toast.error(text("auth_error")); return; }
+      sessionStorage.removeItem("gold-center-login-destination");
+      await nav({ to: destination, replace: true });
     } catch { toast.error(text("sync_error")); }
     finally { setBusy(false); }
   }}>

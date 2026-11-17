@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { customerActionSchema } from "@/lib/customer-accounts";
 import { sectionsQuery } from "@/lib/data";
 import { pick, useLang } from "@/lib/i18n";
+import { sessionNeedsSignOut } from "@/lib/login";
 import { emptyShopping, readShopping, shoppingStorageKey, setCartQuantity, toggleFavorite, type ShoppingState } from "@/lib/shopping";
 
 const ShoppingContext = createContext<{
@@ -57,7 +58,16 @@ export function ShoppingProvider({ children }: { children: ReactNode }) {
     try { localStorage.removeItem(shoppingStorageKey); } catch { /* No account data is written to guest storage. */ }
   }, []);
   useEffect(() => {
-    void load();
+    const initialize = async () => {
+      try {
+        if (sessionNeedsSignOut(localStorage.getItem("gold-center-login-session"), sessionStorage.getItem("gold-center-login-tab"))) {
+          await supabase.auth.signOut({ scope: "local" });
+          localStorage.removeItem("gold-center-login-session");
+        }
+      } catch { /* Auth remains usable with restricted browser storage. */ }
+      await load();
+    };
+    void initialize();
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       ++generation.current; actor.current = null; setReady(false); setState(emptyShopping);

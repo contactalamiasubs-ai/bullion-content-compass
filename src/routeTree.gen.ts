@@ -20,9 +20,11 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as ProductsRouteImport } from './routes/products'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SetPasswordRouteImport } from './routes/set-password'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthCallbackRouteImport } from './routes/auth_.callback'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProductsIdRouteImport } from './routes/products_.$id'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin_.customers'
@@ -81,6 +83,11 @@ const ProductsRoute = ProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -95,6 +102,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth_/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PostsSlugRoute = PostsSlugRouteImport.update({
   id: '/posts/$slug',
@@ -124,9 +136,11 @@ export interface FileRoutesByFullPath {
   '/favorites': typeof FavoritesRoute
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/set-password': typeof SetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
@@ -142,9 +156,11 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesRoute
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/set-password': typeof SetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
@@ -162,9 +178,11 @@ export interface FileRoutesById {
   '/favorites': typeof FavoritesRoute
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/set-password': typeof SetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/auth_/callback': typeof AuthCallbackRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/products_/$id': typeof ProductsIdRoute
   '/_authenticated/admin_/customers': typeof AuthenticatedAdminCustomersRoute
@@ -182,9 +200,11 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/news'
     | '/products'
+    | '/reset-password'
     | '/services'
     | '/set-password'
     | '/admin'
+    | '/auth/callback'
     | '/posts/$slug'
     | '/products/$id'
     | '/admin/customers'
@@ -200,9 +220,11 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/news'
     | '/products'
+    | '/reset-password'
     | '/services'
     | '/set-password'
     | '/admin'
+    | '/auth/callback'
     | '/posts/$slug'
     | '/products/$id'
     | '/admin/customers'
@@ -219,9 +241,11 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/news'
     | '/products'
+    | '/reset-password'
     | '/services'
     | '/set-password'
     | '/_authenticated/admin'
+    | '/auth_/callback'
     | '/posts/$slug'
     | '/products_/$id'
     | '/_authenticated/admin_/customers'
@@ -239,8 +263,10 @@ export interface RootRouteChildren {
   FavoritesRoute: typeof FavoritesRoute
   NewsRoute: typeof NewsRoute
   ProductsRoute: typeof ProductsRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   SetPasswordRoute: typeof SetPasswordRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   PostsSlugRoute: typeof PostsSlugRoute
   ProductsIdRoute: typeof ProductsIdRoute
 }
@@ -324,6 +350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -344,6 +377,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/auth_/callback': {
+      id: '/auth_/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/posts/$slug': {
       id: '/posts/$slug'
@@ -394,8 +434,10 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritesRoute: FavoritesRoute,
   NewsRoute: NewsRoute,
   ProductsRoute: ProductsRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   SetPasswordRoute: SetPasswordRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   PostsSlugRoute: PostsSlugRoute,
   ProductsIdRoute: ProductsIdRoute,
 }
