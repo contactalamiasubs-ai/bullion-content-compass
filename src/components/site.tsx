@@ -36,6 +36,7 @@ import {
   Info,
   UserRound,
   ScanLine,
+  ShieldCheck,
 } from "lucide-react";
 import { useShopping, useShoppingText } from "@/components/shopping-provider";
 import { FavoriteButton, AddToCartButton } from "@/components/product-shopping-actions";
@@ -96,6 +97,12 @@ export function Header() {
     { to: "/account", icon: UserRound, label: shoppingText(user ? "account" : "customer_login"), count: 0 },
     { to: "/favorites", icon: Heart, label: shoppingText("favorites"), count: state.favorites.length },
     { to: "/cart", icon: ShoppingBag, label: shoppingText("cart"), count: cartCount },
+    {
+      to: "/check-bar",
+      icon: ShieldCheck,
+      label: pick(sections?.["serial_shortcut_label"], "title", lang) || t("verify"),
+      count: 0,
+    },
   ] as const;
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur">
@@ -145,7 +152,7 @@ export function Header() {
             {shortcuts.map((item) => (
               <Button key={item.to} asChild variant="ghost" className="main-nav-shortcut">
                 <Link to={item.to} onClick={() => setOpen(false)}
-                  aria-label={item.to === "/account" ? item.label : `${item.label} (${item.count})`} title={item.label}
+                  aria-label={item.count > 0 ? `${item.label} (${item.count})` : item.label} title={item.label}
                   activeProps={{ className: "site-nav-active", "aria-current": "page" }}>
                   <span className="relative grid h-8 w-8 shrink-0 place-items-center">
                     <item.icon strokeWidth={1.7} aria-hidden="true" />
