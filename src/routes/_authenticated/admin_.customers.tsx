@@ -5,6 +5,7 @@ import { Customers } from "@/components/admin/customers";
 import { Button } from "@/components/ui/button";
 import { settingsQuery } from "@/lib/data";
 import { pick } from "@/lib/i18n";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin_/customers")({
   head: () => ({ meta: [
@@ -20,13 +21,24 @@ export const Route = createFileRoute("/_authenticated/admin_/customers")({
 });
 
 function CustomerManagement() {
+  const { user } = Route.useRouteContext();
   const { data: settings } = useQuery(settingsQuery);
+  const access = useQuery({
+    queryKey: ["customer-management-access", user.id],
+    queryFn: async () => {
+      const result = await supabase.rpc("has_dashboard_permission", { _user_id: user.id, _permission: "customers" });
+      if (result.error) throw new Error("تعذر التحقق من صلاحيات الحساب");
+      return result.data;
+    },
+    staleTime: 0,
+    refetchInterval: 30000,
+  });
   return <main dir="rtl" className="mx-auto min-h-screen max-w-7xl px-4 py-8 md:px-8">
     <header className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-border pb-6">
       <div><p className="mb-2 text-sm text-gold">لوحة تحكم {pick(settings, "site_name", "ar")}</p>
         <h1 className="flex items-center gap-3 text-2xl"><UsersRound className="text-gold" />إدارة العملاء</h1></div>
       <Button asChild variant="outline"><Link to="/admin"><LayoutDashboard />لوحة التحكم</Link></Button>
     </header>
-    <Customers />
+    {access.isPending ? <p role="status">جارٍ التحقق من الصلاحيات…</p> : access.error ? <p role="alert">{access.error.message}</p> : access.data ? <Customers /> : <p role="alert">هذا الحساب ليس له صلاحية إدارة العملاء.</p>}
   </main>;
 }

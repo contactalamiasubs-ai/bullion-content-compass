@@ -219,7 +219,7 @@ function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab
           ]} />
       </>;
     case "customers":
-      return access.admin ? <Button asChild><Link to="/admin/customers"><UsersRound />إدارة العملاء</Link></Button> : null;
+      return canAccessTab(access, "customers") ? <Button asChild><Link to="/admin/customers"><UsersRound />إدارة العملاء</Link></Button> : null;
     case "users":
       return access.admin ? <Users actorId={actorId} /> : null;
     case "gram-rates":

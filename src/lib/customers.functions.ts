@@ -16,7 +16,7 @@ export const inspectCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(z.object({ page: z.number().int().min(1), search: z.string().max(255), userId: z.string().uuid().optional(), activityPage: z.number().int().min(1).default(1) }))
   .handler(async ({ data, context }) => {
-    const { data: allowed, error } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    const { data: allowed, error } = await context.supabase.rpc("has_dashboard_permission", { _user_id: context.userId, _permission: "customers" });
     if (error || !allowed) throw new Error("غير مسموح بالاطلاع على العملاء");
     let query = context.supabase.from("profiles").select("*", { count: "exact" }).order("created_at", { ascending: false });
     if (data.search.trim()) query = query.ilike("email", `%${data.search.trim().replace(/[%_]/g, "")}%`);
@@ -34,7 +34,7 @@ export const inspectCustomers = createServerFn({ method: "POST" })
 export const exportCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data: allowed, error } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    const { data: allowed, error } = await context.supabase.rpc("has_dashboard_permission", { _user_id: context.userId, _permission: "customers" });
     if (error || !allowed) throw new Error("غير مسموح بتصدير بيانات العملاء");
     const [profiles, shopping, activity, products] = await Promise.all([
       collectAll((a, b) => context.supabase.from("profiles").select("*").order("id").range(a, b)),
@@ -49,7 +49,7 @@ export const customerAnalytics = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(z.object({ days: z.union([z.literal(7), z.literal(30), z.literal(90)]) }))
   .handler(async ({ data, context }) => {
-    const { data: allowed, error } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    const { data: allowed, error } = await context.supabase.rpc("has_dashboard_permission", { _user_id: context.userId, _permission: "customers" });
     if (error || !allowed) throw new Error("غير مسموح بالاطلاع على العملاء");
     // Read every page: the API's row cap must not silently truncate analytics.
     async function collect<T>(fetch: (start: number, end: number) => PromiseLike<{ data: T[] | null; error: unknown }>) {

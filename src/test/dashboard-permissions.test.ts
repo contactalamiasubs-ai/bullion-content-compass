@@ -2,6 +2,24 @@ import { describe, expect, it } from "vitest";
 import { assertCanChangeAccess, assertCanDeleteAccount, canAccessTab, deleteAccountSchema, inviteSchema, updateAccessSchema } from "@/lib/dashboard-permissions";
 
 describe("Dashboard permissions", () => {
+  it("customer permission grants customer management but not staff management or serials", () => {
+    const access = { admin: false, permissions: ["customers"] };
+    expect(canAccessTab(access, "customers")).toBe(true);
+    expect(canAccessTab(access, "users")).toBe(false);
+    expect(canAccessTab(access, "serials")).toBe(false);
+  });
+  it("serial permission grants the registry independently of products and customers", () => {
+    const access = { admin: false, permissions: ["serials"] };
+    expect(canAccessTab(access, "serials")).toBe(true);
+    expect(canAccessTab(access, "products")).toBe(false);
+    expect(canAccessTab(access, "customers")).toBe(false);
+    expect(canAccessTab({ admin: false, permissions: ["products"] }, "serials")).toBe(false);
+  });
+  it("accepts both new feature permissions when saving or inviting a member", () => {
+    const access = { admin: false, permissions: ["customers", "serials"] };
+    expect(updateAccessSchema.safeParse({ ...access, userId: "3d2278eb-d79e-4a4d-a92c-e43ae288dfe5" }).success).toBe(true);
+    expect(inviteSchema.safeParse({ ...access, email: "member@example.com" }).success).toBe(true);
+  });
   it("cannot delete the current account", () => {
     expect(() => assertCanDeleteAccount("actor", "actor", true, 2)).toThrow();
   });
