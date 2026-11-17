@@ -270,6 +270,7 @@ type AnyTable =
   | "product_groups"
   | "product_categories"
   | "bullion_serials"
+  | "bullion_checks"
   | "posts";
 
 async function readRows(table: AnyTable, order: string, ascending: boolean) {

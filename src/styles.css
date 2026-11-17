@@ -530,3 +530,21 @@
   .login-bottom { margin-top: 10px; }
   .login-home { margin-top: 4px; }
 }
+
+/* Bar-check animated background (dashboard controlled) */
+.serial-scene { min-height: 100vh; background: radial-gradient(ellipse at top, color-mix(in oklab, var(--gold) 18%, var(--background)), var(--background) 70%); }
+.serial-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.serial-bg-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .45; animation: serial-zoom var(--serial-speed) ease-in-out infinite alternate; }
+.serial-bg-glow { position: absolute; inset: -30%; background: conic-gradient(from 0deg, transparent, color-mix(in oklab, var(--gold) 30%, transparent), transparent 40%); opacity: 0; animation: serial-spin var(--serial-speed) linear infinite; }
+.serial-dot { position: absolute; bottom: -20px; border-radius: 9999px; background: var(--gold); box-shadow: 0 0 12px var(--gold); opacity: .7; animation: serial-rise var(--serial-speed) linear infinite; }
+.serial-scene[data-style="waves"] .serial-bg-glow { opacity: .6; background: repeating-linear-gradient(115deg, transparent 0 60px, color-mix(in oklab, var(--gold) 22%, transparent) 60px 64px); animation: serial-wave var(--serial-speed) linear infinite; }
+.serial-scene[data-style="waves"] .serial-dot { display: none; }
+.serial-scene[data-style="shine"] .serial-bg-glow { opacity: .7; }
+.serial-scene[data-style="shine"] .serial-dot { display: none; }
+.serial-scene[data-animated="false"] .serial-bg * { animation: none !important; }
+.serial-card { box-shadow: 0 0 40px color-mix(in oklab, var(--gold) 25%, transparent); }
+@keyframes serial-rise { from { transform: translateY(0); opacity: 0; } 10% { opacity: .8; } to { transform: translateY(-110vh); opacity: 0; } }
+@keyframes serial-spin { to { transform: rotate(360deg); } }
+@keyframes serial-zoom { from { transform: scale(1); } to { transform: scale(1.12); } }
+@keyframes serial-wave { from { transform: translateX(0); } to { transform: translateX(256px); } }
+@media (prefers-reduced-motion: reduce) { .serial-bg * { animation: none !important; } }

@@ -206,6 +206,16 @@ function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab
   switch (tab) {
     case "serials":
       return <>
+        <h3 className="text-lg font-semibold">خلفية صفحة «افحص سبيكتك» المتحركة</h3>
+        <SingleEditor table="site_settings" id={1} queryKey={["settings"]} fields={[
+          { name: "serial_bg_enabled", label: "تشغيل الحركة", type: "bool" },
+          { name: "serial_bg_style", label: "نوع الحركة (particles جزيئات / waves موجات / shine لمعان)", type: "select", options: ["particles", "waves", "shine"] },
+          { name: "serial_bg_speed", label: "مدة دورة الحركة بالثواني (3 سريع — 120 بطيء)", type: "number" },
+          { name: "serial_bg_image", label: "صورة الخلفية (اختياري)", type: "image" },
+        ]} />
+        <h3 className="text-lg font-semibold">طلبات الفحص المرسلة</h3>
+        <ListEditor table="bullion_checks" order="created_at" titleField="email" queryKey={["bullion-checks"]} canAdd={false}
+          fields={[{ name: "name", label: "الاسم" }, { name: "email", label: "البريد" }, { name: "serial", label: "السيريال" }]} />
         <BullionImport />
         <ListEditor table="bullion_serials" order="serial" titleField="serial" queryKey={["bullion-serials"]}
           newRow={{ name_ar: "سبيكة جديدة", name_en: "New bar", weight_grams: 1, purity: "999.9", specifications_ar: "", specifications_en: "", active: false }}

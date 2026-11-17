@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      bullion_checks: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          serial: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          serial: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          serial?: string
+        }
+        Relationships: []
+      }
       bullion_serials: {
         Row: {
           active: boolean
@@ -539,6 +563,10 @@ export type Database = {
           popup_title_ar: string | null
           popup_title_en: string | null
           price_source_enabled: boolean
+          serial_bg_enabled: boolean
+          serial_bg_image: string | null
+          serial_bg_speed: number
+          serial_bg_style: string
           silver_gram: number | null
           silver_source_url: string
           silver_usd: number
@@ -573,6 +601,10 @@ export type Database = {
           popup_title_ar?: string | null
           popup_title_en?: string | null
           price_source_enabled?: boolean
+          serial_bg_enabled?: boolean
+          serial_bg_image?: string | null
+          serial_bg_speed?: number
+          serial_bg_style?: string
           silver_gram?: number | null
           silver_source_url?: string
           silver_usd?: number
@@ -607,6 +639,10 @@ export type Database = {
           popup_title_ar?: string | null
           popup_title_en?: string | null
           price_source_enabled?: boolean
+          serial_bg_enabled?: boolean
+          serial_bg_image?: string | null
+          serial_bg_speed?: number
+          serial_bg_style?: string
           silver_gram?: number | null
           silver_source_url?: string
           silver_usd?: number
