@@ -10,6 +10,7 @@ import { WhatsappField } from "@/components/admin/whatsapp-field";
 import { validateWhatsappNumber } from "@/lib/whatsapp";
 import { availabilityStates } from "@/lib/product-availability";
 import { bullionRowSchema } from "@/lib/bullion-serials";
+import { validateCatalogPdf } from "@/lib/catalog";
 
 export type Field = {
   name: string;
@@ -19,6 +20,7 @@ export type Field = {
     | "textarea"
     | "number"
     | "image"
+    | "pdf"
     | "bool"
     | "select"
     | "date"
@@ -88,6 +90,30 @@ function FieldInput({
 }) {
   const [busy, setBusy] = useState(false);
   switch (f.type) {
+    case "pdf":
+      return <div className="flex flex-wrap items-center gap-3">
+        <Button asChild variant="outline" disabled={busy}>
+          <label><Upload />{busy ? "جارٍ رفع الكتالوج…" : "رفع كتالوج PDF"}
+            <input aria-label={f.label} type="file" accept=".pdf,application/pdf" hidden disabled={busy}
+              onChange={async (event) => {
+                const file = event.target.files?.[0];
+                event.target.value = "";
+                if (!file) return;
+                setBusy(true);
+                try {
+                  await validateCatalogPdf(file);
+                  onChange(await uploadImage(file));
+                  toast.success("تم رفع الكتالوج؛ اضغط حفظ لتحديث زر التحميل");
+                } catch (error) { toast.error(error instanceof Error ? error.message : "تعذر رفع الكتالوج"); }
+                finally { setBusy(false); }
+              }} />
+          </label>
+        </Button>
+        {!!value && <>
+          <Button asChild variant="outline"><a href={String(value)} target="_blank" rel="noopener noreferrer">عرض PDF الحالي</a></Button>
+          <Button type="button" variant="ghost" size="icon" title="إزالة الكتالوج" aria-label="إزالة الكتالوج" disabled={busy} onClick={() => onChange(null)}><Trash2 /></Button>
+        </>}
+      </div>;
     case "availability":
       return <select aria-label={f.label} className={inp} value={String(value ?? "available")}
         onChange={(event) => onChange(event.target.value)}>
@@ -252,7 +278,7 @@ function FormGrid({
       {fields.map((f) => (
         <div key={f.name} className={f.type === "textarea" ? "md:col-span-2" : ""}>
           <p className="mb-1 text-xs text-muted-foreground">{f.label}</p>
-          <FieldInput f={f} value={row[f.name]} onChange={(v) => set(f.name, v)} />
+          <FieldInput f={f.name === "image_url" && row["key"] === "catalog_download" ? { ...f, type: "pdf" } : f} value={row[f.name]} onChange={(v) => set(f.name, v)} />
         </div>
       ))}
     </div>
@@ -320,22 +346,24 @@ function refreshContent(
 export function SingleEditor({
   table,
   id,
+  pk = "id",
   fields,
   queryKey,
 }: {
   table: AnyTable;
-  id: number;
+  id: number | string;
+  pk?: string;
   fields: Field[];
   queryKey: string[];
 }) {
   const qc = useQueryClient();
   const { data, isLoading, error } = useQuery({
-    queryKey: ["admin", table],
+    queryKey: ["admin", table, pk, id],
     queryFn: async () => {
       const result = await supabase
         .from(table)
         .select("*")
-        .eq("id" as never, id as never)
+        .eq(pk as never, id as never)
         .single();
       if (result.error) throw result.error;
       return result.data as unknown as Record<string, unknown>;
@@ -361,7 +389,7 @@ export function SingleEditor({
       const { data: saved, error } = await supabase
         .from(table)
         .update(patch as never)
-        .eq("id" as never, id as never)
+        .eq(pk as never, id as never)
         .select();
       if (error) {
         toast.error(error.message);

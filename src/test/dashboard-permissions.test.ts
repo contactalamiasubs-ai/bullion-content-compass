@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { assertCanChangeAccess, assertCanDeleteAccount, canAccessTab, deleteAccountSchema, inviteSchema, updateAccessSchema } from "@/lib/dashboard-permissions";
 
 describe("Dashboard permissions", () => {
+  it("catalog management uses content permission", () => {
+    expect(canAccessTab({ admin: false, permissions: ["content"] }, "catalog")).toBe(true);
+    expect(canAccessTab({ admin: false, permissions: ["products"] }, "catalog")).toBe(false);
+  });
   it("customer permission grants customer management but not staff management or serials", () => {
     const access = { admin: false, permissions: ["customers"] };
     expect(canAccessTab(access, "customers")).toBe(true);

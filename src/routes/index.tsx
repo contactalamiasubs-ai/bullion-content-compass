@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FileText, BookOpen, Download, ShieldCheck, Smartphone } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
 import { ProductCatalog } from "@/components/product-catalog";
+import { CatalogDownload } from "@/components/catalog-download";
 import { settingsQuery, sectionsQuery, servicesQuery, postsQuery } from "@/lib/data";
 import {
   HeroSlider,
@@ -44,7 +45,7 @@ function Index() {
   const hub = [
     { i: FileText, l: t("dailyReport"), to: "/news" as const },
     { i: BookOpen, l: t("goldGuide"), to: "/blog" as const },
-    { i: Download, l: t("catalog"), to: "/products" as const },
+    { i: Download, l: t("catalog"), catalog: true },
     {
       i: ShieldCheck,
       l: pick(sec?.["serial_check_card"], "title", lang) || t("verify"),
@@ -120,7 +121,7 @@ function Index() {
           <h2 className="mb-6 text-3xl text-gold-gradient">{t("infoHub")}</h2>
           <div className="grid grid-cols-2 gap-4">
             {hub.map((h) => (
-              <Link
+              "catalog" in h ? <CatalogDownload key={h.l} className="h-auto flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 text-center hover:border-gold [&_svg]:h-8 [&_svg]:w-8 [&_svg]:text-gold" /> : <Link
                 key={h.l}
                 to={h.to}
                 className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 text-center hover:border-gold"

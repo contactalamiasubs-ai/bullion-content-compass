@@ -65,6 +65,7 @@ const tabs = [
   { id: "source", l: "مصدر الأسعار والتوثيق", i: Coins },
   { id: "history", l: "سجل الأسعار", i: LineChart },
   { id: "sections", l: "أقسام الموقع", i: FileText },
+  { id: "catalog", l: "كتالوج PDF", i: FileText },
   { id: "services", l: "الخدمات", i: Briefcase },
   { id: "products", l: "المنتجات", i: Package },
   { id: "serials", l: "افحص سبيكتك — السيريالات", i: ScanLine },
@@ -205,6 +206,12 @@ type TabId = (typeof tabs)[number]["id"];
 function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab: TabId) => void; access: DashboardAccess; actorId: string }) {
   const { data: groups = [] } = useQuery(productGroupsQuery);
   switch (tab) {
+    case "catalog":
+      return <SingleEditor table="sections" pk="key" id="catalog_download" queryKey={["sections"]} fields={[
+        ...bi("title", "نص زر تحميل الكتالوج"),
+        { name: "image_url", label: "ملف الكتالوج PDF", type: "pdf" },
+        ...bi("body", "رسالة عدم توفر الكتالوج"),
+      ]} />;
     case "serials":
       return <>
         <h3 className="text-lg font-semibold">خلفية صفحة «افحص سبيكتك» المتحركة</h3>

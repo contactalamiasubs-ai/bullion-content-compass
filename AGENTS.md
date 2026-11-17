@@ -38,6 +38,7 @@ use the editor.
 - Admin editor mutations invalidate the public collection, post detail and overview queries, and expose pending/error states so saved content is reflected without silent failures.
 - Writes use full-admin or scoped dashboard permission RLS; settings updates also validate changed fields so price access cannot edit unrelated settings. The first signed-up user becomes admin through a trigger.
 - The `media` bucket is private (workspace blocks public buckets); uploads store a 10-year signed URL.
+- Catalog PDF uses the generic editor and the catalog_download section; prefetch its signed file into a Blob for click-time mobile downloads.
 - Price refresh requires authenticated price permission; only exact Gold API XAU/XAG HTTPS endpoints are allowed to prevent SSRF, and validated USD-per-ounce quotes must match AI output exactly before publication.
 - Price audit records retain source timestamps, payload and model response ID; manual prices are not labeled source-verified.
 - Visitor events use the injected optional track global at visible product exposure and existing interaction handlers; no personal data or calculator holdings are collected.

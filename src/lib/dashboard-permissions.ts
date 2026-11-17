@@ -24,7 +24,7 @@ export type DashboardAccess = { admin: boolean; permissions: string[] };
 const tabPermissions: Record<string, Permission> = {
   products: "products", "product-groups": "products", "product-categories": "products", serials: "serials", customers: "customers",
   prices: "prices", "gram-rates": "prices", source: "prices", history: "prices",
-  sections: "content", services: "content", posts: "content", slides: "content",
+  sections: "content", catalog: "content", services: "content", posts: "content", slides: "content",
   settings: "settings", popup: "settings", messages: "messages",
 };
 export function canAccessTab(access: DashboardAccess, tab: string) {
