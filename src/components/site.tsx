@@ -40,7 +40,6 @@ import {
 import { useShopping, useShoppingText } from "@/components/shopping-provider";
 import { FavoriteButton, AddToCartButton } from "@/components/product-shopping-actions";
 import { Button } from "@/components/ui/button";
-import { CatalogDownload } from "@/components/catalog-download";
 import { productPrice, type ProductPricing } from "@/lib/product-pricing";
 import { ProductAvailability } from "@/components/product-availability";
 import { canOrderProduct, productAvailability } from "@/lib/product-availability";
@@ -136,7 +135,6 @@ export function Header() {
                 </Link>
               </Button>
             ))}
-            <CatalogDownload className="site-nav-link" />
           </div>
           <Button variant="ghost" className="h-12 justify-start gap-2 px-2 text-sm xl:hidden"
             onClick={() => setOpen(!open)} aria-label={lang === "ar" ? "القائمة" : "Menu"}
@@ -171,7 +169,6 @@ export function Header() {
                 </Link>
               </Button>
             ))}
-            <CatalogDownload className="mobile-nav-link" onDownload={() => setOpen(false)} />
           </nav>
         )}
       </div>
