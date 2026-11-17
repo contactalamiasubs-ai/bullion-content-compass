@@ -8,9 +8,13 @@ import { inspectCustomers } from "@/lib/customers.functions";
 import { productsQuery } from "@/lib/data";
 import { readShopping } from "@/lib/shopping";
 import { customerEventLabels } from "@/lib/customer-accounts";
+import { CustomerAnalytics } from "@/components/admin/customer-analytics";
+import { customerAnalytics } from "@/lib/customers.functions";
 
 export function Customers() {
   const inspect = useServerFn(inspectCustomers);
+  const analyze = useServerFn(customerAnalytics);
+  const analytics = useQuery({ queryKey: ["customer-analytics", 30], queryFn: () => analyze({ data: { days: 30 } }) });
   const [search, setSearch] = useState(""); const [page, setPage] = useState(1);
   const [userId, setUserId] = useState<string>(); const [activityPage, setActivityPage] = useState(1);
   const query = useQuery({ queryKey: ["customers", page, search, userId, activityPage], queryFn: () => inspect({ data: { page, search, userId, activityPage } }) });
@@ -19,6 +23,8 @@ export function Customers() {
   const shopping = readShopping(JSON.stringify(query.data?.shopping));
   const productName = (id: string) => products.data?.find((p) => p.id === id)?.name_ar ?? "منتج محذوف أو غير موجود";
   return <div className="space-y-8">
+    <CustomerAnalytics />
+    <h2 className="text-xl">حسابات العملاء وتفاصيلهم</h2>
     <label className="block space-y-2 text-sm"><span>البحث ببريد العميل</span><input type="search" aria-label="البحث ببريد العميل" dir="ltr" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="w-full rounded-md border border-input bg-background px-3 py-2" /></label>
     {query.isPending && <p role="status">جارٍ تحميل العملاء…</p>}
     {query.error && <p role="alert" className="text-destructive">{query.error.message}</p>}
@@ -26,13 +32,15 @@ export function Customers() {
       {query.data?.profiles.map((profile) => <div key={profile.id} className="flex flex-wrap items-center gap-3 py-4">
         {profile.avatar_url?.startsWith("https://") ? <img src={profile.avatar_url} alt="" referrerPolicy="no-referrer" className="size-10 rounded-full object-cover" /> : <UserRound className="size-10 text-gold" />}
         <div className="min-w-0 flex-1"><h3 className="break-words">{profile.display_name || "حساب عميل"}</h3><p dir="ltr" className="break-all text-sm text-muted-foreground">{profile.email}</p><p className="text-xs text-muted-foreground">تاريخ التسجيل: {new Date(profile.created_at).toLocaleDateString("ar-EG")}</p></div>
-        <Button variant={userId === profile.id ? "default" : "outline"} onClick={() => { setUserId(profile.id); setSelectedName(profile.display_name || profile.email); setActivityPage(1); }}><UsersRound />عرض نشاط العميل</Button>
+        <div className="text-xs text-muted-foreground"><p>المفضلة: {analytics.data?.customers[profile.id]?.favorites ?? "—"} · قطع السلة: {analytics.data?.customers[profile.id]?.cartQuantity ?? "—"}</p><p>آخر نشاط: {analytics.data?.customers[profile.id]?.lastActivity ? new Date(analytics.data.customers[profile.id]?.lastActivity ?? "").toLocaleString("ar-EG") : "لا يوجد نشاط مسجل"}</p></div>
+        <Button variant={userId === profile.id ? "default" : "outline"} onClick={() => { setUserId(profile.id); setSelectedName(profile.display_name || profile.email); setActivityPage(1); }}><UsersRound />تفاصيل العميل</Button>
       </div>)}
     </div>
     {query.data?.count === 0 && <p>لا توجد حسابات مطابقة.</p>}
     <div className="flex items-center gap-3"><Button variant="outline" size="icon" aria-label="العملاء السابقون" disabled={page === 1} onClick={() => setPage(page - 1)}><ChevronRight /></Button><span>{page} / {Math.max(1, Math.ceil((query.data?.count ?? 0) / 20))}</span><Button variant="outline" size="icon" aria-label="العملاء التاليون" disabled={page * 20 >= (query.data?.count ?? 0)} onClick={() => setPage(page + 1)}><ChevronLeft /></Button></div>
     {userId && query.data && <section className="space-y-6 border-t border-border pt-8">
       <h3 className="break-all text-xl text-gold">{selectedName}</h3>
+      <dl className="grid gap-4 text-sm sm:grid-cols-2"><div><dt className="text-muted-foreground">معرّف الحساب</dt><dd className="break-all" dir="ltr">{userId}</dd></div><div><dt className="text-muted-foreground">آخر تعديل للسلة والمفضلة</dt><dd>{analytics.data?.customers[userId]?.shoppingUpdated ? new Date(analytics.data.customers[userId]?.shoppingUpdated ?? "").toLocaleString("ar-EG") : "لا يوجد تعديل مسجل"}</dd></div><div><dt className="text-muted-foreground">المشاهدات خلال آخر ٣٠ يومًا</dt><dd>{analytics.data?.customers[userId]?.views ?? "—"}</dd></div><div><dt className="text-muted-foreground">النشاط خلال آخر ٣٠ يومًا</dt><dd>{analytics.data?.customers[userId]?.events ?? "—"}</dd></div></dl>
       <div className="grid gap-8 sm:grid-cols-2">
         <div><h4 className="mb-3 flex items-center gap-2"><ShoppingBag />السلة الحالية</h4>{!Object.keys(shopping.cart).length && <p className="text-muted-foreground">السلة فارغة</p>}{Object.entries(shopping.cart).map(([id, quantity]) => <p key={id} className="py-2"><Link to="/products/$id" params={{ id }} className="hover:text-gold">{productName(id)}</Link> — الكمية: {quantity}</p>)}</div>
         <div><h4 className="mb-3 flex items-center gap-2"><Heart />المفضلة الحالية</h4>{!shopping.favorites.length && <p className="text-muted-foreground">لا توجد منتجات مفضلة</p>}{shopping.favorites.map((id) => <p key={id} className="py-2"><Link to="/products/$id" params={{ id }} className="hover:text-gold">{productName(id)}</Link></p>)}</div>

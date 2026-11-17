@@ -61,3 +61,4 @@ use the editor.
 - Customer profiles mirror Auth identity via triggers; shopping mutations merge guest data once and run atomically per account. Disclosed account activity is separate from anonymous analytics; only owners and full admins can read customer data.
 - Customer management lives at the protected, unnested /admin/customers route; dashboard desktop links and mobile selection navigate there to support refreshable page URLs.
 - Keep administrator sign-in implemented in its own route rather than the customer LoginPanel so customer presentation changes cannot alter dashboard entry.
+- Customer analytics reads all paginated rows through full-admin authenticated RLS and summarizes disclosed account activity separately from current shopping state; carts are not completed orders.

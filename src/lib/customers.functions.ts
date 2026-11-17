@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { summarizeCustomers } from "@/lib/customer-analytics";
 
 export const inspectCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -19,4 +20,27 @@ export const inspectCustomers = createServerFn({ method: "POST" })
     ]);
     if (shopping.error || activity.error) throw new Error("تعذر تحميل بيانات العميل");
     return { profiles: profiles.data, count: profiles.count ?? 0, shopping: shopping.data, activity: activity.data, activityCount: activity.count ?? 0 };
+  });
+
+export const customerAnalytics = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ days: z.union([z.literal(7), z.literal(30), z.literal(90)]) }))
+  .handler(async ({ data, context }) => {
+    const { data: allowed, error } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (error || !allowed) throw new Error("غير مسموح بالاطلاع على العملاء");
+    // Read every page: the API's row cap must not silently truncate analytics.
+    async function collect<T>(fetch: (start: number, end: number) => PromiseLike<{ data: T[] | null; error: unknown }>) {
+      const rows: T[] = [];
+      for (let start = 0; ; start += 1000) {
+        const result = await fetch(start, start + 999);
+        if (result.error || !result.data) throw new Error("تعذر تحميل تحليلات العملاء");
+        rows.push(...result.data); if (result.data.length < 1000) return rows;
+      }
+    }
+    const [profiles, shopping, activity] = await Promise.all([
+      collect((a, b) => context.supabase.from("profiles").select("*").order("id").range(a, b)),
+      collect((a, b) => context.supabase.from("customer_shopping").select("*").order("user_id").range(a, b)),
+      collect((a, b) => context.supabase.from("customer_activity").select("*").order("id").range(a, b)),
+    ]);
+    return summarizeCustomers(profiles, shopping, activity, data.days);
   });
