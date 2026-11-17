@@ -45,7 +45,11 @@ function Index() {
     { i: FileText, l: t("dailyReport"), to: "/news" as const },
     { i: BookOpen, l: t("goldGuide"), to: "/blog" as const },
     { i: Download, l: t("catalog"), to: "/products" as const },
-    { i: ShieldCheck, l: t("verify"), to: "/contact" as const },
+    {
+      i: ShieldCheck,
+      l: pick(sec?.["serial_check_card"], "title", lang) || t("verify"),
+      to: "/check-bar" as const,
+    },
   ];
   return (
     <main>
