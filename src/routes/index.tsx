@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { FileText, BookOpen, Download, ShieldCheck, Smartphone, LockKeyhole } from "lucide-react";
+import { FileText, BookOpen, Download, ShieldCheck, Smartphone } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
 import { ProductCatalog } from "@/components/product-catalog";
 import { settingsQuery, sectionsQuery, servicesQuery, postsQuery } from "@/lib/data";
@@ -46,7 +46,6 @@ function Index() {
     { i: BookOpen, l: t("goldGuide"), to: "/blog" as const },
     { i: Download, l: t("catalog"), to: "/products" as const },
     { i: ShieldCheck, l: t("verify"), to: "/contact" as const },
-    { i: LockKeyhole, l: lang === "ar" ? "لوحة التحكم" : "Dashboard", to: "/admin" as const },
   ];
   return (
     <main>
