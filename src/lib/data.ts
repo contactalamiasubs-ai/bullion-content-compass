@@ -77,7 +77,8 @@ export const postQuery = (slug: string) =>
 
 export function whatsappLink(number: string | null | undefined, text: string) {
   const n = (number ?? "").replace(/[^\d]/g, "");
-  return `https://wa.me/${n}?text=${encodeURIComponent(text)}`;
+  const message = text.trim();
+  return message ? `https://wa.me/${n}?text=${encodeURIComponent(message)}` : `https://wa.me/${n}`;
 }
 
 /** Zakat: nisab = 85 g of 24K equivalent, 2.5% of value. */

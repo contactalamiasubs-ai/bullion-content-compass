@@ -6,8 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { uploadImage, productGroupsQuery, productCategoriesQuery } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { WhatsappField } from "@/components/admin/whatsapp-field";
-import { validateWhatsappNumber } from "@/lib/whatsapp";
+import { WhatsappField, WhatsappNumberInput } from "@/components/admin/whatsapp-field";
+import { validateWhatsappField } from "@/lib/whatsapp";
 import { availabilityStates } from "@/lib/product-availability";
 import { bullionRowSchema } from "@/lib/bullion-serials";
 import { validateCatalogPdf } from "@/lib/catalog";
@@ -25,12 +25,14 @@ export type Field = {
     | "select"
     | "date"
     | "whatsapp"
+    | "whatsapp_simple"
     | "group"
     | "category"
     | "karat"
     | "metal"
     | "availability";
   options?: string[];
+  optional?: boolean;
 };
 
 const inp = "w-full rounded-md border border-input bg-background px-3 py-2 text-sm";
@@ -148,6 +150,15 @@ function FieldInput({
       return <CategoryInput f={f} value={value} onChange={onChange} />;
     case "whatsapp":
       return <WhatsappField label={f.label} value={value} onChange={onChange} />;
+    case "whatsapp_simple":
+      return (
+        <WhatsappNumberInput
+          label={f.label}
+          value={value}
+          onChange={onChange}
+          optional={!!f.optional}
+        />
+      );
     case "textarea":
       return (
         <textarea
@@ -374,18 +385,23 @@ export function SingleEditor({
   useEffect(() => {
     if (data) setRow(data);
   }, [data]);
-  const whatsappField = fields.find((field) => field.type === "whatsapp");
-  const whatsappValidation = whatsappField ? validateWhatsappNumber(row[whatsappField.name]) : null;
+  const whatsappChecks = fields
+    .filter((field) => field.type === "whatsapp" || field.type === "whatsapp_simple")
+    .map((field) => ({
+      field,
+      result: validateWhatsappField(row[field.name], !!field.optional),
+    }));
+  const whatsappError = whatsappChecks.find((check) => check.result.error)?.result.error ?? null;
   const save = async () => {
-    if (whatsappValidation?.error) {
-      toast.error(whatsappValidation.error);
+    if (whatsappError) {
+      toast.error(whatsappError);
       return;
     }
     setSaving(true);
     try {
       const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
-      if (whatsappField && whatsappValidation)
-        patch[whatsappField.name] = whatsappValidation.number;
+      for (const { field, result } of whatsappChecks)
+        patch[field.name] = result.number === "" && field.optional ? null : result.number;
       const { data: saved, error } = await supabase
         .from(table)
         .update(patch as never)
@@ -411,7 +427,7 @@ export function SingleEditor({
   return (
     <div className="space-y-6">
       <FormGrid fields={fields} row={row} set={(k, v) => setRow({ ...row, [k]: v })} />
-      <Button disabled={saving || !data || !!whatsappValidation?.error} onClick={save}>
+      <Button disabled={saving || !data || !!whatsappError} onClick={save}>
         <Save />
         {saving ? "جارٍ الحفظ…" : "حفظ التغييرات"}
       </Button>

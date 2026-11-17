@@ -180,6 +180,7 @@ export function Header() {
 export function Footer() {
   const { t, lang } = useLang();
   const { data: s } = useQuery(settingsQuery);
+  const { data: sections } = useQuery(sectionsQuery);
   return (
     <footer className="mt-20 border-t border-border bg-card">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:grid-cols-3">
@@ -252,6 +253,33 @@ export function Footer() {
           <p className="flex items-center gap-2">
             <MapPin className="h-4 w-4 shrink-0 text-gold" /> {pick(s, "address", lang)}
           </p>
+          {(s?.service_whatsapp || s?.service_phone) && (
+            <div className="space-y-2 border-t border-border pt-3">
+              <p className="font-medium text-gold">
+                {pick(sections?.["customer_service"], "title", lang)}
+              </p>
+              {s?.service_whatsapp && (
+                <a
+                  href={whatsappLink(s.service_whatsapp, "")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 hover:text-gold"
+                >
+                  <MessageCircle className="h-4 w-4 shrink-0 text-gold" />{" "}
+                  <span dir="ltr">{`+${s.service_whatsapp}`}</span>
+                </a>
+              )}
+              {s?.service_phone && (
+                <a
+                  href={`tel:${(s?.service_phone ?? "").replace(/\s+/g, "")}`}
+                  className="flex items-center gap-2 hover:text-gold"
+                >
+                  <Phone className="h-4 w-4 shrink-0 text-gold" />{" "}
+                  <span dir="ltr">{s.service_phone}</span>
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <p className="border-t border-border py-4 text-center text-xs text-muted-foreground">

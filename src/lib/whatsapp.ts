@@ -17,3 +17,16 @@ export function validateWhatsappNumber(value: unknown): { number: string; error:
     };
   return { number: phone.number.slice(1), error: null };
 }
+
+/**
+ * Validate a WhatsApp field. Optional fields accept an empty value as "not set"
+ * so an unused customer-service number cannot block saving the whole form.
+ */
+export function validateWhatsappField(
+  value: unknown,
+  optional = false,
+): { number: string; error: string | null } {
+  const empty = typeof value !== "string" || !value.trim();
+  if (optional && empty) return { number: "", error: null };
+  return validateWhatsappNumber(value);
+}

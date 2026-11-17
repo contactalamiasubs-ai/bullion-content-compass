@@ -567,6 +567,8 @@ export type Database = {
           serial_bg_image: string | null
           serial_bg_speed: number
           serial_bg_style: string
+          service_phone: string | null
+          service_whatsapp: string | null
           silver_gram: number | null
           silver_source_url: string
           silver_usd: number
@@ -605,6 +607,8 @@ export type Database = {
           serial_bg_image?: string | null
           serial_bg_speed?: number
           serial_bg_style?: string
+          service_phone?: string | null
+          service_whatsapp?: string | null
           silver_gram?: number | null
           silver_source_url?: string
           silver_usd?: number
@@ -643,6 +647,8 @@ export type Database = {
           serial_bg_image?: string | null
           serial_bg_speed?: number
           serial_bg_style?: string
+          service_phone?: string | null
+          service_whatsapp?: string | null
           silver_gram?: number | null
           silver_source_url?: string
           silver_usd?: number

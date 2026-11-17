@@ -301,6 +301,13 @@ function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab
             { name: "logo_url", label: "اللوجو", type: "image" },
             { name: "whatsapp_number", label: "رقم واتساب (بالكود الدولي)", type: "whatsapp" },
             { name: "phone", label: "الهاتف" },
+            {
+              name: "service_whatsapp",
+              label: "واتساب خدمة العملاء (بالكود الدولي)",
+              type: "whatsapp_simple",
+              optional: true,
+            },
+            { name: "service_phone", label: "هاتف خدمة العملاء", optional: true },
             { name: "email", label: "البريد" },
             ...bi("address", "العنوان"),
             { name: "facebook", label: "فيسبوك" },

@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useLang } from "@/lib/i18n";
+import { MessageCircle, Phone } from "lucide-react";
+import { useLang, pick } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHero } from "@/components/site";
+import { sectionsQuery, settingsQuery, whatsappLink } from "@/lib/data";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -20,7 +23,9 @@ export const Route = createFileRoute("/contact")({
 });
 
 function Contact() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const { data: s } = useQuery(settingsQuery);
+  const { data: sections } = useQuery(sectionsQuery);
   const [f, setF] = useState({ name: "", email: "", phone: "", message: "" });
   const [busy, setBusy] = useState(false);
   const submit = async (e: React.FormEvent) => {
@@ -38,6 +43,7 @@ function Contact() {
     setF({ name: "", email: "", phone: "", message: "" });
   };
   const inp = "w-full rounded-md border border-input bg-background px-3 py-2.5";
+  const service = sections?.["customer_service"];
   return (
     <main>
       <PageHero title={t("contact")} centered />
@@ -82,6 +88,36 @@ function Contact() {
           {t("send")}
         </button>
       </form>
+      {(s?.service_whatsapp || s?.service_phone) && (
+        <section className="mx-auto max-w-xl px-4 pb-12">
+          <div className="rounded-lg border border-border bg-card p-5">
+            <h2 className="mb-1 text-lg text-gold-gradient">{pick(service, "title", lang)}</h2>
+            <p className="mb-4 text-xs text-muted-foreground">{pick(service, "body", lang)}</p>
+            <div className="flex flex-wrap gap-3">
+              {s?.service_whatsapp && (
+                <a
+                  href={whatsappLink(s.service_whatsapp, "")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm hover:border-gold hover:text-gold"
+                >
+                  <MessageCircle className="h-4 w-4 text-gold" />
+                  <span dir="ltr">{`+${s.service_whatsapp}`}</span>
+                </a>
+              )}
+              {s?.service_phone && (
+                <a
+                  href={`tel:${(s?.service_phone ?? "").replace(/\s+/g, "")}`}
+                  className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm hover:border-gold hover:text-gold"
+                >
+                  <Phone className="h-4 w-4 text-gold" />
+                  <span dir="ltr">{s.service_phone}</span>
+                </a>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
     </main>
   );
 }
