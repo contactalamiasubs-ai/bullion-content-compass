@@ -1,4 +1,5 @@
 # Gold Center updates
+- [x] Restore the previous simple administrator login without changing customer login or access protection; both pages verified at 1280/394/890 widths, signed-out admin redirects to /auth, no browser errors or horizontal overflow, three login tests passed.
 - [x] Test the login page at desktop and 394/320px mobile widths; required fields, password visibility, invalid credentials, signup minimum, signed-out admin gate, authenticated account refresh and signout passed; six unit tests passed. Successful password submission could not be completed because preparing a temporary password returned a managed Auth HTTP 500. Google consent, signup confirmation and recovery-email receipt remain unverified and require a real Google account/mailbox; the reserved temporary email is rejected by the mail service.
 - [x] Implement supplied luxury login design with existing email/Google auth, signup, public recovery and session preference; desktop/mobile, rejected credentials, actual account session and signout verified. Google consent and email delivery require the customer's Google account/mailbox.
 
