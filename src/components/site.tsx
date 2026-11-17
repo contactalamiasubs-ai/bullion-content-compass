@@ -102,16 +102,18 @@ export function Header() {
       <div className="mx-auto max-w-7xl px-3 sm:px-6">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3">
           <Link to="/" className="flex min-w-0 items-center gap-2" onClick={() => setOpen(false)}>
-            {s?.logo_url ? (
-              <img
-                src={s.logo_url}
-                alt={pick(s, "site_name", lang)}
-                className="brand-logo h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-gold/40 sm:h-12 sm:w-12"
-              />
-            ) : (
-              <span className="brand-logo grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold-gradient font-display text-lg font-bold text-primary-foreground">Au</span>
-            )}
-            <span className="brand-name min-w-0 break-words font-display text-base font-bold sm:text-xl">{pick(s, "site_name", lang)}</span>
+            <span className="brand-mark relative grid h-11 w-11 shrink-0 place-items-center rounded-full sm:h-[52px] sm:w-[52px]">
+              {s?.logo_url ? (
+                <img src={s.logo_url} alt={pick(s, "site_name", lang)} className="relative z-10 h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" />
+              ) : (
+                <span className="relative z-10 grid h-10 w-10 place-items-center rounded-full bg-gold-gradient font-display text-lg font-bold text-primary-foreground sm:h-12 sm:w-12">Au</span>
+              )}
+              <span aria-hidden className="brand-sheen" />
+            </span>
+            <span className="brand-text flex min-w-0 flex-col">
+              <span className="brand-name break-words font-display text-base font-bold sm:text-xl">{pick(s, "site_name", lang)}</span>
+              <span aria-hidden className="brand-rule" />
+            </span>
           </Link>
           <div className="flex shrink-0 items-center gap-1.5">
             <ThemeToggle />
