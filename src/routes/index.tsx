@@ -74,6 +74,26 @@ function Index() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-4 py-16">
+        <SectionTitle title={t("services")} />
+        <div className="grid gap-6 md:grid-cols-3">
+          {services.map((x, i) => (
+            <div key={x.id} className="overflow-hidden rounded-xl border border-border bg-card">
+              <img
+                src={x.image_url || fallbackImages[(i + 2) % 4]}
+                alt={pick(x, "title", lang)}
+                loading="lazy"
+                className="aspect-video w-full object-cover"
+              />
+              <div className="p-5">
+                <h3 className="mb-2 text-xl text-gold">{pick(x, "title", lang)}</h3>
+                <p className="text-sm text-muted-foreground">{pick(x, "body", lang)}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 md:grid-cols-2">
         <img
           src={sec?.["about"]?.image_url || fallbackImages[0]}
@@ -93,26 +113,6 @@ function Index() {
           <Link to="/about" className="text-gold hover:underline">
             {t("readMore")}
           </Link>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-16">
-        <SectionTitle title={t("services")} />
-        <div className="grid gap-6 md:grid-cols-3">
-          {services.map((x, i) => (
-            <div key={x.id} className="overflow-hidden rounded-xl border border-border bg-card">
-              <img
-                src={x.image_url || fallbackImages[(i + 2) % 4]}
-                alt={pick(x, "title", lang)}
-                loading="lazy"
-                className="aspect-video w-full object-cover"
-              />
-              <div className="p-5">
-                <h3 className="mb-2 text-xl text-gold">{pick(x, "title", lang)}</h3>
-                <p className="text-sm text-muted-foreground">{pick(x, "body", lang)}</p>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
