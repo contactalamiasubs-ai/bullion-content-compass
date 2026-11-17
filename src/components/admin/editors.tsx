@@ -33,6 +33,8 @@ export type Field = {
     | "availability";
   options?: string[];
   optional?: boolean;
+  /** Force left-to-right display, e.g. for links and other Latin-only values. */
+  ltr?: boolean;
 };
 
 const inp = "w-full rounded-md border border-input bg-background px-3 py-2 text-sm";
@@ -266,7 +268,7 @@ function FieldInput({
       return (
         <input
           aria-label={f.label}
-          dir={f.name.endsWith("_en") || f.name.includes("url") ? "ltr" : undefined}
+          dir={f.ltr || f.name.endsWith("_en") || f.name.includes("url") ? "ltr" : undefined}
           className={inp}
           value={(value as string) ?? ""}
           onChange={(e) => onChange(e.target.value)}

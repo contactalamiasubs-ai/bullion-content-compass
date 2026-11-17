@@ -577,6 +577,7 @@ export type Database = {
           tiktok: string | null
           updated_at: string
           whatsapp_number: string
+          x_url: string | null
           years_experience: number
           youtube: string | null
         }
@@ -617,6 +618,7 @@ export type Database = {
           tiktok?: string | null
           updated_at?: string
           whatsapp_number?: string
+          x_url?: string | null
           years_experience?: number
           youtube?: string | null
         }
@@ -657,6 +659,7 @@ export type Database = {
           tiktok?: string | null
           updated_at?: string
           whatsapp_number?: string
+          x_url?: string | null
           years_experience?: number
           youtube?: string | null
         }
