@@ -22,7 +22,6 @@ import {
   Youtube,
   ChevronLeft,
   ChevronRight,
-  LockKeyhole,
   Sun,
   Moon,
   Heart,
@@ -228,7 +227,6 @@ export function Footer() {
             { to: "/blog", label: t("blog"), icon: BookOpen },
             { to: "/news", label: t("news"), icon: Newspaper },
             { to: "/contact", label: t("contact"), icon: MessageCircle },
-            { to: "/admin", label: lang === "ar" ? "لوحة التحكم" : "Dashboard", icon: LockKeyhole },
           ] as const).map((item) => (
             <Button key={item.to} asChild variant="ghost" className="h-auto min-h-12 min-w-0 justify-start gap-2 rounded-md px-1.5 py-2 text-muted-foreground hover:text-gold">
               <Link to={item.to}>
