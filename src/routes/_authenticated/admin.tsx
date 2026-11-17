@@ -130,7 +130,7 @@ function Admin() {
               key={t.id}
               aria-current={activeTab === t.id ? "page" : undefined}
               onClick={() => setTab(t.id)}
-              className={`h-auto min-h-10 w-full justify-start whitespace-normal px-3 py-2 text-sm ${activeTab === t.id ? "bg-sidebar-accent text-gold" : "text-sidebar-foreground"}`}
+              className="admin-nav-item h-auto min-h-10 w-full justify-start whitespace-normal px-3 py-2 text-sm text-sidebar-foreground"
             >
               <t.i className="h-4 w-4" /> {t.l}
             </Button>

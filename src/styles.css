@@ -399,6 +399,33 @@
   background: var(--accent);
 }
 .main-nav-shortcut svg { width: 21px; height: 21px; }
+.admin-nav-item {
+  border-inline-start: 3px solid transparent;
+}
+.admin-nav-item[aria-current="page"],
+.admin-nav-item[aria-current="page"]:hover {
+  background: var(--sidebar-primary);
+  color: var(--sidebar-primary-foreground);
+  border-inline-start-color: var(--sidebar-primary-foreground);
+  font-weight: 700;
+}
+.admin-nav-item[aria-current="page"] svg {
+  stroke-width: 2.5;
+}
+.site-nav-link.site-nav-active,
+.mobile-nav-link.site-nav-active,
+.main-nav-shortcut.site-nav-active {
+  font-weight: 700;
+}
+.site-nav-link.site-nav-active .nav-icon,
+.mobile-nav-link.site-nav-active .nav-icon,
+.main-nav-shortcut.site-nav-active,
+.main-nav-shortcut.site-nav-active:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+.site-nav-active svg { stroke-width: 2.5; }
 @media (min-width: 640px) {
   .main-nav-shortcut { width: 78px; font-size: 12px; }
 }
