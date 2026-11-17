@@ -71,8 +71,8 @@ export function ProductCatalog({ limit }: { limit?: number }) {
   const branches = (categories.data ?? []).filter((category) => category.group_id === groupId);
   const selectedMain = groups.data?.find((group) => group.id === groupId);
   const branchTone = /فضة|الفضة|silver/i.test(`${selectedMain?.name_ar} ${selectedMain?.name_en}`)
-    ? "text-silver"
-    : "text-gold";
+    ? "silver"
+    : "gold";
   const visible = (products.data ?? []).filter(
     (product) =>
       product.active && matchesProductCategory(product, categories.data ?? [], groupId, categoryId),
@@ -103,7 +103,8 @@ export function ProductCatalog({ limit }: { limit?: number }) {
             <Button
               key={group.id}
               variant="ghost"
-              className={`category-choice group ${/فضة|الفضة|silver/i.test(`${group.name_ar} ${group.name_en}`) ? "text-silver" : "text-gold"}`}
+              className="category-choice group"
+              data-tone={/فضة|الفضة|silver/i.test(`${group.name_ar} ${group.name_en}`) ? "silver" : "gold"}
               aria-pressed={groupId === group.id}
               onClick={() => {
                 setGroup(group.id);
@@ -120,7 +121,8 @@ export function ProductCatalog({ limit }: { limit?: number }) {
         {groupId && (
           <nav
             aria-label={lang === "ar" ? "الأقسام الفرعية" : "Subcategories"}
-            className={`mb-10 flex flex-wrap justify-center gap-x-3 gap-y-4 sm:gap-x-8 ${branchTone}`}
+            className="mb-10 flex flex-wrap justify-center gap-x-3 gap-y-4 sm:gap-x-8"
+            data-tone={branchTone}
           >
             <Button
               variant="ghost"

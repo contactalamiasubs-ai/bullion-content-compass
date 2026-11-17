@@ -359,6 +359,30 @@
   background: transparent;
   color: inherit;
 }
+.category-choice {
+  --category-selected: var(--primary);
+  --category-selected-foreground: var(--primary-foreground);
+  color: var(--muted-foreground);
+}
+.category-choice[data-tone="silver"],
+[data-tone="silver"] .category-choice {
+  --category-selected: var(--silver);
+  --category-selected-foreground: var(--background);
+}
+.category-choice[aria-pressed="true"],
+.category-choice[aria-pressed="true"]:hover {
+  color: var(--category-selected);
+  font-weight: 700;
+}
+.category-choice[aria-pressed="true"] .category-medallion {
+  background: var(--category-selected);
+  color: var(--category-selected-foreground);
+  border-color: var(--category-selected);
+  outline-color: var(--category-selected);
+}
+.category-choice[aria-pressed="true"] .category-medallion svg {
+  stroke-width: 2;
+}
 
 /* Ensure navigational artwork stays legible over generic button sizing. */
 .shortcut-icon svg, .favorite-control svg { width: 22px; height: 22px; }
