@@ -106,12 +106,12 @@ export function Header() {
               <img
                 src={s.logo_url}
                 alt={pick(s, "site_name", lang)}
-                className="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-gold/40 sm:h-12 sm:w-12"
+                className="brand-logo h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-gold/40 sm:h-12 sm:w-12"
               />
             ) : (
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold-gradient font-display text-lg font-bold text-primary-foreground">Au</span>
+              <span className="brand-logo grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gold-gradient font-display text-lg font-bold text-primary-foreground">Au</span>
             )}
-            <span className="min-w-0 break-words font-display text-base font-bold text-gold-gradient sm:text-xl">{pick(s, "site_name", lang)}</span>
+            <span className="brand-name min-w-0 break-words font-display text-base font-bold sm:text-xl">{pick(s, "site_name", lang)}</span>
           </Link>
           <div className="flex shrink-0 items-center gap-1.5">
             <ThemeToggle />
