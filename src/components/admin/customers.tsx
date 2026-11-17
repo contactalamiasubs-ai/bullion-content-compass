@@ -10,6 +10,7 @@ import { readShopping } from "@/lib/shopping";
 import { customerEventLabels } from "@/lib/customer-accounts";
 import { CustomerAnalytics } from "@/components/admin/customer-analytics";
 import { customerAnalytics } from "@/lib/customers.functions";
+import { CustomerExportButton } from "@/components/admin/customer-export";
 
 export function Customers() {
   const inspect = useServerFn(inspectCustomers);
@@ -24,7 +25,7 @@ export function Customers() {
   const productName = (id: string) => products.data?.find((p) => p.id === id)?.name_ar ?? "منتج محذوف أو غير موجود";
   return <div className="space-y-8">
     <CustomerAnalytics />
-    <h2 className="text-xl">حسابات العملاء وتفاصيلهم</h2>
+    <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl">حسابات العملاء وتفاصيلهم</h2><CustomerExportButton /></div>
     <label className="block space-y-2 text-sm"><span>البحث ببريد العميل</span><input type="search" aria-label="البحث ببريد العميل" dir="ltr" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="w-full rounded-md border border-input bg-background px-3 py-2" /></label>
     {query.isPending && <p role="status">جارٍ تحميل العملاء…</p>}
     {query.error && <p role="alert" className="text-destructive">{query.error.message}</p>}

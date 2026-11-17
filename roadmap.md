@@ -1,4 +1,5 @@
 # Gold Center updates
+- [x] Add a full-admin Excel download of all customer profiles, shopping and activity, independent of search/pagination; actual download with empty search contains all four accounts, six cart rows, three favorites and 19 activity rows across five worksheets, no formulas or browser errors, mobile layout and four tests passed.
 - [x] Cancel the requested product analytics/import work before implementation; preserve existing customer analytics and all application behavior.
 - [x] Add full-admin customer analytics with 7/30/90-day registration/activity trends, current shopping totals, popular products and per-customer detail; real admin data, period switching, refresh and customer shopping/activity verified, no overflow at 394/890 widths, five tests passed.
 - [x] Restore the previous simple administrator login without changing customer login or access protection; both pages verified at 1280/394/890 widths, signed-out admin redirects to /auth, no browser errors or horizontal overflow, three login tests passed.

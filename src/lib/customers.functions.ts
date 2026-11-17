@@ -3,6 +3,15 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { summarizeCustomers } from "@/lib/customer-analytics";
 
+async function collectAll<T>(fetch: (start: number, end: number) => PromiseLike<{ data: T[] | null; error: unknown }>) {
+  const rows: T[] = [];
+  for (let start = 0; ; start += 1000) {
+    const result = await fetch(start, start + 999);
+    if (result.error || !result.data) throw new Error("تعذر تحميل بيانات العملاء");
+    rows.push(...result.data); if (result.data.length < 1000) return rows;
+  }
+}
+
 export const inspectCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(z.object({ page: z.number().int().min(1), search: z.string().max(255), userId: z.string().uuid().optional(), activityPage: z.number().int().min(1).default(1) }))
@@ -20,6 +29,20 @@ export const inspectCustomers = createServerFn({ method: "POST" })
     ]);
     if (shopping.error || activity.error) throw new Error("تعذر تحميل بيانات العميل");
     return { profiles: profiles.data, count: profiles.count ?? 0, shopping: shopping.data, activity: activity.data, activityCount: activity.count ?? 0 };
+  });
+
+export const exportCustomers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: allowed, error } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (error || !allowed) throw new Error("غير مسموح بتصدير بيانات العملاء");
+    const [profiles, shopping, activity, products] = await Promise.all([
+      collectAll((a, b) => context.supabase.from("profiles").select("*").order("id").range(a, b)),
+      collectAll((a, b) => context.supabase.from("customer_shopping").select("*").order("user_id").range(a, b)),
+      collectAll((a, b) => context.supabase.from("customer_activity").select("*").order("id").range(a, b)),
+      collectAll((a, b) => context.supabase.from("products").select("id,name_ar").order("id").range(a, b)),
+    ]);
+    return { profiles, shopping, activity, products, exportedAt: new Date().toISOString() };
   });
 
 export const customerAnalytics = createServerFn({ method: "POST" })
