@@ -18,6 +18,7 @@ import {
   RefreshCw,
   Trash2,
   UsersRound,
+  ScanLine,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SingleEditor, ListEditor, type Field } from "@/components/admin/editors";
@@ -29,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Users } from "@/components/admin/users";
 import { canAccessTab, type DashboardAccess } from "@/lib/dashboard-permissions";
+import { BullionImport } from "@/components/admin/bullion-import";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -64,6 +66,7 @@ const tabs = [
   { id: "sections", l: "أقسام الموقع", i: FileText },
   { id: "services", l: "الخدمات", i: Briefcase },
   { id: "products", l: "المنتجات", i: Package },
+  { id: "serials", l: "افحص سبيكتك — السيريالات", i: ScanLine },
   { id: "product-groups", l: "أقسام المنتجات الرئيسية", i: Package },
   { id: "product-categories", l: "أقسام المنتجات الفرعية", i: Coins },
   { id: "posts", l: "المدونة والأخبار", i: Newspaper },
@@ -201,6 +204,20 @@ type TabId = (typeof tabs)[number]["id"];
 function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab: TabId) => void; access: DashboardAccess; actorId: string }) {
   const { data: groups = [] } = useQuery(productGroupsQuery);
   switch (tab) {
+    case "serials":
+      return <>
+        <BullionImport />
+        <ListEditor table="bullion_serials" order="serial" titleField="serial" queryKey={["bullion-serials"]}
+          newRow={{ name_ar: "سبيكة جديدة", name_en: "New bar", weight_grams: 1, purity: "999.9", specifications_ar: "", specifications_en: "", active: false }}
+          fields={[
+            { name: "serial", label: "السيريال" },
+            ...bi("name", "اسم السبيكة"),
+            { name: "weight_grams", label: "الوزن بالجرام", type: "number" },
+            { name: "purity", label: "العيار / النقاء" },
+            ...bi("specifications", "المواصفات", "textarea"),
+            { name: "active", label: "متاح للفحص", type: "bool" },
+          ]} />
+      </>;
     case "customers":
       return access.admin ? <Button asChild><Link to="/admin/customers"><UsersRound />إدارة العملاء</Link></Button> : null;
     case "users":

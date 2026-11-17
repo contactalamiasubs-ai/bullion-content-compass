@@ -113,6 +113,20 @@
       "when": 1794848370033,
       "tag": "0015_customer_accounts_shopping_activity",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1794912138895,
+      "tag": "0016_bullion_serial_registry",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1794912289307,
+      "tag": "0017_restrict_bullion_registry_grants",
+      "breakpoints": true
     }
   ]
 }

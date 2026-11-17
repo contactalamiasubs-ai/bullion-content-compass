@@ -20,7 +20,7 @@ export const deleteAccountSchema = z.object({ userId: z.string().uuid() });
 export type DashboardAccess = { admin: boolean; permissions: string[] };
 
 const tabPermissions: Record<string, Permission> = {
-  products: "products", "product-groups": "products", "product-categories": "products",
+  products: "products", "product-groups": "products", "product-categories": "products", serials: "products",
   prices: "prices", "gram-rates": "prices", source: "prices", history: "prices",
   sections: "content", services: "content", posts: "content", slides: "content",
   settings: "settings", popup: "settings", messages: "messages",

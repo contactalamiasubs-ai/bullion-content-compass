@@ -35,6 +35,7 @@ import {
   Handshake,
   Info,
   UserRound,
+  ScanLine,
 } from "lucide-react";
 import { useShopping, useShoppingText } from "@/components/shopping-provider";
 import { FavoriteButton, AddToCartButton } from "@/components/product-shopping-actions";
@@ -45,6 +46,7 @@ import { canOrderProduct, productAvailability } from "@/lib/product-availability
 import { useLang, pick } from "@/lib/i18n";
 import {
   settingsQuery,
+  sectionsQuery,
   slidesQuery,
   pricesQuery,
   historyQuery,
@@ -74,6 +76,7 @@ export function SectionTitle({ eyebrow, title }: { eyebrow?: string; title: stri
 export function Header() {
   const { t, lang, setLang } = useLang();
   const { data: s } = useQuery(settingsQuery);
+  const { data: sections } = useQuery(sectionsQuery);
   const [open, setOpen] = useState(false);
   const { state, user } = useShopping();
   const shoppingText = useShoppingText();
@@ -82,6 +85,7 @@ export function Header() {
     { to: "/", l: t("home"), icon: House },
     { to: "/", hash: "prices", l: t("metalPrices"), icon: ChartNoAxesCombined },
     { to: "/products", l: t("products"), icon: Gem },
+    { to: "/check-bar", l: pick(sections?.["serial_heading"], "title", lang), icon: ScanLine },
     { to: "/about", l: t("about"), icon: Info },
     { to: "/services", l: t("services"), icon: Handshake },
     { to: "/blog", l: t("blog"), icon: BookOpen },

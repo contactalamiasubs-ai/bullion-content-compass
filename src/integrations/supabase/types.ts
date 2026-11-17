@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      bullion_serials: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name_ar: string
+          name_en: string
+          purity: string
+          serial: string
+          specifications_ar: string
+          specifications_en: string
+          weight_grams: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name_ar?: string
+          name_en?: string
+          purity?: string
+          serial: string
+          specifications_ar?: string
+          specifications_en?: string
+          weight_grams?: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name_ar?: string
+          name_en?: string
+          purity?: string
+          serial?: string
+          specifications_ar?: string
+          specifications_en?: string
+          weight_grams?: number
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -686,6 +725,18 @@ export type Database = {
           summary_ar: string
           summary_en: string
           verified_at: string
+        }[]
+      }
+      lookup_bullion_serial: {
+        Args: { _serial: string }
+        Returns: {
+          name_ar: string
+          name_en: string
+          purity: string
+          serial: string
+          specifications_ar: string
+          specifications_en: string
+          weight_grams: number
         }[]
       }
       record_customer_view: {

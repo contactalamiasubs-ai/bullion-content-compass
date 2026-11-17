@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { WhatsappField } from "@/components/admin/whatsapp-field";
 import { validateWhatsappNumber } from "@/lib/whatsapp";
 import { availabilityStates } from "@/lib/product-availability";
+import { bullionRowSchema } from "@/lib/bullion-serials";
 
 export type Field = {
   name: string;
@@ -268,9 +269,19 @@ type AnyTable =
   | "products"
   | "product_groups"
   | "product_categories"
+  | "bullion_serials"
   | "posts";
 
 async function readRows(table: AnyTable, order: string, ascending: boolean) {
+  if (table === "bullion_serials") {
+    const rows: Record<string, unknown>[] = [];
+    for (let start = 0; ; start += 1000) {
+      const result = await supabase.from(table).select("*").order(order, { ascending }).range(start, start + 999);
+      if (result.error) throw result.error;
+      rows.push(...result.data);
+      if (result.data.length < 1000) return rows;
+    }
+  }
   const { data, error } = await supabase.from(table).select("*").order(order, { ascending });
   if (error) throw error;
   return (data ?? []) as unknown as Record<string, unknown>[];
@@ -431,6 +442,11 @@ function RowCard({
         patch["making_charge"] = row["making_charge"] ?? 0;
         if (row["pricing_metal"] === "silver") patch["karat"] = null;
       }
+      if (table === "bullion_serials") {
+        const validated = bullionRowSchema.safeParse(patch);
+        if (!validated.success) { toast.error("أدخل سيريالًا واسمًا ونقاءً صحيحًا ووزنًا أكبر من صفر"); return; }
+        Object.assign(patch, validated.data);
+      }
       const { data: saved, error } = await supabase
         .from(table)
         .update(patch as never)
@@ -554,7 +570,8 @@ export function ListEditor({
     }
     setAdding(true);
     try {
-      const { error } = await supabase.from(table).insert((newRow ?? {}) as never);
+      const values = table === "bullion_serials" ? { ...newRow, serial: `NEW-${crypto.randomUUID().toUpperCase()}` } : (newRow ?? {});
+      const { error } = await supabase.from(table).insert(values as never);
       if (error) {
         toast.error(error.message);
         return;

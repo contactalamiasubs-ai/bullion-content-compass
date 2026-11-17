@@ -16,6 +16,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as CheckBarRouteImport } from './routes/check-bar'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as NewsRouteImport } from './routes/news'
@@ -61,6 +62,11 @@ const BlogRoute = BlogRouteImport.update({
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckBarRoute = CheckBarRouteImport.update({
+  id: '/check-bar',
+  path: '/check-bar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
   '/cart': typeof CartRoute
+  '/check-bar': typeof CheckBarRoute
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
   '/news': typeof NewsRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
   '/cart': typeof CartRoute
+  '/check-bar': typeof CheckBarRoute
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
   '/news': typeof NewsRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRoute
   '/cart': typeof CartRoute
+  '/check-bar': typeof CheckBarRoute
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
   '/news': typeof NewsRoute
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/blog'
     | '/cart'
+    | '/check-bar'
     | '/contact'
     | '/favorites'
     | '/news'
@@ -216,6 +226,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/blog'
     | '/cart'
+    | '/check-bar'
     | '/contact'
     | '/favorites'
     | '/news'
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/blog'
     | '/cart'
+    | '/check-bar'
     | '/contact'
     | '/favorites'
     | '/news'
@@ -259,6 +271,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BlogRoute: typeof BlogRoute
   CartRoute: typeof CartRoute
+  CheckBarRoute: typeof CheckBarRoute
   ContactRoute: typeof ContactRoute
   FavoritesRoute: typeof FavoritesRoute
   NewsRoute: typeof NewsRoute
@@ -320,6 +333,13 @@ declare module '@tanstack/react-router' {
       path: '/cart'
       fullPath: '/cart'
       preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/check-bar': {
+      id: '/check-bar'
+      path: '/check-bar'
+      fullPath: '/check-bar'
+      preLoaderRoute: typeof CheckBarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -430,6 +450,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BlogRoute: BlogRoute,
   CartRoute: CartRoute,
+  CheckBarRoute: CheckBarRoute,
   ContactRoute: ContactRoute,
   FavoritesRoute: FavoritesRoute,
   NewsRoute: NewsRoute,

@@ -1,4 +1,5 @@
 # Gold Center updates
+- [x] Add public exact bar serial lookup, dashboard registry and Excel template/import; actual file import, public specification match, missing/disabled serials, saved edits and mobile verified; anonymous registry browsing denied, 16 tests passed, temporary record removed.
 - [x] Add a full-admin Excel download of all customer profiles, shopping and activity, independent of search/pagination; actual download with empty search contains all four accounts, six cart rows, three favorites and 19 activity rows across five worksheets, no formulas or browser errors, mobile layout and four tests passed.
 - [x] Cancel the requested product analytics/import work before implementation; preserve existing customer analytics and all application behavior.
 - [x] Add full-admin customer analytics with 7/30/90-day registration/activity trends, current shopping totals, popular products and per-customer detail; real admin data, period switching, refresh and customer shopping/activity verified, no overflow at 394/890 widths, five tests passed.

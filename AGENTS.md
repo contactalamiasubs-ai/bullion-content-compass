@@ -63,3 +63,4 @@ use the editor.
 - Keep administrator sign-in implemented in its own route rather than the customer LoginPanel so customer presentation changes cannot alter dashboard entry.
 - Customer analytics reads all paginated rows through full-admin authenticated RLS and summarizes disclosed account activity separately from current shopping state; carts are not completed orders.
 - Customer exports fetch every page under full-admin RLS and generate XLSX locally in the browser; export strings as text, never formulas, and exclude credentials.
+- Bar serials are private product-permission records; public lookup returns only one active exact match, and Excel parsing runs in the browser with atomic validated upserts.
