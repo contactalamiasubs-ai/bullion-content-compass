@@ -33,7 +33,7 @@ function Services() {
               src={x.image_url || fallbackImages[(i + 2) % 4]}
               alt={pick(x, "title", lang)}
               loading="lazy"
-              className={`rounded-xl border border-border ${i % 2 ? "md:order-2" : ""}`}
+              className={`aspect-[4/3] w-full rounded-xl border border-border object-cover object-center md:aspect-[16/10] ${i % 2 ? "md:order-2" : ""}`}
             />
             <div>
               <h2 className="mb-3 text-3xl text-gold-gradient">{pick(x, "title", lang)}</h2>

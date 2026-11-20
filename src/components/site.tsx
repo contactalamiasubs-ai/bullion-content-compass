@@ -748,7 +748,7 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
           src={p.image_url || fallbackImages[idx % 4]}
           alt={name}
           loading="lazy"
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-105"
         />
       </Link>
       </div>
@@ -812,7 +812,7 @@ export function PostCard({ p, idx }: { p: PostRow; idx: number }) {
           src={p.image_url || fallbackImages[(idx + 1) % 4]}
           alt={pick(p, "title", lang)}
           loading="lazy"
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-105"
         />
       </div>
       <div className="p-5">

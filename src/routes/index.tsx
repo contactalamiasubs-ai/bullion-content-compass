@@ -83,7 +83,7 @@ function Index() {
                 src={x.image_url || fallbackImages[(i + 2) % 4]}
                 alt={pick(x, "title", lang)}
                 loading="lazy"
-                className="aspect-video w-full object-cover"
+                className="aspect-[4/3] w-full object-cover object-center sm:aspect-video"
               />
               <div className="p-5">
                 <h3 className="mb-2 text-xl text-gold">{pick(x, "title", lang)}</h3>
@@ -99,7 +99,7 @@ function Index() {
           src={sec?.["about"]?.image_url || fallbackImages[0]}
           alt=""
           loading="lazy"
-          className="rounded-xl border border-border"
+          className="aspect-[4/3] w-full rounded-xl border border-border object-cover object-center md:aspect-auto md:h-auto"
         />
         <div>
           <p className="font-display text-7xl font-bold text-gold-gradient">
