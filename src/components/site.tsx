@@ -386,7 +386,7 @@ export function HeroSlider() {
   if (!cur) return null;
   const go = (d: number) => setI((p) => (p + d + active.length) % active.length);
   return (
-    <section className="relative h-[75vh] min-h-[480px] overflow-hidden">
+    <section className="relative h-[62svh] min-h-[420px] max-h-[640px] overflow-hidden sm:h-[70vh] md:h-[75vh] md:min-h-[480px] md:max-h-none">
       {active.map((sl, idx) => (
         <img
           key={sl.id}
@@ -394,30 +394,30 @@ export function HeroSlider() {
           alt={pick(sl, "title", lang)}
           width={1920}
           height={912}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${idx === i % active.length ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000 ${idx === i % active.length ? "opacity-100" : "opacity-0"}`}
         />
       ))}
       <div className="absolute inset-0 bg-hero-fade" />
-      <div className="relative mx-auto flex h-full max-w-7xl items-end px-4 pb-28">
+      <div className="relative mx-auto flex h-full max-w-7xl items-end px-4 pb-24 md:pb-28">
         <div
           key={cur.id}
           className="max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-700"
         >
-          <h1 className="mb-4 text-4xl font-bold leading-tight md:text-6xl text-gold-gradient">
+          <h1 className="mb-3 line-clamp-3 text-2xl font-bold leading-snug sm:text-4xl md:mb-4 md:text-6xl md:leading-tight text-gold-gradient">
             {pick(cur, "title", lang)}
           </h1>
-          <p className="mb-6 text-lg text-foreground/85">{pick(cur, "body", lang)}</p>
+          <p className="mb-5 line-clamp-3 text-sm text-foreground/85 sm:text-base md:mb-6 md:text-lg">{pick(cur, "body", lang)}</p>
           {pick(cur, "button", lang) && (
             <a
               href={cur.link ?? "#"}
-              className="inline-block rounded-md bg-gold-gradient px-7 py-3 font-semibold text-primary-foreground shadow-gold"
+              className="inline-block rounded-md bg-gold-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-gold md:px-7 md:py-3 md:text-base"
             >
               {pick(cur, "button", lang)}
             </a>
           )}
         </div>
       </div>
-      <div className="absolute bottom-14 left-1/2 flex -translate-x-1/2 items-center gap-3">
+      <div className="absolute bottom-8 left-1/2 md:bottom-14 flex -translate-x-1/2 items-center gap-3">
         <button
           onClick={() => go(-1)}
           className="rounded-full border border-border p-1.5 hover:border-gold"
