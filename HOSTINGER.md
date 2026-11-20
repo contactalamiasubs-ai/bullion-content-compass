@@ -1,7 +1,9 @@
 # رفع موقع جولد سنتر على هوستنجر (الدومين من Namecheap)
 
 ## 1) الخطة المطلوبة
-خطة تدعم Node.js: VPS أو Business/Cloud (Node.js Web App). الخطط المشتركة العادية لا تشغّل لوحة التحكم والأسعار.
+الخطة المناسبة: **Hostinger VPS — KVM 2** (معالجان vCPU، ذاكرة 8 جيجا، قرص NVMe 100 جيجا، نقل 8 تيرا).
+الخطة تدعم Node.js: VPS أو Business/Cloud (Node.js Web App). الخطط المشتركة العادية لا تشغّل لوحة التحكم والأسعار.
+لو الميزانية ضيقة: KVM 1 (4 جيجا) مع إضافة Swap، ولو الزيارات زادت: KVM 4.
 قاعدة البيانات والصور تبقى على Lovable Cloud ولا تحتاج نقل.
 
 ## 2) متغيرات البيئة (Environment Variables)
@@ -16,14 +18,14 @@
 
 ## 3) Node.js Web App (Business/Cloud)
 1. اربط مستودع GitHub أو ارفع ملف ZIP للمشروع.
-2. Node 20 أو أحدث.
+2. Node 22 (يُثبَّت من NodeSource كما في قسم VPS).
 3. أمر التثبيت: `npm install`
 4. أمر البناء: `npm run build:node`
 5. أمر التشغيل: `npm start`  (الملف: `.output/server/index.mjs`)
 
 ## 3ب) VPS
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - && sudo apt install -y nodejs nginx
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash - && sudo apt install -y nodejs nginx
 git clone <رابط المستودع> goldcenter && cd goldcenter
 # ضع المتغيرات في ملف .env
 npm install && npm run build:node
