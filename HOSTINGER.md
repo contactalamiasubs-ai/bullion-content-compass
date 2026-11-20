@@ -23,6 +23,14 @@
 4. أمر البناء: `npm run build:node`
 5. أمر التشغيل: `npm start`  (الملف: `.output/server/index.mjs`)
 
+### 3أ) طريقة سريعة: مجلد `.output` الجاهز
+حزمة الرفع فيها مجلد `.output` مبنيّ وجاهز للتشغيل (لا يحتاج `npm install`).
+1. ارفع محتويات `.output` إلى السيرفر.
+2. اضبط المتغيرات: `PORT` و `SUPABASE_URL` و `SUPABASE_PUBLISHABLE_KEY`.
+3. شغّل: `node .output/server/index.mjs` (أو `pm2 start .output/server/index.mjs --name goldcenter`).
+ملاحظة: هذا المجلد ليس في مستودع GitHub (متجاهَل)، بل في حزمة الرفع فقط.
+لو غيّرت الكود لاحقًا، أعد البناء بـ `npm run build:node` قبل الرفع.
+
 ## 3ب) VPS
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash - && sudo apt install -y nodejs nginx
