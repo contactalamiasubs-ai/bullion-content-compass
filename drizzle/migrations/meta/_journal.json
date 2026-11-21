@@ -169,6 +169,13 @@
       "when": 1794931863193,
       "tag": "0023_tighten_bullion_checks_insert",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1795255564401,
+      "tag": "0024_latest_price_invoker",
+      "breakpoints": true
     }
   ]
 }
