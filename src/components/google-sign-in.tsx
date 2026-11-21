@@ -16,7 +16,16 @@ export function GoogleSignIn({ destination = "/account", remember = true }: { de
     try {
       rememberLogin(remember);
       sessionStorage.setItem("gold-center-login-destination", destination);
-      const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth/callback`, extraParams: { prompt: "select_account" } });
+      const redirect = `${window.location.origin}/auth/callback`;
+      const host = window.location.hostname;
+      const lovableHosted = host.endsWith(".lovable.app") || host.endsWith(".lovableproject.com") || host === "localhost";
+      if (!lovableHosted) {
+        // External hosting (e.g. Hostinger) has no /~oauth broker path, so sign in directly.
+        const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: redirect, queryParams: { prompt: "select_account" } } });
+        if (error) toast.error(text("auth_error"));
+        return;
+      }
+      const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: redirect, extraParams: { prompt: "select_account" } });
       if (result.error) { toast.error(text("auth_error")); return; }
       if (result.redirected) return;
       const verified = await supabase.auth.getUser();
