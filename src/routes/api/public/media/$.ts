@@ -9,7 +9,7 @@ export const Route = createFileRoute("/api/public/media/$")({
     GET: async ({ params }) => {
       const path = params._splat ?? "";
       if (!SAFE_PATH.test(path) || path.startsWith(".")) return new Response("Not found", { status: 404 });
-      if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      if (!process.env["SUPABASE_SERVICE_ROLE_KEY"]) {
         // External hosting has no private key: let the published app sign the link.
         return Response.redirect(`${PUBLISHED_ORIGIN}/api/public/media/${encodeURIComponent(path)}`, 302);
       }
