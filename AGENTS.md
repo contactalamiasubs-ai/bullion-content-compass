@@ -37,7 +37,7 @@ use the editor.
 - Admin dashboard uses the generic `ListEditor`/`SingleEditor` in `src/components/admin/editors.tsx`; add new editable tables by declaring fields there, not by writing new forms.
 - Admin editor mutations invalidate the public collection, post detail and overview queries, and expose pending/error states so saved content is reflected without silent failures.
 - Writes use full-admin or scoped dashboard permission RLS; settings updates also validate changed fields so price access cannot edit unrelated settings. The first signed-up user becomes admin through a trigger.
-- The `media` bucket is private; content stores `/api/public/media/<path>` links that sign a fresh one-hour URL per request (external hosts redirect to the published app), so no long-lived signed links are stored.
+- Media bucket is private; content stores `/api/public/media/<path>` links that sign a fresh one-hour URL per request.
 - Catalog PDF uses the generic editor and the catalog_download section; prefetch its signed file into a Blob for click-time mobile downloads.
 - Price refresh requires authenticated price permission; only exact Gold API XAU/XAG HTTPS endpoints are allowed to prevent SSRF, and validated USD-per-ounce quotes must match AI output exactly before publication.
 - Price audit records retain source timestamps, payload and model response ID; manual prices are not labeled source-verified.
