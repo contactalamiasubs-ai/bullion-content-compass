@@ -183,6 +183,27 @@
       "when": 1795256161306,
       "tag": "0025_scope_role_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1795265710998,
+      "tag": "0026_limit_public_catalog_to_visible_content",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1795265799712,
+      "tag": "0027_secure_admin_bootstrap_and_published_media",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1795265944839,
+      "tag": "0028_separate_public_posts_from_staff_reads",
+      "breakpoints": true
     }
   ]
 }

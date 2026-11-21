@@ -47,7 +47,8 @@ function ProductPage() {
   useEffect(() => { if (ready) view(id); }, [id, view, ready]);
   const { lang, t } = useLang();
   const shoppingText = useShoppingText();
-  const { data: p, isLoading } = useQuery(productQuery(id));
+  // The loader snapshot must also seed the first browser render, matching SSR.
+  const { data: p, isLoading } = useQuery({ ...productQuery(id), initialData: Route.useLoaderData() });
   const { data: s } = useQuery(settingsQuery);
   const { data: all = [] } = useQuery(productsQuery);
   const { data: groups = [] } = useQuery(productGroupsQuery);

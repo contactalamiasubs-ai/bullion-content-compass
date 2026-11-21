@@ -24,7 +24,13 @@ describe("Hostinger authenticated administration bridge", () => {
   it("only forwards the signed-in admin bearer to the exact published endpoint", async () => {
     const send = vi.fn().mockResolvedValue(Response.json({ data: { users: [], hasNext: false } }));
     expect(await forwardAdminCommand(adminBridgeUrl, "Bearer admin-session", { action: "list", page: 1 }, send)).toEqual({ users: [], hasNext: false });
-    expect(send).toHaveBeenCalledWith(adminBridgeUrl, expect.objectContaining({ method: "POST", redirect: "error", headers: expect.objectContaining({ Authorization: "Bearer admin-session" }), body: '{"action":"list","page":1}' }));
+    expect(send).toHaveBeenCalledWith(adminBridgeUrl, expect.objectContaining({ method: "POST", redirect: "manual", headers: expect.objectContaining({ Authorization: "Bearer admin-session" }), body: '{"action":"list","page":1}' }));
+  });
+  it.each([301, 302, 303, 307, 308])("rejects redirect %s without forwarding credentials again", async (status) => {
+    const send = vi.fn().mockResolvedValue(new Response(null, { status, headers: { Location: "https://attacker.example" } }));
+    await expect(forwardAdminCommand(adminBridgeUrl, "Bearer admin-session", { action: "list", page: 1 }, send)).rejects.toMatchObject({ status: 502 });
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(send).toHaveBeenCalledWith(adminBridgeUrl, expect.objectContaining({ redirect: "manual" }));
   });
   it.each(["https://attacker.example/api/public/dashboard-users", `${adminBridgeUrl}?redirect=1`, "http://bullion-content-compass.lovable.app/api/public/dashboard-users"])("does not send credentials to an unapproved endpoint %s", async (url) => {
     const send = vi.fn();
@@ -87,10 +93,9 @@ describe("Hostinger authenticated administration bridge", () => {
     expect(mocks.invite).toHaveBeenCalledWith("member@example.com", { redirectTo: "https://goldcenterstr.com/set-password" });
     expect(rpc).toHaveBeenCalledWith("set_dashboard_access", { _user_id: other, _admin: false, _permissions: ["serials"] });
   });
-  it("preserves the same-site preview invitation callback without enabling remote origin bypass", async () => {
-    mocks.invite.mockResolvedValue({ data: { user: { id: other } }, error: null });
-    await executeAdminCommand({ action: "invite", email: "member@example.com", admin: false, permissions: [], redirectOrigin: "http://localhost:8080" }, context().ctx, "http://localhost:8080/set-password");
-    expect(mocks.invite).toHaveBeenCalledWith("member@example.com", { redirectTo: "http://localhost:8080/set-password" });
+  it("rejects an unapproved request origin even on the local invitation path", async () => {
+    await expect(executeAdminCommand({ action: "invite", email: "member@example.com", admin: false, permissions: [], redirectOrigin: "https://attacker.example" }, context().ctx)).rejects.toMatchObject({ status: 400 });
+    expect(mocks.invite).not.toHaveBeenCalled();
     expect(adminCommandSchema.safeParse({ action: "invite", email: "member@example.com", admin: false, permissions: [], redirectOrigin: "http://localhost:8080", localInvitationRedirect: "http://localhost:8080/set-password" }).success).toBe(false);
   });
   it("retains self-deletion protection", async () => {

@@ -1,4 +1,7 @@
 # Gold Center updates
+- [x] Review security: restrict hidden products/slides, verified summaries and published media; remove public administrator bootstrap and untrusted invitation destinations. Preserve intentionally public business contact details/catalog data without dismissing their alerts.
+- [x] Verify 127 regression tests, 13 public routes, desktop/mobile, product hydration, live quote fetching, real authenticated dashboard/account and anonymous denials. Temporary hidden product/slide checks and guest cart/favorites persistence passed; test rows removed.
+- [x] Recheck security fixes, complete deep review and save changes. Full AI publication and invitation email receipt remain unverified; latest code must be published on Lovable and deployed on Hostinger for public handler fixes to reach those sites.
 - [x] Implement Hostinger user listing/invitations/deletion through a pinned, authenticated Lovable-hosted bridge; 44 tests passed, real admin list/refresh and temporary account deletion verified, anonymous/customer sessions denied and unsafe invitation origins rejected.
 - [ ] Activate the bridge on the deployed Hostinger site and verify invitation email acceptance there; requires publishing this Lovable update, deploying updated Hostinger code with HOSTED_ADMIN_BRIDGE_URL, and access to the recipient mailbox.
 - [x] Add dashboard PDF catalog upload and connect homepage/main-menu downloads; authenticated upload/save/reload, exact PDF download, mobile layout and 18 tests passed; test catalog removed.

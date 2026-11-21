@@ -1,22 +1,43 @@
 import { createFileRoute } from "@tanstack/react-router";
-
-const PUBLISHED_ORIGIN = "https://bullion-content-compass.lovable.app";
-const SAFE_PATH = /^[\w.-]{1,200}$/;
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
+import { mediaResponse, publicMediaPath, publishedMediaOrigin } from "@/lib/media-access";
 
 // Media files stay in the private bucket; each request gets a fresh short-lived signed link.
 export const Route = createFileRoute("/api/public/media/$")({
   server: { handlers: {
     GET: async ({ params }) => {
       const path = params._splat ?? "";
-      if (!SAFE_PATH.test(path) || path.startsWith(".")) return new Response("Not found", { status: 404 });
+      const publicPath = publicMediaPath(path);
+      if (!publicPath) return new Response("Not found", { status: 404 });
       if (!process.env["SUPABASE_SERVICE_ROLE_KEY"]) {
         // External hosting has no private key: let the published app sign the link.
-        return Response.redirect(`${PUBLISHED_ORIGIN}/api/public/media/${encodeURIComponent(path)}`, 302);
+        return new Response(null, { status: 302, headers: { Location: `${publishedMediaOrigin}${publicPath}`, "Cache-Control": "no-store" } });
       }
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data, error } = await supabaseAdmin.storage.from("media").createSignedUrl(path, 60 * 60);
-      if (error || !data) return new Response("Not found", { status: 404 });
-      return new Response(null, { status: 302, headers: { Location: data.signedUrl, "Cache-Control": "public, max-age=1800" } });
+      const url = process.env["SUPABASE_URL"];
+      const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
+      if (!url || !key) return new Response("Unavailable", { status: 503 });
+      const publicClient = createClient<Database>(url, key, {
+        auth: { persistSession: false, autoRefreshToken: false },
+        global: { fetch: (input, init) => {
+          const headers = new Headers(init?.headers);
+          if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`) headers.delete("Authorization");
+          headers.set("apikey", key);
+          return fetch(input, { ...init, headers });
+        } },
+      });
+      return mediaResponse(path, {
+        isPublished: async (_url) => {
+          const { data, error } = await publicClient.rpc("is_published_media", { _url });
+          return !error && data === true;
+        },
+        sign: async (objectPath) => {
+          // Only a file referenced by anonymously readable content reaches privileged signing.
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { data, error } = await supabaseAdmin.storage.from("media").createSignedUrl(objectPath, 60 * 60);
+          return !error && data ? data.signedUrl : null;
+        },
+      });
     },
   } },
 });

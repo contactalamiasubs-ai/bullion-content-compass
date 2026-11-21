@@ -36,10 +36,14 @@ export async function forwardAdminCommand(url: string, authorization: string | n
   try {
     response = await send(url, {
       method: "POST", headers: { "Content-Type": "application/json", Authorization: authorization },
-      body: JSON.stringify(adminCommandSchema.parse(command)), redirect: "error", signal: AbortSignal.timeout(20000),
+      body: JSON.stringify(adminCommandSchema.parse(command)), redirect: "manual", signal: AbortSignal.timeout(20000),
     });
   } catch {
     throw new AdminBridgeError("تعذر الاتصال بإدارة المستخدمين؛ تأكد أن نسخة Lovable منشورة وأعد المحاولة.", 502);
+  }
+  // Never follow redirects: a moved endpoint must not receive the admin bearer.
+  if (response.status >= 300 && response.status < 400) {
+    throw new AdminBridgeError("ربط إدارة المستخدمين أعاد توجيه الطلب؛ تحقق من نشر النسخة الصحيحة.", 502);
   }
   let result: unknown;
   try { result = await response.json(); } catch {

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { validateAnalysis, validateQuote, validateSourceUrl } from "./price-validation";
+import { fetchValidatedQuote, validateAnalysis, validateQuote, validateSourceUrl } from "./price-validation";
 
 export const refreshVerifiedPrices = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -20,20 +20,9 @@ export const refreshVerifiedPrices = createServerFn({ method: "POST" })
       throw new Error("فعّل المصدر واحفظ الإعدادات أولًا");
     const goldUrl = validateSourceUrl(settings.gold_source_url, "XAU");
     const silverUrl = validateSourceUrl(settings.silver_source_url, "XAG");
-    async function fetchQuote(url: string, symbol: "XAU" | "XAG") {
-      const res = await fetch(url, {
-        redirect: "error",
-        signal: AbortSignal.timeout(15000),
-        headers: { Accept: "application/json" },
-      });
-      if (!res.ok) throw new Error(`تعذر قراءة مصدر الأسعار (${res.status})`);
-      const body = await res.text();
-      if (body.length > 20000) throw new Error("استجابة المصدر أكبر من الحد المسموح");
-      return validateQuote(JSON.parse(body), symbol);
-    }
     const [gold, silver] = await Promise.all([
-      fetchQuote(goldUrl, "XAU"),
-      fetchQuote(silverUrl, "XAG"),
+      fetchValidatedQuote(goldUrl, "XAU"),
+      fetchValidatedQuote(silverUrl, "XAG"),
     ]);
     const { generateResponse, GatewayError } = await import("@lovable.dev/ai-gateway");
     try {

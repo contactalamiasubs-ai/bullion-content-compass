@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertCanChangeAccess, assertCanDeleteAccount, deleteAccountSchema, inviteSchema, updateAccessSchema } from "./dashboard-permissions";
-import { adminListSchema, adminSuccessSchema, forwardAdminCommand } from "./admin-bridge";
+import { adminBridgeUrl, adminListSchema, adminSuccessSchema, forwardAdminCommand } from "./admin-bridge";
 
 export const listDashboardUsers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -56,15 +56,14 @@ export const inviteDashboardUser = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: allowed, error } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
     if (error || !allowed) throw new Error("غير مسموح بإضافة المستخدمين");
-    const { getRequestUrl } = await import("@tanstack/react-start/server");
-    const origin = getRequestUrl().origin;
+    // The request Host/Origin is untrusted. Use the pinned site unless explicitly configured.
+    const origin = process.env["DASHBOARD_INVITE_ORIGIN"] || new URL(adminBridgeUrl).origin;
     const command = { ...data, action: "invite" as const, redirectOrigin: origin };
     const bridge = process.env["HOSTED_ADMIN_BRIDGE_URL"];
     if (bridge) {
       const { getRequest } = await import("@tanstack/react-start/server");
       return adminSuccessSchema.parse(await forwardAdminCommand(bridge, getRequest().headers.get("authorization"), command));
     }
-    // Same-site preview invitations keep their existing redirect; remote invitations use the strict allowlist.
     const { executeAdminCommand } = await import("./admin-users.server");
-    return adminSuccessSchema.parse(await executeAdminCommand(command, context, new URL("/set-password", origin).href));
+    return adminSuccessSchema.parse(await executeAdminCommand(command, context));
   });

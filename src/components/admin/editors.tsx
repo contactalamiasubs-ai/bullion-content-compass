@@ -11,6 +11,7 @@ import { validateWhatsappField } from "@/lib/whatsapp";
 import { availabilityStates } from "@/lib/product-availability";
 import { bullionRowSchema } from "@/lib/bullion-serials";
 import { validateCatalogPdf } from "@/lib/catalog";
+import { publicMediaPath } from "@/lib/media-access";
 
 export type Field = {
   name: string;
@@ -93,6 +94,19 @@ function FieldInput({
   onChange: (v: unknown) => void;
 }) {
   const [busy, setBusy] = useState(false);
+  const [preview, setPreview] = useState<{ value: string; url: string } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    if ((f.type !== "image" && f.type !== "pdf") || typeof value !== "string" || !value.startsWith("/api/public/media/")) return;
+    const path = value.slice("/api/public/media/".length);
+    if (publicMediaPath(path) !== value) return;
+    // Staff preview uses their own storage permissions, including unsaved/private uploads.
+    void supabase.storage.from("media").createSignedUrl(path, 3600).then(({ data, error }) => {
+      if (!cancelled && !error && data) setPreview({ value, url: data.signedUrl });
+    });
+    return () => { cancelled = true; };
+  }, [f.type, value]);
+  const previewUrl = preview && preview.value === value ? preview.url : String(value ?? "");
   switch (f.type) {
     case "pdf":
       return <div className="flex flex-wrap items-center gap-3">
@@ -114,7 +128,7 @@ function FieldInput({
           </label>
         </Button>
         {!!value && <>
-          <Button asChild variant="outline"><a href={String(value)} target="_blank" rel="noopener noreferrer">عرض PDF الحالي</a></Button>
+          <Button asChild variant="outline"><a href={previewUrl} target="_blank" rel="noopener noreferrer">عرض PDF الحالي</a></Button>
           <Button type="button" variant="ghost" size="icon" title="إزالة الكتالوج" aria-label="إزالة الكتالوج" disabled={busy} onClick={() => onChange(null)}><Trash2 /></Button>
         </>}
       </div>;
@@ -216,7 +230,7 @@ function FieldInput({
       return (
         <div className="flex flex-wrap items-center gap-3">
           {value ? (
-            <img src={value as string} alt="" className="h-14 w-14 rounded object-cover" />
+            <img src={previewUrl} alt="" className="h-14 w-14 rounded object-cover" />
           ) : (
             <div className="h-14 w-14 rounded bg-secondary" />
           )}

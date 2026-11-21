@@ -1,0 +1,3 @@
+- Public media signing must verify an exact published-content reference before loading privileged storage; staff previews use user-scoped storage access so drafts remain private.
+- Invitation destinations come from pinned or configured allowlisted origins, never request headers; this prevents forged email destinations.
+- New-account triggers never bootstrap administrators after deployment; existing administrators explicitly grant access to avoid public signup escalation.

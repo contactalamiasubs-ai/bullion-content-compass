@@ -21,6 +21,19 @@ export function validateQuote(value: unknown, symbol: "XAU" | "XAG", now = Date.
     throw new Error("بيانات المصدر قديمة أو توقيتها غير صالح");
   return q;
 }
+export async function fetchValidatedQuote(url: string, symbol: "XAU" | "XAG", send: typeof fetch = fetch) {
+  const source = validateSourceUrl(url, symbol);
+  const res = await send(source, {
+    redirect: "manual",
+    signal: AbortSignal.timeout(15000),
+    headers: { Accept: "application/json" },
+  });
+  // A redirect must never bypass the exact provider allowlist.
+  if (!res.ok) throw new Error(`تعذر قراءة مصدر الأسعار (${res.status})`);
+  const body = await res.text();
+  if (body.length > 20000) throw new Error("استجابة المصدر أكبر من الحد المسموح");
+  return validateQuote(JSON.parse(body), symbol);
+}
 export const analysisSchema = z.object({
   accepted: z.boolean(),
   gold_usd: z.number().positive(),

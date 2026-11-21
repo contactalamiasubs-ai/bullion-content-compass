@@ -757,6 +757,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_published_media: { Args: { _url: string }; Returns: boolean }
       latest_verified_price: {
         Args: never
         Returns: {

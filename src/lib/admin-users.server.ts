@@ -26,12 +26,12 @@ export async function authenticateAdminRequest(request: Request): Promise<AdminC
   return { supabase, userId: data.user.id };
 }
 
-export async function executeAdminCommand(command: AdminCommand, context: AdminContext, localInvitationRedirect?: string): Promise<AdminResult> {
+export async function executeAdminCommand(command: AdminCommand, context: AdminContext): Promise<AdminResult> {
   const { data: allowed, error } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
   if (error || !allowed) throw new AdminBridgeError("غير مسموح بإدارة المستخدمين.", 403);
   // Verify authorization and self-deletion before even loading the privileged client.
   if (command.action === "delete") assertCanDeleteAccount(context.userId, command.userId, false, 0);
-  const redirectTo = command.action === "invite" ? (localInvitationRedirect ?? invitationRedirect(command.redirectOrigin, process.env["DASHBOARD_INVITE_ORIGINS"] ?? "")) : undefined;
+  const redirectTo = command.action === "invite" ? invitationRedirect(command.redirectOrigin, process.env["DASHBOARD_INVITE_ORIGINS"] ?? "") : undefined;
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   if (command.action === "list") {
     const result = await supabaseAdmin.auth.admin.listUsers({ page: command.page, perPage: 20 });

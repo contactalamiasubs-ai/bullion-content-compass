@@ -17,7 +17,6 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const nav = useNavigate();
-  const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -25,16 +24,9 @@ function AuthPage() {
     event.preventDefault();
     setBusy(true);
     try {
-      if (mode === "in") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) { toast.error(error.message); return; }
         await nav({ to: "/admin" });
-      } else {
-        const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
-        if (error) { toast.error(error.message); return; }
-        toast.success("تم إنشاء الحساب — افتح بريدك لتأكيده ثم سجّل الدخول");
-        setMode("in");
-      }
     } catch { toast.error("تعذر إكمال الطلب الآن، يرجى المحاولة مجددًا."); }
     finally { setBusy(false); }
   };
@@ -42,12 +34,10 @@ function AuthPage() {
   return (
     <main dir="rtl" className="grid min-h-screen place-items-center px-4">
       <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-xl border border-gold/30 bg-card p-8 shadow-gold">
-        <h1 className="text-center text-2xl text-gold-gradient">{mode === "in" ? "دخول لوحة التحكم" : "إنشاء حساب مسؤول"}</h1>
+        <h1 className="text-center text-2xl text-gold-gradient">دخول لوحة التحكم</h1>
         <input type="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني" autoComplete="email" className={inp} value={email} onChange={event => setEmail(event.target.value)} />
-        <input type="password" required minLength={6} aria-label="كلمة المرور" placeholder="كلمة المرور" autoComplete={mode === "in" ? "current-password" : "new-password"} className={inp} value={password} onChange={event => setPassword(event.target.value)} />
-        <Button type="submit" disabled={busy} className="w-full bg-gold-gradient py-2.5 font-semibold text-primary-foreground">{mode === "in" ? "دخول" : "إنشاء الحساب"}</Button>
-        <Button type="button" variant="ghost" onClick={() => setMode(mode === "in" ? "up" : "in")} className="w-full text-sm text-muted-foreground hover:text-gold">{mode === "in" ? "أول مرة؟ أنشئ حساب المسؤول" : "لديك حساب؟ سجّل الدخول"}</Button>
-        <p className="text-center text-xs text-muted-foreground">أول حساب يتم إنشاؤه يصبح هو المسؤول تلقائيًا.</p>
+        <input type="password" required minLength={6} aria-label="كلمة المرور" placeholder="كلمة المرور" autoComplete="current-password" className={inp} value={password} onChange={event => setPassword(event.target.value)} />
+        <Button type="submit" disabled={busy} className="w-full bg-gold-gradient py-2.5 font-semibold text-primary-foreground">دخول</Button>
       </form>
     </main>
   );
