@@ -93,9 +93,5 @@ export async function uploadImage(file: File): Promise<string> {
   const path = `${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
   const { error } = await supabase.storage.from("media").upload(path, file);
   if (error) throw error;
-  const { data, error: e2 } = await supabase.storage
-    .from("media")
-    .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
-  if (e2 || !data) throw e2 ?? new Error("url");
-  return data.signedUrl;
+  return `/api/public/media/${encodeURIComponent(path)}`;
 }

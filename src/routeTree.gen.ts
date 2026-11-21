@@ -30,6 +30,7 @@ import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProductsIdRouteImport } from './routes/products_.$id'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin_.customers'
 import { Route as ApiPublicDashboardUsersRouteImport } from './routes/api/public/dashboard-users'
+import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -136,6 +137,11 @@ const ApiPublicDashboardUsersRoute = ApiPublicDashboardUsersRouteImport.update({
   path: '/api/public/dashboard-users',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
+  id: '/api/public/media/$',
+  path: '/api/public/media/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -158,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/products/$id': typeof ProductsIdRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
+  '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/products/$id': typeof ProductsIdRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
+  '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -204,6 +212,7 @@ export interface FileRoutesById {
   '/products_/$id': typeof ProductsIdRoute
   '/_authenticated/admin_/customers': typeof AuthenticatedAdminCustomersRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
+  '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -228,6 +237,7 @@ export interface FileRouteTypes {
     | '/products/$id'
     | '/admin/customers'
     | '/api/public/dashboard-users'
+    | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/products/$id'
     | '/admin/customers'
     | '/api/public/dashboard-users'
+    | '/api/public/media/$'
   id:
     | '__root__'
     | '/'
@@ -273,6 +284,7 @@ export interface FileRouteTypes {
     | '/products_/$id'
     | '/_authenticated/admin_/customers'
     | '/api/public/dashboard-users'
+    | '/api/public/media/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -295,6 +307,7 @@ export interface RootRouteChildren {
   PostsSlugRoute: typeof PostsSlugRoute
   ProductsIdRoute: typeof ProductsIdRoute
   ApiPublicDashboardUsersRoute: typeof ApiPublicDashboardUsersRoute
+  ApiPublicMediaSplatRoute: typeof ApiPublicMediaSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -446,6 +459,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicDashboardUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/media/$': {
+      id: '/api/public/media/$'
+      path: '/api/public/media/$'
+      fullPath: '/api/public/media/$'
+      preLoaderRoute: typeof ApiPublicMediaSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -482,6 +502,7 @@ const rootRouteChildren: RootRouteChildren = {
   PostsSlugRoute: PostsSlugRoute,
   ProductsIdRoute: ProductsIdRoute,
   ApiPublicDashboardUsersRoute: ApiPublicDashboardUsersRoute,
+  ApiPublicMediaSplatRoute: ApiPublicMediaSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
