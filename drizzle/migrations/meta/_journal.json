@@ -176,6 +176,13 @@
       "when": 1795255564401,
       "tag": "0024_latest_price_invoker",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1795256161306,
+      "tag": "0025_scope_role_checks",
+      "breakpoints": true
     }
   ]
 }
