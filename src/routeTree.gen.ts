@@ -29,6 +29,7 @@ import { Route as AuthCallbackRouteImport } from './routes/auth_.callback'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProductsIdRouteImport } from './routes/products_.$id'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin_.customers'
+import { Route as ApiPublicDashboardUsersRouteImport } from './routes/api/public/dashboard-users'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -130,6 +131,11 @@ const AuthenticatedAdminCustomersRoute =
     path: '/admin/customers',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicDashboardUsersRoute = ApiPublicDashboardUsersRouteImport.update({
+  id: '/api/public/dashboard-users',
+  path: '/api/public/dashboard-users',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/posts/$slug': typeof PostsSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -172,6 +179,7 @@ export interface FileRoutesByTo {
   '/posts/$slug': typeof PostsSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/posts/$slug': typeof PostsSlugRoute
   '/products_/$id': typeof ProductsIdRoute
   '/_authenticated/admin_/customers': typeof AuthenticatedAdminCustomersRoute
+  '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/posts/$slug'
     | '/products/$id'
     | '/admin/customers'
+    | '/api/public/dashboard-users'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/posts/$slug'
     | '/products/$id'
     | '/admin/customers'
+    | '/api/public/dashboard-users'
   id:
     | '__root__'
     | '/'
@@ -261,6 +272,7 @@ export interface FileRouteTypes {
     | '/posts/$slug'
     | '/products_/$id'
     | '/_authenticated/admin_/customers'
+    | '/api/public/dashboard-users'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -282,6 +294,7 @@ export interface RootRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
   PostsSlugRoute: typeof PostsSlugRoute
   ProductsIdRoute: typeof ProductsIdRoute
+  ApiPublicDashboardUsersRoute: typeof ApiPublicDashboardUsersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -426,6 +439,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCustomersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/dashboard-users': {
+      id: '/api/public/dashboard-users'
+      path: '/api/public/dashboard-users'
+      fullPath: '/api/public/dashboard-users'
+      preLoaderRoute: typeof ApiPublicDashboardUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -461,6 +481,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCallbackRoute: AuthCallbackRoute,
   PostsSlugRoute: PostsSlugRoute,
   ProductsIdRoute: ProductsIdRoute,
+  ApiPublicDashboardUsersRoute: ApiPublicDashboardUsersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

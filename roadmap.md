@@ -1,4 +1,6 @@
 # Gold Center updates
+- [x] Implement Hostinger user listing/invitations/deletion through a pinned, authenticated Lovable-hosted bridge; 44 tests passed, real admin list/refresh and temporary account deletion verified, anonymous/customer sessions denied and unsafe invitation origins rejected.
+- [ ] Activate the bridge on the deployed Hostinger site and verify invitation email acceptance there; requires publishing this Lovable update, deploying updated Hostinger code with HOSTED_ADMIN_BRIDGE_URL, and access to the recipient mailbox.
 - [x] Add dashboard PDF catalog upload and connect homepage/main-menu downloads; authenticated upload/save/reload, exact PDF download, mobile layout and 18 tests passed; test catalog removed.
 - [x] Extend team permissions to customer management (including analytics/Excel) and bar serial management; preserved existing serial access, verified admin save/reload, member serial create/read/delete, customer details and Excel download, revoked private-data reads, mobile layout and 22 tests.
 - [x] Add public exact bar serial lookup, dashboard registry and Excel template/import; actual file import, public specification match, missing/disabled serials, saved edits and mobile verified; anonymous registry browsing denied, 16 tests passed, temporary record removed.
