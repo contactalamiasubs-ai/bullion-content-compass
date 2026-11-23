@@ -195,6 +195,13 @@ const BUSINESS_LOCATION = {
 
 const locationUrl = `https://www.google.com/maps/search/?api=1&query=${BUSINESS_LOCATION.lat},${BUSINESS_LOCATION.lng}&query_place_id=${BUSINESS_LOCATION.placeId}`;
 
+/** tel: target from a dashboard-entered number: keeps + and digits, drops spaces, dashes and slashes. */
+export function phoneHref(value: string): string {
+  const trimmed = value.trim();
+  const plus = trimmed.startsWith("+") ? "+" : "";
+  return `${plus}${trimmed.replace(/\D/g, "")}`;
+}
+
 export function Footer() {
   const { t, lang } = useLang();
   const { data: s } = useQuery(settingsQuery);
@@ -277,14 +284,20 @@ export function Footer() {
         </nav>
         <div className="space-y-2 text-sm text-muted-foreground">
           {s?.phone && (
-            <p className="flex items-center gap-2">
+            <a
+              href={`tel:${phoneHref(s.phone)}`}
+              className="flex items-center gap-2 hover:text-gold"
+            >
               <Phone className="h-4 w-4 shrink-0 text-gold" /> <span dir="ltr">{s.phone}</span>
-            </p>
+            </a>
           )}
           {s?.email && (
-            <p className="flex items-center gap-2">
+            <a
+              href={`mailto:${s.email.trim()}`}
+              className="flex items-center gap-2 hover:text-gold"
+            >
               <Mail className="h-4 w-4 shrink-0 text-gold" /> <span className="break-all">{s.email}</span>
-            </p>
+            </a>
           )}
           <a
             href={locationUrl}
@@ -312,7 +325,7 @@ export function Footer() {
               )}
               {s?.service_phone && (
                 <a
-                  href={`tel:${(s?.service_phone ?? "").replace(/\s+/g, "")}`}
+                  href={`tel:${phoneHref(s.service_phone)}`}
                   className="flex items-center gap-2 hover:text-gold"
                 >
                   <Phone className="h-4 w-4 shrink-0 text-gold" />{" "}
