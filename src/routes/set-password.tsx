@@ -24,7 +24,8 @@ function SetPassword() {
   const nav = useNavigate();
   useEffect(() => {
     let active = true;
-    void supabase.auth.getUser().then(({ data }) => { if (active) { setReady(!!data.user); setLoading(false); } });
+    const code = new URL(window.location.href).searchParams.get("code");
+    void (code ? supabase.auth.exchangeCodeForSession(code).catch(() => undefined) : Promise.resolve()).then(() => supabase.auth.getUser()).then(({ data }) => { if (active) { setReady(!!data.user); setLoading(false); } });
     return () => { active = false; };
   }, []);
   return <main dir="rtl" className="grid min-h-screen place-items-center px-4">

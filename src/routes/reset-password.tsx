@@ -16,14 +16,16 @@ function ResetPassword() {
     let active = true;
     const recoveryHash = new URLSearchParams(window.location.hash.slice(1)).get("type") === "recovery";
     const pending = sessionStorage.getItem("gold-center-recovery") === "active";
+    const code = new URL(window.location.href).searchParams.get("code");
     const check = async (recovery: boolean) => {
+      if (code) await supabase.auth.exchangeCodeForSession(code).catch(() => undefined);
       const { data } = await supabase.auth.getUser();
       if (!active) return;
       if (recovery && data.user) { sessionStorage.setItem("gold-center-recovery", "active"); setReady(true); }
       setLoading(false);
     };
     const { data } = supabase.auth.onAuthStateChange(event => { if (event === "PASSWORD_RECOVERY") queueMicrotask(() => { void check(true); }); });
-    void check(recoveryHash || pending);
+    void check(recoveryHash || pending || !!code);
     return () => { active = false; data.subscription.unsubscribe(); };
   }, []);
   return <LoginScene><section className="login-panel"><LoginBrand /><h1>{text("reset_title")}</h1>
