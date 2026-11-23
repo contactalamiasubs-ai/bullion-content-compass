@@ -204,7 +204,14 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:grid-cols-3">
         <div>
           <h3 className="mb-3 text-2xl text-gold-gradient">{pick(s, "site_name", lang)}</h3>
-          <p className="text-sm text-muted-foreground">{pick(s, "address", lang)}</p>
+          <a
+            href={locationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-gold"
+          >
+            <MapPin className="h-4 w-4 shrink-0 text-gold" /> {pick(s, "address", lang)}
+          </a>
           <div className="mt-4 flex gap-3">
             {s?.facebook && (
               <a
