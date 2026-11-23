@@ -186,10 +186,23 @@ function XLogo({ className }: { className?: string }) {
   );
 }
 
+/** Verified business location (from the company's Google Maps listing). */
+const BUSINESS_LOCATION = {
+  lat: 30.1025034,
+  lng: 31.348448,
+  placeId: "ChIJty-SWG4VWBQRuWOdrOZ0l6Q",
+  nameAr: "شركة جولد سنترز لتجارة الذهب",
+  nameEn: "Gold Centers Gold Trading Co.",
+  addressAr: "117 عبد العزيز فهمي، النزهة، القاهرة",
+  addressEn: "117 Abdel Aziz Fahmy St., El Nozha, Cairo",
+} as const;
+
 export function Footer() {
   const { t, lang } = useLang();
   const { data: s } = useQuery(settingsQuery);
   const { data: sections } = useQuery(sectionsQuery);
+  const mapEmbedUrl = `https://maps.google.com/maps?q=${BUSINESS_LOCATION.lat},${BUSINESS_LOCATION.lng}&z=16&hl=${lang}&output=embed`;
+  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${BUSINESS_LOCATION.lat},${BUSINESS_LOCATION.lng}&query_place_id=${BUSINESS_LOCATION.placeId}`;
   return (
     <footer className="mt-20 border-t border-border bg-card">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:grid-cols-3">
@@ -300,6 +313,38 @@ export function Footer() {
               )}
             </div>
           )}
+        </div>
+      </div>
+      <div className="mx-auto max-w-7xl px-4 pb-10">
+        <div className="overflow-hidden rounded-xl border border-border shadow-gold">
+          <div className="flex flex-wrap items-center gap-3 border-b border-border bg-secondary/50 px-4 py-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-card text-gold">
+              <MapPin aria-hidden="true" className="h-5 w-5" />
+            </span>
+            <div className="min-w-0">
+              <p className="font-medium">
+                {lang === "ar" ? "موقعنا على الخريطة" : "Find us on the map"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {lang === "ar" ? BUSINESS_LOCATION.nameAr : BUSINESS_LOCATION.nameEn}
+                {" — "}
+                {lang === "ar" ? BUSINESS_LOCATION.addressAr : BUSINESS_LOCATION.addressEn}
+              </p>
+            </div>
+            <Button asChild variant="outline" size="sm" className="ms-auto border-gold/40 text-gold hover:bg-gold/10">
+              <a href={directionsUrl} target="_blank" rel="noopener noreferrer">
+                {lang === "ar" ? "احصل على الاتجاهات" : "Get directions"}
+              </a>
+            </Button>
+          </div>
+          <iframe
+            src={mapEmbedUrl}
+            title={lang === "ar" ? "خريطة موقع الشركة" : "Company location map"}
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+            className="h-64 w-full md:h-72"
+          />
         </div>
       </div>
       <p className="border-t border-border py-4 text-center text-xs text-muted-foreground">
