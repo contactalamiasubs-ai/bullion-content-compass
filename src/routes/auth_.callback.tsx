@@ -13,12 +13,24 @@ function Callback() {
   useEffect(() => {
     let active = true;
     const finish = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (!active) return;
-      if (error || !data.user) { setError(true); return; }
-      const saved = sessionStorage.getItem("gold-center-login-destination");
-      sessionStorage.removeItem("gold-center-login-destination");
-      await nav({ to: saved === "/admin" ? "/admin" : "/account", replace: true });
+      try {
+        const url = new URL(window.location.href);
+        const hash = new URLSearchParams(url.hash.replace(/^#/, ""));
+        if (url.searchParams.get("error") || hash.get("error")) { if (active) setError(true); return; }
+        const code = url.searchParams.get("code");
+        if (code) await supabase.auth.exchangeCodeForSession(code).catch(() => undefined);
+        let { data } = await supabase.auth.getSession();
+        for (let i = 0; !data.session && i < 20 && active; i++) {
+          await new Promise((r) => setTimeout(r, 250));
+          ({ data } = await supabase.auth.getSession());
+        }
+        if (!active) return;
+        if (!data.session) { setError(true); return; }
+        const saved = sessionStorage.getItem("gold-center-login-destination");
+        sessionStorage.removeItem("gold-center-login-destination");
+        const to = saved === "/admin" ? "/admin" : "/account";
+        try { await nav({ to, replace: true }); } catch { window.location.replace(to); }
+      } catch { if (active) setError(true); }
     };
     void finish();
     return () => { active = false; };
