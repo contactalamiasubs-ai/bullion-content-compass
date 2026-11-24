@@ -1,6 +1,7 @@
 import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
+import { wwwRedirectTarget } from "./lib/www-redirect";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
@@ -18,6 +19,16 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
   }
 });
 
+// Permanently send www.<domain> visitors to the bare domain (Hostinger serves both on one app).
+const wwwRedirectMiddleware = createMiddleware().server(async ({ request, next }) => {
+  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const target = wwwRedirectTarget(request.url, host);
+  if (target) {
+    return new Response(null, { status: 301, headers: { location: target } });
+  }
+  return next();
+});
+
 // Start installs this automatically when src/start.ts is absent; defining the
 // file opts out, so re-add it explicitly to keep server functions protected
 // from cross-site requests.
@@ -33,5 +44,5 @@ const csrfMiddleware = createCsrfMiddleware({
 // project did not intentionally replace it.
 export const startInstance = createStart(() => ({
   functionMiddleware: [attachSupabaseAuth],
-  requestMiddleware: [errorMiddleware, csrfMiddleware],
+  requestMiddleware: [wwwRedirectMiddleware, errorMiddleware, csrfMiddleware],
 }));
