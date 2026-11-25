@@ -10,6 +10,23 @@ export const Route = createFileRoute("/api/public/media/$")({
       const path = params._splat ?? "";
       const publicPath = publicMediaPath(path);
       if (!publicPath) return new Response("Not found", { status: 404 });
+      // Files moved to the Hostinger database are served directly when referenced by published content.
+      if (process.env["MYSQL_HOST"]) {
+        try {
+          const { sql } = await import("@/lib/mysql.server");
+          const ref = await sql(`SELECT 1 FROM products WHERE active = 1 AND image_url = ?
+            UNION SELECT 1 FROM slides WHERE active = 1 AND (image_url = ? OR link = ?)
+            UNION SELECT 1 FROM posts WHERE published = 1 AND image_url = ?
+            UNION SELECT 1 FROM services WHERE image_url = ?
+            UNION SELECT 1 FROM sections WHERE image_url = ?
+            UNION SELECT 1 FROM site_settings WHERE id = 1 AND (logo_url = ? OR app_link = ? OR (popup_enabled = 1 AND popup_link = ?) OR (serial_bg_enabled = 1 AND serial_bg_image = ?)) LIMIT 1`, Array(10).fill(publicPath));
+          if (!ref.length) return new Response("Not found", { status: 404, headers: { "Cache-Control": "no-store" } });
+          const [file] = await sql<{ mime: string; data: Buffer }>("SELECT mime, data FROM media_files WHERE path = ?", [path]);
+          if (file) return new Response(new Uint8Array(file.data), { headers: { "Content-Type": file.mime, "Cache-Control": "public, max-age=3600", "X-Content-Type-Options": "nosniff" } });
+        } catch (error) {
+          console.error("media lookup failed", error);
+        }
+      }
       if (!process.env["SUPABASE_SERVICE_ROLE_KEY"]) {
         // External hosting has no private key: let the published app sign the link.
         return new Response(null, { status: 302, headers: { Location: `${publishedMediaOrigin}${publicPath}`, "Cache-Control": "no-store" } });

@@ -1,3 +1,5 @@
 - Public media signing must verify an exact published-content reference before loading privileged storage; staff previews use user-scoped storage access so drafts remain private.
 - Invitation destinations come from pinned or configured allowlisted origins, never request headers; this prevents forged email destinations.
-- New-account triggers never bootstrap administrators after deployment; existing administrators explicitly grant access to avoid public signup escalation.
+- New-account triggers never bootstrap administrators after deployment; existing administrators explicitly grant access to avoid public signup escalation.- Customer analytics reads all paginated rows through customer-permission authenticated RLS and summarizes disclosed account activity separately from current shopping state; carts are not completed orders.
+- Customer exports fetch every page under customer-permission RLS and generate XLSX locally in the browser; export strings as text, never formulas, and exclude credentials.
+- Bar serials use a separate serial permission in navigation and RLS; public lookup returns only one active exact match, and Excel parsing runs in the browser with atomic validated upserts. Backfill existing product members' serial permission when separating access.

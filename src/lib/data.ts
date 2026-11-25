@@ -1,78 +1,53 @@
 import { queryOptions } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
+import { latestVerifiedPrice, readSiteRows } from "@/lib/site-data.functions";
+import { uploadMedia } from "@/lib/media.functions";
+import type { SiteTable } from "@/lib/site-schema";
 
-async function q<T>(
-  p: PromiseLike<{ data: T; error: { message: string } | null }>,
-): Promise<NonNullable<T>> {
-  const { data, error } = await p;
-  if (error) throw new Error(error.message);
-  return data as NonNullable<T>;
-}
+type Row = Record<string, any>;
+const read = <T = Row>(table: SiteTable, opts: { order?: string; ascending?: boolean; eq?: Record<string, string | number | boolean>; single?: boolean } = {}) =>
+  readSiteRows({ data: { table, ...opts } }) as Promise<T[]>;
 
 export const settingsQuery = queryOptions({
   queryKey: ["settings"],
-  queryFn: () => q(supabase.from("site_settings").select("*").eq("id", 1).single()),
+  queryFn: async () => {
+    const [row] = await read<Tables<"site_settings">>("site_settings", { eq: { id: 1 } });
+    if (!row) throw new Error("الإعدادات غير موجودة");
+    return row;
+  },
 });
 export const verifiedPricesQuery = queryOptions({
   queryKey: ["verified-prices"],
-  queryFn: () =>
-    q(
-      supabase.rpc("latest_verified_price"),
-    ),
+  queryFn: () => latestVerifiedPrice(),
 });
-export const slidesQuery = queryOptions({
-  queryKey: ["slides"],
-  queryFn: () => q(supabase.from("slides").select("*").order("sort")),
-});
-export const pricesQuery = queryOptions({
-  queryKey: ["prices"],
-  queryFn: () => q(supabase.from("metal_prices").select("*").order("sort")),
-});
-export const historyQuery = queryOptions({
-  queryKey: ["history"],
-  queryFn: () => q(supabase.from("price_history").select("*").order("day")),
-});
+export const slidesQuery = queryOptions({ queryKey: ["slides"], queryFn: () => read<Tables<"slides">>("slides", { order: "sort" }) });
+export const pricesQuery = queryOptions({ queryKey: ["prices"], queryFn: () => read<Tables<"metal_prices">>("metal_prices", { order: "sort" }) });
+export const historyQuery = queryOptions({ queryKey: ["history"], queryFn: () => read<Tables<"price_history">>("price_history", { order: "day" }) });
 export const sectionsQuery = queryOptions({
   queryKey: ["sections"],
   queryFn: async () => {
-    const rows = await q(supabase.from("sections").select("*"));
-    return Object.fromEntries(rows.map((r) => [r.key, r])) as Record<string, (typeof rows)[number]>;
+    const rows = await read<Tables<"sections">>("sections");
+    return Object.fromEntries(rows.map((r) => [r.key, r])) as Record<string, Tables<"sections">>;
   },
 });
-export const servicesQuery = queryOptions({
-  queryKey: ["services"],
-  queryFn: () => q(supabase.from("services").select("*").order("sort")),
-});
-export const productsQuery = queryOptions({
-  queryKey: ["products"],
-  queryFn: () => q(supabase.from("products").select("*").order("sort")),
-});
-export const productGroupsQuery = queryOptions({
-  queryKey: ["product-groups"],
-  queryFn: () => q(supabase.from("product_groups").select("*").order("sort")),
-});
-export const productCategoriesQuery = queryOptions({
-  queryKey: ["product-categories"],
-  queryFn: () => q(supabase.from("product_categories").select("*").order("sort")),
-});
+export const servicesQuery = queryOptions({ queryKey: ["services"], queryFn: () => read<Tables<"services">>("services", { order: "sort" }) });
+export const productsQuery = queryOptions({ queryKey: ["products"], queryFn: () => read<Tables<"products">>("products", { order: "sort" }) });
+export const productGroupsQuery = queryOptions({ queryKey: ["product-groups"], queryFn: () => read<Tables<"product_groups">>("product_groups", { order: "sort" }) });
+export const productCategoriesQuery = queryOptions({ queryKey: ["product-categories"], queryFn: () => read<Tables<"product_categories">>("product_categories", { order: "sort" }) });
 export const productQuery = (id: string) =>
   queryOptions({
     queryKey: ["products", id],
-    queryFn: () => q(supabase.from("products").select("*").eq("id", id).maybeSingle()),
+    queryFn: async () => (await read<Tables<"products">>("products", { eq: { id }, single: true }))[0] ?? null,
   });
 export const postsQuery = (kind?: "blog" | "news") =>
   queryOptions({
     queryKey: ["posts", kind ?? "all"],
-    queryFn: () => {
-      let b = supabase.from("posts").select("*").order("created_at", { ascending: false });
-      if (kind) b = b.eq("kind", kind);
-      return q(b);
-    },
+    queryFn: () => read<Tables<"posts">>("posts", { order: "created_at", ascending: false, ...(kind ? { eq: { kind } } : {}) }),
   });
 export const postQuery = (slug: string) =>
   queryOptions({
     queryKey: ["post", slug],
-    queryFn: () => q(supabase.from("posts").select("*").eq("slug", slug).maybeSingle()),
+    queryFn: async () => (await read<Tables<"posts">>("posts", { eq: { slug }, single: true }))[0] ?? null,
   });
 
 export function whatsappLink(number: string | null | undefined, text: string) {
@@ -90,8 +65,8 @@ export function calcZakat(grams: number, karat: number, price24PerGram: number) 
 }
 
 export async function uploadImage(file: File): Promise<string> {
-  const path = `${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
-  const { error } = await supabase.storage.from("media").upload(path, file);
-  if (error) throw error;
+  const form = new FormData();
+  form.append("file", file);
+  const { path } = await uploadMedia({ data: form });
   return `/api/public/media/${encodeURIComponent(path)}`;
 }
