@@ -20,7 +20,6 @@ import {
   UsersRound,
   ScanLine,
 } from "lucide-react";
-import { countSiteRows } from "@/lib/site-data.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { BullionChecksExportButton } from "@/components/admin/bullion-checks-export";
 import { SingleEditor, ListEditor, type Field } from "@/components/admin/editors";
@@ -539,12 +538,14 @@ function Overview({ onSelect, access }: { onSelect: (tab: TabId) => void; access
     queryKey: ["admin-overview"],
     enabled: access.admin,
     queryFn: async () => {
-      const [counts, messages] = await Promise.all([
-        countSiteRows(),
+      const results = await Promise.all([
+        supabase.from("products").select("id", { count: "exact", head: true }),
+        supabase.from("slides").select("id", { count: "exact", head: true }),
+        supabase.from("posts").select("id", { count: "exact", head: true }),
         supabase.from("contact_messages").select("id", { count: "exact", head: true }),
       ]);
-      if (messages.error) throw messages.error;
-      return [counts.products, counts.slides, counts.posts, messages.count ?? 0];
+      for (const result of results) if (result.error) throw result.error;
+      return results.map((result) => result.count ?? 0);
     },
   });
   const metrics = [

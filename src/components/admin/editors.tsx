@@ -3,9 +3,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Trash2, Save, Upload, Search, ChevronDown, ImageOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { deleteSiteRow, insertSiteRow, readStaffRows, updateSiteRow } from "@/lib/site-data.functions";
-import { previewMedia } from "@/lib/media.functions";
-import type { SiteTable } from "@/lib/site-schema";
 import { uploadImage, productGroupsQuery, productCategoriesQuery } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -104,9 +101,9 @@ function FieldInput({
     const path = value.slice("/api/public/media/".length);
     if (publicMediaPath(path) !== value) return;
     // Staff preview uses their own storage permissions, including unsaved/private uploads.
-    void previewMedia({ data: { path } }).then((url) => {
-      if (!cancelled && url) setPreview({ value, url });
-    }).catch(() => {});
+    void supabase.storage.from("media").createSignedUrl(path, 3600).then(({ data, error }) => {
+      if (!cancelled && !error && data) setPreview({ value, url: data.signedUrl });
+    });
     return () => { cancelled = true; };
   }, [f.type, value]);
   const previewUrl = preview && preview.value === value ? preview.url : String(value ?? "");
@@ -330,7 +327,15 @@ type AnyTable =
   | "posts";
 
 async function readRows(table: AnyTable, order: string, ascending: boolean) {
-  if (table !== "bullion_checks") return (await readStaffRows({ data: { table, order, ascending } })) as Record<string, unknown>[];
+  if (table === "bullion_serials") {
+    const rows: Record<string, unknown>[] = [];
+    for (let start = 0; ; start += 1000) {
+      const result = await supabase.from(table).select("*").order(order, { ascending }).range(start, start + 999);
+      if (result.error) throw result.error;
+      rows.push(...result.data);
+      if (result.data.length < 1000) return rows;
+    }
+  }
   const { data, error } = await supabase.from(table).select("*").order(order, { ascending });
   if (error) throw error;
   return (data ?? []) as unknown as Record<string, unknown>[];
@@ -382,9 +387,13 @@ export function SingleEditor({
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin", table, pk, id],
     queryFn: async () => {
-      const [row] = await readStaffRows({ data: { table: table as SiteTable, eq: { [pk]: id } } });
-      if (!row) throw new Error("المحتوى غير موجود");
-      return row as Record<string, unknown>;
+      const result = await supabase
+        .from(table)
+        .select("*")
+        .eq(pk as never, id as never)
+        .single();
+      if (result.error) throw result.error;
+      return result.data as unknown as Record<string, unknown>;
     },
   });
   const [row, setRow] = useState<Record<string, unknown>>({});
@@ -409,7 +418,19 @@ export function SingleEditor({
       const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
       for (const { field, result } of whatsappChecks)
         patch[field.name] = result.number === "" && field.optional ? null : result.number;
-      await updateSiteRow({ data: { table: table as SiteTable, id, patch } });
+      const { data: saved, error } = await supabase
+        .from(table)
+        .update(patch as never)
+        .eq(pk as never, id as never)
+        .select();
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      if (!saved?.length) {
+        toast.error("لم يتم الحفظ: هذا الحساب لا يملك صلاحية المسؤول");
+        return;
+      }
       toast.success("تم الحفظ");
       refreshContent(qc, table, queryKey);
     } catch (err) {
@@ -487,7 +508,19 @@ function RowCard({
         if (!validated.success) { toast.error("أدخل سيريالًا واسمًا ونقاءً صحيحًا ووزنًا أكبر من صفر"); return; }
         Object.assign(patch, validated.data);
       }
-      await updateSiteRow({ data: { table: table as SiteTable, id: row[pk] as string, patch } });
+      const { data: saved, error } = await supabase
+        .from(table)
+        .update(patch as never)
+        .eq(pk, row[pk] as never)
+        .select();
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      if (!saved?.length) {
+        toast.error("لم يتم الحفظ: هذا الحساب لا يملك صلاحية المسؤول");
+        return;
+      }
       toast.success("تم الحفظ");
       onDone();
     } catch (err) {
@@ -500,7 +533,19 @@ function RowCard({
     if (!confirm("حذف هذا العنصر؟")) return;
     setBusy(true);
     try {
-      await deleteSiteRow({ data: { table: table as SiteTable, id: String(row[pk]) } });
+      const { data: gone, error } = await supabase
+        .from(table)
+        .delete()
+        .eq(pk, row[pk] as never)
+        .select();
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      if (!gone?.length) {
+        toast.error("لم يتم الحذف: هذا الحساب لا يملك صلاحية المسؤول");
+        return;
+      }
       toast.success("تم الحذف");
       onDone();
     } catch (err) {
@@ -587,7 +632,11 @@ export function ListEditor({
     setAdding(true);
     try {
       const values = table === "bullion_serials" ? { ...newRow, serial: `NEW-${crypto.randomUUID().toUpperCase()}` } : (newRow ?? {});
-      await insertSiteRow({ data: { table: table as SiteTable, values } });
+      const { error } = await supabase.from(table).insert(values as never);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       toast.success("تمت الإضافة — افتحها لتعديلها");
       refresh();
     } catch (err) {

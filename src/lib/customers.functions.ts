@@ -40,7 +40,7 @@ export const exportCustomers = createServerFn({ method: "POST" })
       collectAll((a, b) => context.supabase.from("profiles").select("*").order("id").range(a, b)),
       collectAll((a, b) => context.supabase.from("customer_shopping").select("*").order("user_id").range(a, b)),
       collectAll((a, b) => context.supabase.from("customer_activity").select("*").order("id").range(a, b)),
-      (async () => { const { sql } = await import("./mysql.server"); return (await sql(`SELECT id, name_ar FROM products ORDER BY id`)) as { id: string; name_ar: string }[]; })(),
+      collectAll((a, b) => context.supabase.from("products").select("id,name_ar").order("id").range(a, b)),
     ]);
     return { profiles, shopping, activity, products, exportedAt: new Date().toISOString() };
   });

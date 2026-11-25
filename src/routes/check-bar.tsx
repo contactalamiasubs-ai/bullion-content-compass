@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { sectionsQuery, settingsQuery } from "@/lib/data";
 import { pick, useLang } from "@/lib/i18n";
 import { serialSchema } from "@/lib/bullion-serials";
-import { lookupBullionSerial } from "@/lib/site-data.functions";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -68,8 +67,9 @@ function CheckBar() {
           setBusy(true);
           try {
             await supabase.from("bullion_checks").insert({ name: n.data, email: m.data.toLowerCase(), serial: p.data });
-            const result = await lookupBullionSerial({ data: { serial: p.data } });
-            setMatch(result[0] ?? null); setChecked(true); setCaptcha(newCaptcha()); setAnswer("");
+            const result = await supabase.rpc("lookup_bullion_serial", { _serial: p.data });
+            if (result.error) throw result.error;
+            setMatch(result.data?.[0] ?? null); setChecked(true); setCaptcha(newCaptcha()); setAnswer("");
           } catch { setError(text("error")); }
           finally { setBusy(false); }
         }}>

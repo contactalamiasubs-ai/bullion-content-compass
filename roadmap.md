@@ -52,5 +52,3 @@
 
 - [x] Add administrator-managed invitations and scoped permissions. Verified account listing, permission save/reload, product member CRUD, denied price writes and escalation, admin promotion and access revocation on a temporary member; 25 tests passed and desktop/mobile checked. Invitation email receipt and acceptance require the recipient's mailbox and were not exercised.
 - [x] Point the homepage gold-verification card to the bar serial check page and make its label dashboard-editable (serial_check_card); Arabic/English click-through to /check-bar, mobile layout and build verified.
-
-- [x] Switch site data reads/saves to Hostinger MySQL and move 69 images/files; counts match, public products and images verified. Dashboard save not yet tried signed in.
