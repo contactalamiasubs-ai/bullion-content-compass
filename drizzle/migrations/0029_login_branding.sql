@@ -1,0 +1,1 @@
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS login_logo_url text, ADD COLUMN IF NOT EXISTS login_background_url text;

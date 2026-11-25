@@ -299,6 +299,8 @@ function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab
           fields={[
             ...bi("site_name", "اسم الموقع"),
             { name: "logo_url", label: "اللوجو", type: "image" },
+            { name: "login_logo_url", label: "لوجو صفحة دخول العملاء (فارغ = لوجو الموقع)", type: "image", optional: true },
+            { name: "login_background_url", label: "خلفية صفحة دخول العملاء", type: "image", optional: true },
             { name: "whatsapp_number", label: "رقم واتساب (بالكود الدولي)", type: "whatsapp" },
             { name: "phone", label: "الهاتف" },
             {

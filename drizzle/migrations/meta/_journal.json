@@ -204,6 +204,13 @@
       "when": 1795265944839,
       "tag": "0028_separate_public_posts_from_staff_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1795610342832,
+      "tag": "0029_login_branding",
+      "breakpoints": true
     }
   ]
 }

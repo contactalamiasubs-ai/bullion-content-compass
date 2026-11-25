@@ -554,6 +554,8 @@ export type Database = {
           gold_usd: number
           id: number
           instagram: string | null
+          login_background_url: string | null
+          login_logo_url: string | null
           logo_url: string | null
           phone: string | null
           popup_button_ar: string | null
@@ -595,6 +597,8 @@ export type Database = {
           gold_usd?: number
           id?: number
           instagram?: string | null
+          login_background_url?: string | null
+          login_logo_url?: string | null
           logo_url?: string | null
           phone?: string | null
           popup_button_ar?: string | null
@@ -636,6 +640,8 @@ export type Database = {
           gold_usd?: number
           id?: number
           instagram?: string | null
+          login_background_url?: string | null
+          login_logo_url?: string | null
           logo_url?: string | null
           phone?: string | null
           popup_button_ar?: string | null

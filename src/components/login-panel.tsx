@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Gem, Mail, LockKeyhole, Eye, EyeOff, LogIn, LoaderCircle, ArrowRight } from "lucide-react";
+import { Mail, LockKeyhole, Eye, EyeOff, LogIn, LoaderCircle, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,16 @@ import { authErrorKey, rememberLogin, type LoginDestination } from "@/lib/login"
 import marketImage from "@/assets/login-gold-market.jpg";
 
 export function LoginScene({ children }: { children: React.ReactNode }) {
-  return <main className="login-scene"><img className="login-market" src={marketImage} alt="" width={1536} height={1024} fetchPriority="high" /><div className="login-scene-content">{children}</div></main>;
+  const { data } = useQuery(settingsQuery);
+  const bg = (data as { login_background_url?: string | null } | undefined)?.login_background_url || marketImage;
+  return <main className="login-scene"><img className="login-market" src={bg} alt="" width={1536} height={1024} fetchPriority="high" /><div className="login-scene-content">{children}</div></main>;
 }
 export function LoginBrand() {
   const { data } = useQuery(settingsQuery);
   const { lang } = useLang();
-  return <div className="login-brand"><Gem aria-hidden="true" /><div className="login-brand-english" dir="ltr">{pick(data, "site_name", "en")}</div><div className="login-brand-arabic" dir="rtl"><span />{pick(data, "site_name", lang)}<span /></div></div>;
+  const d = data as { login_logo_url?: string | null; logo_url?: string | null } | undefined;
+  const logo = d?.login_logo_url || d?.logo_url;
+  return <div className="login-brand">{logo ? <img className="login-brand-logo" src={logo} alt={pick(data, "site_name", lang)} width={88} height={88} /> : null}<div className="login-brand-english" dir="ltr">{pick(data, "site_name", "en")}</div><div className="login-brand-arabic" dir="rtl"><span />{pick(data, "site_name", lang)}<span /></div></div>;
 }
 export function LoginPanel({ destination = "/account" }: { destination?: LoginDestination }) {
   const text = useShoppingText();
