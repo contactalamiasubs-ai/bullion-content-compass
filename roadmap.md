@@ -1,4 +1,5 @@
 # Gold Center updates
+- [x] Fix non-product images: portable CDN links, eager warmed slideshow images and original fallback including pre-hydration failures. Eight public pages verified at 390/1280 widths with external-host asset paths blocked; missing responsive copies recover, products unchanged, no runtime errors; 176 tests passed. Live Hostinger requires deploying this update.
 - [x] Optimize image delivery: 24 existing images with high-quality responsive WebP variants, five CDN-backed default images, exact original authorization and five-minute byte caching; originals/design/database preserved, oversized generated copies removed.
 - [x] Prioritize first home image, defer hidden slides/chart/PDF work, reduce immediate repeat reads, and render eight catalog cards per URL-backed page (home stays six). Full metadata bundle retained for SEO/shopping consistency.
 - [x] Verify mobile/desktop images, chart, pagination/filter refresh, customer login and serial page; guest cart/WhatsApp flow passed, 173 tests passed. Local mobile Lighthouse LCP 14.70s → 8.58s and TBT 7.08s → 3.14s; targets not yet achieved in this development lab. Details in PERFORMANCE.md.

@@ -1,8 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { responsiveImage, requestedImageWidth, imageVariantPath } from "@/lib/responsive-images";
 import { catalogPage } from "@/lib/catalog-pagination";
+import { staticImages, staticImageVariants } from "@/lib/static-images";
 
 describe("Responsive delivery", () => {
+  it("serves all default images and every size from the reachable CDN, not the external host", () => {
+    expect(Object.values(staticImages)).toHaveLength(5);
+    for (const image of Object.values(staticImages)) {
+      expect(new URL(image).origin).toBe("https://bullion-content-compass.lovable.app");
+      const variants = staticImageVariants[image];
+      expect(variants?.map(variant => variant.width)).toEqual([640, 1280, 1920]);
+      for (const variant of variants ?? []) {
+        expect(new URL(variant.url).origin).toBe("https://bullion-content-compass.lovable.app");
+      }
+      expect(responsiveImage(image, 640).src).toBe(variants?.[0]?.url);
+    }
+  });
   it("selects only bounded known widths", () => {
     expect(requestedImageWidth("640")).toBe(640);
     expect(requestedImageWidth("99999")).toBeNull();

@@ -13,17 +13,19 @@ import image3_1920 from "@/assets/slide-4-1920.webp.asset.json";
 import image4_640 from "@/assets/login-gold-market-640.webp.asset.json";
 import image4_1280 from "@/assets/login-gold-market-1280.webp.asset.json";
 import image4_1920 from "@/assets/login-gold-market-1920.webp.asset.json";
+// Relative Lovable asset paths do not exist on external hosting.
+const assetUrl = (asset: { url: string }) => new URL(asset.url, "https://bullion-content-compass.lovable.app").href;
 export const staticImages = {
-  "slide-1": image0_1920.url,
-  "slide-2": image1_1920.url,
-  "slide-3": image2_1920.url,
-  "slide-4": image3_1920.url,
-  "login-gold-market": image4_1920.url,
+  "slide-1": assetUrl(image0_1920),
+  "slide-2": assetUrl(image1_1920),
+  "slide-3": assetUrl(image2_1920),
+  "slide-4": assetUrl(image3_1920),
+  "login-gold-market": assetUrl(image4_1920),
 };
 export const staticImageVariants: Record<string, { width: number; url: string }[]> = {
-  [image0_1920.url]: [{width:640,url:image0_640.url}, {width:1280,url:image0_1280.url}, {width:1920,url:image0_1920.url}],
-  [image1_1920.url]: [{width:640,url:image1_640.url}, {width:1280,url:image1_1280.url}, {width:1920,url:image1_1920.url}],
-  [image2_1920.url]: [{width:640,url:image2_640.url}, {width:1280,url:image2_1280.url}, {width:1920,url:image2_1920.url}],
-  [image3_1920.url]: [{width:640,url:image3_640.url}, {width:1280,url:image3_1280.url}, {width:1920,url:image3_1920.url}],
-  [image4_1920.url]: [{width:640,url:image4_640.url}, {width:1280,url:image4_1280.url}, {width:1920,url:image4_1920.url}],
+  [assetUrl(image0_1920)]: [{width:640,url:assetUrl(image0_640)}, {width:1280,url:assetUrl(image0_1280)}, {width:1920,url:assetUrl(image0_1920)}],
+  [assetUrl(image1_1920)]: [{width:640,url:assetUrl(image1_640)}, {width:1280,url:assetUrl(image1_1280)}, {width:1920,url:assetUrl(image1_1920)}],
+  [assetUrl(image2_1920)]: [{width:640,url:assetUrl(image2_640)}, {width:1280,url:assetUrl(image2_1280)}, {width:1920,url:assetUrl(image2_1920)}],
+  [assetUrl(image3_1920)]: [{width:640,url:assetUrl(image3_640)}, {width:1280,url:assetUrl(image3_1280)}, {width:1920,url:assetUrl(image3_1920)}],
+  [assetUrl(image4_1920)]: [{width:640,url:assetUrl(image4_640)}, {width:1280,url:assetUrl(image4_1280)}, {width:1920,url:assetUrl(image4_1920)}],
 };

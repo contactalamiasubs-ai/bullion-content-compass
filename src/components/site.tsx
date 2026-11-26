@@ -432,7 +432,7 @@ export function HeroSlider() {
           width={1920}
           height={912}
           sizes="(max-width: 767px) 180vw, 100vw"
-          loading={idx === 0 ? "eager" : "lazy"}
+          loading="eager"
           fetchPriority={idx === 0 ? "high" : "low"}
           className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000 ${idx === i % active.length ? "opacity-100" : "opacity-0"}`}
         />
