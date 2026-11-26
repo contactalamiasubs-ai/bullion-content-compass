@@ -23,7 +23,7 @@ export function LoginBrand() {
   const { lang } = useLang();
   const d = data as { login_logo_url?: string | null; logo_url?: string | null } | undefined;
   const logo = d?.login_logo_url || d?.logo_url;
-  return <div className="login-brand"><svg width="0" height="0" aria-hidden="true" className="login-logo-filter"><defs><filter id="login-logo-transparent" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1.5 1.5 1.5 1 -1.3" /></filter></defs></svg>{logo ? <img className="login-brand-logo" src={logo} alt={pick(data, "site_name", lang)} width={128} height={72} /> : null}<div className="login-brand-english" dir="ltr">{pick(data, "site_name", "en")}</div><div className="login-brand-arabic" dir="rtl"><span />{pick(data, "site_name", lang)}<span /></div></div>;
+  return <div className="login-brand"><svg width="0" height="0" aria-hidden="true" className="login-logo-filter"><defs><filter id="login-logo-transparent" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1.5 1.5 1.5 1 -1.3" /></filter></defs></svg>{logo ? <img className="login-brand-logo" src={logo} alt={pick(data, "site_name", lang)} width={240} height={150} /> : <><div className="login-brand-english" dir="ltr">{pick(data, "site_name", "en")}</div><div className="login-brand-arabic" dir="rtl"><span />{pick(data, "site_name", lang)}<span /></div></>}</div>;
 }
 export function LoginPanel({ destination = "/account" }: { destination?: LoginDestination }) {
   const text = useShoppingText();
