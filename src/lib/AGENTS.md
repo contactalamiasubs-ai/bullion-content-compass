@@ -4,3 +4,4 @@
 - Public SEO metadata and sitemap share published-content reads; protected audits and cached Google reports require the separate SEO permission to prevent administrative data exposure.
 - New SEO routes declare sitemap eligibility, and dynamic sources paginate to completion or fail the whole response so discovery never silently omits later content.
 - Hostinger Google actions use the pinned Lovable bridge with an independently checked SEO-authorized bearer; provider credentials never move to browser code or arbitrary destinations.
+- Public SEO images require a published original reference without recursive media checks; configuration reads use the fixed public tag projection so drafts and future settings stay private.

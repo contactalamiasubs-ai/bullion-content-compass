@@ -16,7 +16,9 @@ export async function readPublicBundle(): Promise<SiteBundle> {
       return {data: result.data as unknown as Database["public"]["Tables"][T]["Row"][] | null,error:result.error};
     });
   }
-  const [settings, products, posts, services, groups, categories, sections, slides, prices, history, seo, images, config] = await Promise.all([rows("site_settings", "id"), rows("products", "id"), rows("posts", "id"), rows("services", "id"), rows("product_groups", "id"), rows("product_categories", "id"), rows("sections", "key"), rows("slides", "id"), rows("metal_prices", "id"), rows("price_history", "id"), rows("seo_pages", "path"), rows("seo_images", "id"), rows("seo_config", "id")]);
+  const [settings, products, posts, services, groups, categories, sections, slides, prices, history, seo, images, config] = await Promise.all([rows("site_settings", "id"), rows("products", "id"), rows("posts", "id"), rows("services", "id"), rows("product_groups", "id"), rows("product_categories", "id"), rows("sections", "key"), rows("slides", "id"), rows("metal_prices", "id"), rows("price_history", "id"), rows("seo_pages", "path"), rows("seo_images", "id"), client.rpc("public_seo_tags")]);
+  if (config.error) throw new Error("Site verification settings unavailable");
+  const tags = config.data?.[0];
   const first = settings[0]; if (!first) throw new Error("Site settings unavailable");
-  return { settings: first, products: products.filter(p => p.active), posts: posts.filter(p => p.published && (!p.publish_at || Date.parse(p.publish_at) <= Date.now())), services, groups, categories, sections, slides: slides.filter(p => p.active), prices, history, seo, images, config: config[0] ?? null };
+  return { settings: first, products: products.filter(p => p.active), posts: posts.filter(p => p.published && (!p.publish_at || Date.parse(p.publish_at) <= Date.now())), services, groups, categories, sections, slides: slides.filter(p => p.active), prices, history, seo, images, config: tags ? { id: 1, google_verification: tags.google_verification, bing_verification: tags.bing_verification, measurement_id: tags.measurement_id } : null };
 }

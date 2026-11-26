@@ -1032,6 +1032,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_public_seo_image: { Args: { _url: string }; Returns: boolean }
       is_published_media: { Args: { _url: string }; Returns: boolean }
       latest_verified_price: {
         Args: never
@@ -1058,6 +1059,14 @@ export type Database = {
           specifications_ar: string
           specifications_en: string
           weight_grams: number
+        }[]
+      }
+      public_seo_tags: {
+        Args: never
+        Returns: {
+          bing_verification: string
+          google_verification: string
+          measurement_id: string
         }[]
       }
       record_customer_view: {

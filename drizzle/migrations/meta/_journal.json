@@ -260,6 +260,13 @@
       "when": 1795697683486,
       "tag": "0036_seo_staff_image_uploads",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1795698052768,
+      "tag": "0037_restrict_seo_image_and_config_reads",
+      "breakpoints": true
     }
   ]
 }
