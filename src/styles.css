@@ -549,10 +549,11 @@
 @media (prefers-reduced-motion: reduce) { .serial-bg * { animation: none !important; } }
 
 /* Animated brand: rotating gold ring, refined sheen, name reveal */
-.brand-mark { isolation: isolate; }
+.brand-mark { isolation: isolate; background: var(--background); }
+.header-brand-logo { filter: url(#header-logo-transparent); }
 .brand-mark::before {
   content: ""; position: absolute; inset: 0; border-radius: 9999px; z-index: 0;
-  background: conic-gradient(from 0deg, color-mix(in oklab, var(--gold) 15%, transparent), var(--gold), color-mix(in oklab, var(--gold) 15%, transparent) 40%, var(--gold) 75%, color-mix(in oklab, var(--gold) 15%, transparent));
+  border: 1px solid color-mix(in oklab, var(--gold) 25%, transparent);
 }
 .brand-sheen {
   position: absolute; inset: 2px; z-index: 20; border-radius: 9999px; overflow: hidden; pointer-events: none;

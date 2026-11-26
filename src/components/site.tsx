@@ -94,13 +94,13 @@ export function Header() {
       <div className="mx-auto max-w-7xl px-3 sm:px-6">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3">
           <Link to="/" className="flex min-w-0 items-center gap-2" onClick={() => setOpen(false)}>
+            <svg width="0" height="0" aria-hidden="true" className="login-logo-filter"><defs><filter id="header-logo-transparent" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1.5 1.5 1.5 1 -1.3" /></filter></defs></svg>
             <span className="brand-mark relative grid h-11 w-11 shrink-0 place-items-center rounded-full sm:h-[52px] sm:w-[52px]">
               {s?.logo_url ? (
-                <SeoImage src={s.logo_url} loading="eager" maxWidth={160} sizes="52px" width={52} height={52} alt={pick(s, "site_name", lang)} className="relative z-10 h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" />
+                <SeoImage src={s.logo_url} loading="eager" maxWidth={160} sizes="52px" width={52} height={52} alt={pick(s, "site_name", lang)} className="header-brand-logo relative z-10 h-10 w-10 rounded-full object-contain sm:h-12 sm:w-12" />
               ) : (
                 <span className="relative z-10 grid h-10 w-10 place-items-center rounded-full bg-gold-gradient font-display text-lg font-bold text-primary-foreground sm:h-12 sm:w-12">Au</span>
               )}
-              <span aria-hidden className="brand-sheen" />
             </span>
             <span className="brand-text flex min-w-0 flex-col">
               <span className="brand-name break-words font-display text-base font-bold sm:text-xl">{pick(s, "site_name", lang)}</span>
