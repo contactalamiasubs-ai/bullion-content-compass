@@ -8,6 +8,10 @@ import { Button } from "@/components/ui/button";
 import { SingleEditor, type Field } from "@/components/admin/editors";
 import { PriceSource } from "@/components/admin/price-source";
 import { SeoGoogle } from "@/components/admin/seo-google";
+import { googleLoginSettings, saveGoogleLoginSettings } from "@/lib/google-login.functions";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { externalConnectionsStatus } from "@/lib/external-connections.functions";
 import { seoBundleQuery } from "@/lib/seo-public.functions";
 import { pagePath } from "@/lib/seo";
@@ -53,6 +57,7 @@ export function ExternalConnections() {
         <p className="mt-3 text-sm">يظهر اختيار حساب Google قبل الدخول؛ لا تتغير صفحة دخول المسؤول.</p>
         <Button asChild variant="outline" className="mt-5"><Link to="/account" target="_blank"><ExternalLink />فتح صفحة دخول العملاء</Link></Button>
       </div>
+      <GoogleKeysForm />
       <div className="space-y-4"><h3 className="font-semibold">ربط مفاتيح Google الخاصة بك</h3>
         <p className="text-sm leading-relaxed text-muted-foreground">تُحفظ مفاتيح تسجيل الدخول في إعدادات الدخول الآمنة، وليس في إعدادات الموقع: افتح Lovable ← More ← Users ← Auth settings ← Sign In Methods ← Google، ثم استخدم بياناتك الخاصة واحفظ Client ID وClient Secret هناك.</p>
         <p className="text-sm leading-relaxed text-muted-foreground">في Google Cloud Console، أضف رابط العودة الظاهر في إعدادات Google إلى Authorized redirect URIs. هذا مختلف عن رابط عودة العميل إلى الموقع أدناه؛ لا تستبدل أحدهما بالآخر.</p>
@@ -75,10 +80,36 @@ function GoogleTestButton() {
   const run = async () => {
     setBusy(true);
     sessionStorage.setItem("gold-center-google-test", "1");
+    const { siteGoogleLoginEnabled } = await import("@/components/google-sign-in");
+    if (await siteGoogleLoginEnabled()) { window.location.assign("/api/public/google-login?start=1"); return; }
     const redirect = `${window.location.origin}/auth/callback`;
     const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: redirect, queryParams: { prompt: "select_account" } } });
     if (error) { sessionStorage.removeItem("gold-center-google-test"); setBusy(false); toast.error(`رفض Google الطلب: ${error.message}`); }
   };
   return <Button onClick={run} disabled={busy}><KeyRound />{busy ? "جارٍ التحويل إلى Google…" : "اختبار الدخول بـ Google"}</Button>;
+}
+
+const callbackUris = ["https://goldcenterstr.com/api/public/google-login", "https://www.goldcenterstr.com/api/public/google-login", "https://bullion-content-compass.lovable.app/api/public/google-login"];
+function GoogleKeysForm() {
+  const load = useServerFn(googleLoginSettings); const save = useServerFn(saveGoogleLoginSettings); const qc = useQueryClient();
+  const current = useQuery({ queryKey: ["google-login-settings"], queryFn: () => load() });
+  const [clientId, setClientId] = useState<string | null>(null); const [secret, setSecret] = useState(""); const [enabled, setEnabled] = useState<boolean | null>(null);
+  const id = clientId ?? current.data?.clientId ?? ""; const on = enabled ?? current.data?.enabled ?? true;
+  const mutation = useMutation({
+    mutationFn: () => save({ data: { clientId: id, clientSecret: secret, enabled: on } }),
+    onSuccess: async () => { setSecret(""); await qc.invalidateQueries({ queryKey: ["google-login-settings"] }); toast.success(on ? "تم الحفظ وتفعيل الدخول بـ Google" : "تم الحفظ؛ الدخول بـ Google متوقف"); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  const ready = !!current.data?.hasSecret && !!current.data.clientId && current.data.enabled;
+  return <form className="space-y-4 rounded-md border border-border p-4" onSubmit={(e) => { e.preventDefault(); if (!current.data?.hasSecret && !secret) { toast.error("الصق Client Secret أولًا."); return; } mutation.mutate(); }}>
+    <h3 className="font-semibold">مفاتيح Google (تفعيل مباشر من لوحة التحكم)</h3>
+    <p role="status" className="text-sm text-muted-foreground">{current.isPending ? "جارٍ التحميل…" : current.error ? current.error.message : ready ? "الدخول بـ Google يعمل بمفاتيحك." : "لم يكتمل الإعداد بعد."}</p>
+    <label className="block space-y-1 text-sm"><span>Client ID</span><Input dir="ltr" value={id} onChange={e => setClientId(e.target.value)} placeholder="xxxx.apps.googleusercontent.com" autoComplete="off" required /></label>
+    <label className="block space-y-1 text-sm"><span>Client Secret</span><Input dir="ltr" type="password" value={secret} onChange={e => setSecret(e.target.value)} placeholder={current.data?.hasSecret ? "محفوظ — اتركه فارغًا للإبقاء عليه" : "GOCSPX-..."} autoComplete="new-password" /></label>
+    <label className="flex items-center gap-3 text-sm"><Switch checked={on} onCheckedChange={setEnabled} />تفعيل الدخول بـ Google</label>
+    <Button type="submit" disabled={mutation.isPending || current.isPending}>{mutation.isPending ? "جارٍ الحفظ…" : "حفظ وتفعيل"}</Button>
+    <div className="space-y-1 text-sm"><p className="text-muted-foreground">أضف هذه الروابط في Google Cloud Console ← Credentials ← تطبيقك ← Authorized redirect URIs:</p>
+      {callbackUris.map(u => <code key={u} dir="ltr" className="block break-all">{u}</code>)}</div>
+  </form>;
 }

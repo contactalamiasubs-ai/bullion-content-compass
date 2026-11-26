@@ -193,6 +193,30 @@ export type Database = {
         }
         Relationships: []
       }
+      google_login_config: {
+        Row: {
+          client_id: string
+          client_secret: string
+          enabled: boolean
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string
+          client_secret?: string
+          enabled?: boolean
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          client_secret?: string
+          enabled?: boolean
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       metal_prices: {
         Row: {
           buy: number
@@ -1021,6 +1045,15 @@ export type Database = {
         }
         Returns: Json
       }
+      google_login_status: {
+        Args: never
+        Returns: {
+          client_id: string
+          enabled: boolean
+          has_secret: boolean
+          updated_at: string
+        }[]
+      }
       has_dashboard_permission: {
         Args: { _permission: string; _user_id: string }
         Returns: boolean
@@ -1061,6 +1094,13 @@ export type Database = {
           weight_grams: number
         }[]
       }
+      public_google_login: {
+        Args: never
+        Returns: {
+          client_id: string
+          enabled: boolean
+        }[]
+      }
       public_seo_tags: {
         Args: never
         Returns: {
@@ -1071,6 +1111,10 @@ export type Database = {
       }
       record_customer_view: {
         Args: { _product_id: string }
+        Returns: undefined
+      }
+      save_google_login: {
+        Args: { _client_id: string; _client_secret: string; _enabled: boolean }
         Returns: undefined
       }
       set_dashboard_access: {

@@ -267,6 +267,20 @@
       "when": 1795698052768,
       "tag": "0037_restrict_seo_image_and_config_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1795714500631,
+      "tag": "0038_google_login_config",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1795714525508,
+      "tag": "0039_google_login_admin_rpcs",
+      "breakpoints": true
     }
   ]
 }

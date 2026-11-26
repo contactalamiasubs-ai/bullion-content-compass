@@ -21,6 +21,12 @@ function Callback() {
         sessionStorage.removeItem("gold-center-google-test");
         const errText = url.searchParams.get("error_description") || hash.get("error_description") || url.searchParams.get("error") || hash.get("error");
         if (errText) { if (active) { if (isTest) setTest({ ok: false, reason: errText }); else setError(true); } return; }
+        const tokenHash = url.searchParams.get("token_hash");
+        if (tokenHash) {
+          const verified = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "magiclink" });
+          window.history.replaceState(null, "", url.pathname);
+          if (verified.error) { if (active) { if (isTest) setTest({ ok: false, reason: verified.error.message }); else setError(true); } return; }
+        }
         const code = url.searchParams.get("code");
         if (code) await supabase.auth.exchangeCodeForSession(code).catch(() => undefined);
         let { data } = await supabase.auth.getSession();
