@@ -580,5 +580,6 @@
   @keyframes brand-draw { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 0.7; } }
 }
 
-.login-brand-logo { width: 88px; height: 88px; margin: 0 auto 8px; border-radius: 9999px; object-fit: cover; border: 2px solid var(--login-gold); }
-@media (max-width: 640px) { .login-brand-logo { width: 64px; height: 64px; } }
+/* Blend black-backed brand artwork into the customer sign-in surface. */
+.login-brand-logo { display: block; width: 128px; height: 72px; max-width: 100%; margin: 0 auto 8px; object-fit: contain; mix-blend-mode: screen; }
+@media (max-width: 640px) { .login-brand-logo { width: 112px; height: 64px; } }
