@@ -1,3 +1,4 @@
+import { SeoImage } from "@/components/seo-image";
 import { loadPublicPage } from "@/lib/seo-public.functions";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -25,7 +26,7 @@ function Services() {
       <section className="mx-auto max-w-6xl space-y-10 px-4 py-12">
         {list.map((x, i) => (
           <div key={x.id} className="grid items-center gap-8 md:grid-cols-2">
-            <img
+            <SeoImage
               src={x.image_url || fallbackImages[(i + 2) % 4]}
               alt={pick(x, "title", lang)}
               loading="lazy"

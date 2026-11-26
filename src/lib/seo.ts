@@ -5,7 +5,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 type Row<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"];
 export const SEO_ORIGIN = "https://goldcenterstr.com";
-export const publicPathSchema = z.string().max(300).regex(/^\/(?!\/)[^?#\\]*$/).refine(v => !/^\/(admin|auth|api|account|cart|favorites|reset-password|set-password)(\/|$)/.test(v), "Only public site paths are allowed").refine(v => { try { return !/[\\?#]/.test(decodeURIComponent(v)) && !decodeURIComponent(v).startsWith("//"); } catch { return false; } });
+export const publicPathSchema = z.string().max(300).regex(/^\/(?!\/)[^?#\\]*$/).refine(v => !/^\/(admin|auth|api|account|cart|favorites|reset-password|set-password)(\/|$)/.test(v), "Only public site paths are allowed").refine(v => { try { const decoded=decodeURIComponent(v); return !/[\\?#]/.test(decoded) && !decoded.startsWith("//") && !/\/\.\.?($|\/)/.test(decoded) && !/^\/(admin|auth|api|account|cart|favorites|reset-password|set-password)(\/|$)/.test(decoded) && new URL(v,SEO_ORIGIN).pathname === v; } catch { return false; } });
 export const seoPageInput = z.object({ path: publicPathSchema, lang: z.enum(["ar", "en"]).default("ar") });
 export const keywordCategories = ["gold_bars", "silver_bars", "gold_prices", "buy_gold", "bullion_trading", "refining", "wholesale", "brand"];
 export type SiteBundle = {
@@ -48,9 +48,12 @@ export function buildSeo(bundle: SiteBundle, path: string, lang: Lang = "ar") {
   const defaults = staticSeoPages[path];
   const exists = Boolean(defaults || content);
   const brand = pick(bundle.settings, "site_name", lang);
-  const name = content ? pick(content, product || group || category ? "name" : "title", lang) : defaults?.[lang] ?? (lang === "ar" ? "الصفحة غير موجودة" : "Page not found");
+  const baseName = content ? pick(content, product || group || category ? "name" : "title", lang) : defaults?.[lang] ?? (lang === "ar" ? "الصفحة غير موجودة" : "Page not found");
+  const parentGroup = category ? bundle.groups.find(g=>g.id===category.group_id) : undefined;
+  const name = parentGroup ? `${baseName} — ${pick(parentGroup,"name",lang)}` : baseName;
   const rawDescription = content ? pick(content, product ? "description" : post ? "excerpt" : "body", lang) : defaults?.[lang === "ar" ? "desc_ar" : "desc_en"] ?? "";
-  const description = pick(page, "description", lang) || rawDescription.replace(/[#*\[\]]/g, "").replace(/\s+/g, " ").slice(0, 300) || name;
+  const productDetails = product ? [name, product.weight_grams ? `${product.weight_grams} ${lang==="ar"?"جرام":"grams"}` : "", product.pricing_metal !== "silver" && product.karat ? `${product.karat} ${lang==="ar"?"عيار":"karat"}` : ""].filter(Boolean).join(" — ") : "";
+  const description = pick(page, "description", lang) || rawDescription.replace(/[#*\[\]]/g, "").replace(/\s+/g, " ").slice(0, 300) || productDetails || name;
   const title = pick(page, "title", lang) || `${name}${brand ? ` | ${brand}` : ""}`;
   const cleanPath = page ? pagePath(page) : path;
   const canonical = (page?.canonical_url || SEO_ORIGIN + cleanPath) + (lang === "en" ? "?lang=en" : "");

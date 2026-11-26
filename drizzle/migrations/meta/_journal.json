@@ -239,6 +239,13 @@
       "when": 1795694183175,
       "tag": "0033_integrated_seo_management",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1795696647327,
+      "tag": "0034_seo_content_safety_and_publication",
+      "breakpoints": true
     }
   ]
 }

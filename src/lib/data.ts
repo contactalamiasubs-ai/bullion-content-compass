@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { optimizeUploadedImage } from "@/lib/image-optimization";
 
 async function q<T>(
   p: PromiseLike<{ data: T; error: { message: string } | null }>,
@@ -90,8 +91,10 @@ export function calcZakat(grams: number, karat: number, price24PerGram: number) 
 }
 
 export async function uploadImage(file: File): Promise<string> {
-  const path = `${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
-  const { error } = await supabase.storage.from("media").upload(path, file);
+  const optimized = await optimizeUploadedImage(file);
+  const filename = optimized.name.replace(/[^\w.-]/g, "_");
+  const path = `${Date.now()}-${filename.replace(/^_+/, "") || "goldcenter-image.webp"}`;
+  const { error } = await supabase.storage.from("media").upload(path, optimized);
   if (error) throw error;
   return `/api/public/media/${encodeURIComponent(path)}`;
 }

@@ -1,3 +1,4 @@
+import { SeoImage } from "@/components/seo-image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -103,7 +104,7 @@ export function Header() {
           <Link to="/" className="flex min-w-0 items-center gap-2" onClick={() => setOpen(false)}>
             <span className="brand-mark relative grid h-11 w-11 shrink-0 place-items-center rounded-full sm:h-[52px] sm:w-[52px]">
               {s?.logo_url ? (
-                <img src={s.logo_url} alt={pick(s, "site_name", lang)} className="relative z-10 h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" />
+                <SeoImage src={s.logo_url} alt={pick(s, "site_name", lang)} className="relative z-10 h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" />
               ) : (
                 <span className="relative z-10 grid h-10 w-10 place-items-center rounded-full bg-gold-gradient font-display text-lg font-bold text-primary-foreground sm:h-12 sm:w-12">Au</span>
               )}
@@ -422,12 +423,14 @@ export function HeroSlider() {
   return (
     <section className="relative h-[62svh] min-h-[420px] max-h-[640px] overflow-hidden sm:h-[70vh] md:h-[75vh] md:min-h-[480px] md:max-h-none">
       {active.map((sl, idx) => (
-        <img
+        <SeoImage
           key={sl.id}
           src={sl.image_url || fallbackImages[idx % 4]}
           alt={pick(sl, "title", lang)}
           width={1920}
           height={912}
+          loading={idx === 0 ? "eager" : "lazy"}
+          fetchPriority={idx === 0 ? "high" : "low"}
           className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000 ${idx === i % active.length ? "opacity-100" : "opacity-0"}`}
         />
       ))}
@@ -778,9 +781,11 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
         params={{ id: p.id }}
         className="block aspect-square overflow-hidden bg-secondary"
       >
-        <img
+        <SeoImage
           src={p.image_url || fallbackImages[idx % 4]}
           alt={name}
+          width={600}
+          height={600}
           loading="lazy"
           className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-105"
         />
@@ -842,9 +847,11 @@ export function PostCard({ p, idx }: { p: PostRow; idx: number }) {
       className="group block overflow-hidden rounded-xl border border-border bg-card hover:border-gold/60"
     >
       <div className="aspect-video overflow-hidden">
-        <img
+        <SeoImage
           src={p.image_url || fallbackImages[(idx + 1) % 4]}
           alt={pick(p, "title", lang)}
+          width={800}
+          height={450}
           loading="lazy"
           className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-105"
         />
@@ -864,7 +871,7 @@ export function PostCard({ p, idx }: { p: PostRow; idx: number }) {
 export function PageHero({ title, centered = false }: { title: string; centered?: boolean }) {
   return (
     <section className="relative h-56 overflow-hidden">
-      <img src={s1} alt="" className="absolute inset-0 h-full w-full object-cover opacity-40" />
+      <SeoImage src={s1} alt="" className="absolute inset-0 h-full w-full object-cover opacity-40" />
       <div className="absolute inset-0 bg-hero-fade" />
       <div className={`relative mx-auto flex h-full max-w-7xl px-4 ${centered ? "items-center justify-center text-center" : "items-end pb-8"}`}>
         <h1 className="text-4xl font-bold text-gold-gradient">{title}</h1>

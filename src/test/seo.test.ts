@@ -1,0 +1,25 @@
+import { describe, expect, it } from "vitest";
+import { buildSeo, publicPathSchema, pagePath, SEO_ORIGIN, type SiteBundle } from "@/lib/seo";
+import { auditObservation, duplicateValues, type AuditObservation } from "@/lib/seo-audit";
+import { sitemapXML } from "@/lib/sitemap";
+import { canAccessTab, updateAccessSchema } from "@/lib/dashboard-permissions";
+import { readAllPages } from "@/lib/seo-pagination";
+const bundle = { settings:{site_name_ar:"جولد سنتر",site_name_en:"Gold Center",gold_gram_24:4000,gold_gram_21:3500,silver_gram:70},products:[{id:"gold-1",name_ar:"سبيكة ذهب",name_en:"Gold bar",description_ar:"سبيكة ذهب خالص",description_en:"Pure gold bar",active:true,gram_pricing:true,weight_grams:10,karat:24,making_charge:200,pricing_metal:"gold",price:999,availability:"available"}],posts:[],services:[],groups:[],categories:[],sections:[],slides:[],prices:[],history:[],seo:[],images:[],config:null } as unknown as SiteBundle;
+const observation: AuditObservation = { status:200,title:"Gold",description:"Actual page",canonical:SEO_ORIGIN+"/products",expectedCanonical:SEO_ORIGIN+"/products",schemaCount:1,invalidSchemas:0,h1Count:1,missingAlts:0,wordCount:100,brokenLinks:[],failedLinks:[],pageType:"/products",imageCount:1 };
+describe("SEO rules",()=>{
+ it("reads every source batch for the sitemap",async()=>{const data=[1,2,3,4,5];expect(await readAllPages(async(offset,size)=>({data:data.slice(offset,offset+size),error:null}),2)).toEqual(data);});
+ it("fails rather than emitting a partial sitemap when a later batch fails",async()=>{await expect(readAllPages(async(offset)=>offset===0?{data:[1,2],error:null}:{data:null,error:{message:"later page unavailable"}},2)).rejects.toThrow("later page unavailable");});
+ it("uses the confirmed bare primary domain",()=>{expect(buildSeo(bundle,"/products").canonical).toBe("https://goldcenterstr.com/products");});
+ it("keeps English identifiable to the server",()=>{const r=buildSeo(bundle,"/products","en");expect(r.canonical).toBe("https://goldcenterstr.com/products?lang=en");expect(r.lang).toBe("en");});
+ it("manual title overrides automatic product title",()=>{const b={...bundle,seo:[{path:"/products/gold-1",entity_type:"products",entity_id:"gold-1",title_ar:"عنوان معتمد",url_slug:"",canonical_url:"",robots:"index"} as SiteBundle["seo"][number]]};expect(buildSeo(b,"/products/gold-1").title).toBe("عنوان معتمد");});
+ it("Product Schema uses current gram rate plus making charge, not stale manual price",()=>{const p=buildSeo(bundle,"/products/gold-1").schema.find(s=>s["@type"]==="Product");expect(p?.["offers"]).toMatchObject({price:40200,priceCurrency:"EGP",availability:"https://schema.org/InStock"});});
+ it("does not invent offers when linked gram pricing is incomplete",()=>{const b={...bundle,settings:{...bundle.settings,gold_gram_24:null}};expect(buildSeo(b,"/products/gold-1").schema.find(s=>s["@type"]==="Product")?.["offers"]).toBeUndefined();});
+ it("never represents reservation as in stock",()=>{const b={...bundle,products:bundle.products.map(p=>({...p,availability:"reservation"}))};expect(buildSeo(b,"/products/gold-1").schema.find(s=>s["@type"]==="Product")?.["offers"]).toMatchObject({availability:"https://schema.org/PreOrder"});});
+ it("does not invent business ratings",()=>{const r=buildSeo(bundle,"/");expect(r.schema.some(s=>"aggregateRating" in s)).toBe(false);expect(r.schema.some(s=>s["@type"]==="LocalBusiness")).toBe(false);});
+ it("rejects external, private, encoded private and dot-segment audit targets",()=>{for(const path of ["https://other.test","//other.test","/admin","/%61dmin","/a/../admin","/api/private","/%2fother.test","/products?x=1"]) expect(publicPathSchema.safeParse(path).success).toBe(false);expect(publicPathSchema.safeParse("/products/gold-bar").success).toBe(true);});
+ it("requires SEO permission independently of content and products",()=>{expect(canAccessTab({admin:false,permissions:["content"]},"seo")).toBe(false);expect(canAccessTab({admin:false,permissions:["seo"]},"seo")).toBe(true);expect(updateAccessSchema.safeParse({userId:"3d2278eb-d79e-4a4d-a92c-e43ae288dfe5",admin:false,permissions:["seo"]}).success).toBe(true);});
+ it("uses the descriptive URL without dropping the stable entity path",()=>{expect(pagePath({path:"/products/gold-1",url_slug:"ten-gram-bar"} as SiteBundle["seo"][number])).toBe("/products/ten-gram-bar");});
+ it("audit grade falls for an actual missing title",()=>{expect(auditObservation(observation).score).toBe(100);expect(auditObservation({...observation,title:""}).score).toBe(85);expect(auditObservation({...observation,title:""}).issues[0]?.code).toBe("missing_title");});
+ it("detects duplicate metadata values from actual rows",()=>{expect(duplicateValues([{path:"/a",title:"Gold",description:"a"},{path:"/b",title:"gold",description:"b"}],"title")).toEqual([["/a","/b"]]);});
+ it("sitemap uses primary origin and omits synthetic lastmod",()=>{const xml=sitemapXML(SEO_ORIGIN,[{path:"/products"}]);expect(xml).toContain("https://goldcenterstr.com/products");expect(xml).toContain("?lang=en");expect(xml).not.toContain("lastmod");});
+});

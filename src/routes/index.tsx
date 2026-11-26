@@ -1,3 +1,4 @@
+import { SeoImage } from "@/components/seo-image";
 import { loadPublicPage } from "@/lib/seo-public.functions";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -69,7 +70,7 @@ function Index() {
         <div className="grid gap-6 md:grid-cols-3">
           {services.map((x, i) => (
             <div key={x.id} className="overflow-hidden rounded-xl border border-border bg-card">
-              <img
+              <SeoImage
                 src={x.image_url || fallbackImages[(i + 2) % 4]}
                 alt={pick(x, "title", lang)}
                 loading="lazy"
@@ -85,7 +86,7 @@ function Index() {
       </section>
 
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 md:grid-cols-2">
-        <img
+        <SeoImage
           src={sec?.["about"]?.image_url || fallbackImages[0]}
           alt=""
           loading="lazy"

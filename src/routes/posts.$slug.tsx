@@ -1,3 +1,4 @@
+import { SeoImage } from "@/components/seo-image";
 import { loadPublicPage } from "@/lib/seo-public.functions";
 import { seoHead, pageContent, imageAlt } from "@/lib/seo";
 import { SeoContent } from "@/components/seo-content";
@@ -32,7 +33,7 @@ function Post() {
     );
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
-      <img
+      <SeoImage
         src={p.image_url || fallbackImages[1]}
         alt={imageAlt(loaded.bundle, p.image_url, pick(p, "image_alt", lang) || pick(p, "title", lang), lang)}
         width={1200}

@@ -33,7 +33,9 @@ import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProductsIdRouteImport } from './routes/products_.$id'
 import { Route as ServicesIdRouteImport } from './routes/services_.$id'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin_.customers'
+import { Route as AuthenticatedAdminSeoRouteImport } from './routes/_authenticated/admin_.seo'
 import { Route as ApiPublicDashboardUsersRouteImport } from './routes/api/public/dashboard-users'
+import { Route as ApiPublicSeoRefreshRouteImport } from './routes/api/public/seo-refresh'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -156,9 +158,19 @@ const AuthenticatedAdminCustomersRoute =
     path: '/admin/customers',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminSeoRoute = AuthenticatedAdminSeoRouteImport.update({
+  id: '/admin_/seo',
+  path: '/admin/seo',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiPublicDashboardUsersRoute = ApiPublicDashboardUsersRouteImport.update({
   id: '/api/public/dashboard-users',
   path: '/api/public/dashboard-users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSeoRefreshRoute = ApiPublicSeoRefreshRouteImport.update({
+  id: '/api/public/seo-refresh',
+  path: '/api/public/seo-refresh',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
@@ -191,7 +203,9 @@ export interface FileRoutesByFullPath {
   '/products/$id': typeof ProductsIdRoute
   '/services/$id': typeof ServicesIdRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
+  '/api/public/seo-refresh': typeof ApiPublicSeoRefreshRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesByTo {
@@ -218,7 +232,9 @@ export interface FileRoutesByTo {
   '/products/$id': typeof ProductsIdRoute
   '/services/$id': typeof ServicesIdRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
+  '/api/public/seo-refresh': typeof ApiPublicSeoRefreshRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesById {
@@ -247,7 +263,9 @@ export interface FileRoutesById {
   '/products_/$id': typeof ProductsIdRoute
   '/services_/$id': typeof ServicesIdRoute
   '/_authenticated/admin_/customers': typeof AuthenticatedAdminCustomersRoute
+  '/_authenticated/admin_/seo': typeof AuthenticatedAdminSeoRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
+  '/api/public/seo-refresh': typeof ApiPublicSeoRefreshRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRouteTypes {
@@ -276,7 +294,9 @@ export interface FileRouteTypes {
     | '/products/$id'
     | '/services/$id'
     | '/admin/customers'
+    | '/admin/seo'
     | '/api/public/dashboard-users'
+    | '/api/public/seo-refresh'
     | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -303,7 +323,9 @@ export interface FileRouteTypes {
     | '/products/$id'
     | '/services/$id'
     | '/admin/customers'
+    | '/admin/seo'
     | '/api/public/dashboard-users'
+    | '/api/public/seo-refresh'
     | '/api/public/media/$'
   id:
     | '__root__'
@@ -331,7 +353,9 @@ export interface FileRouteTypes {
     | '/products_/$id'
     | '/services_/$id'
     | '/_authenticated/admin_/customers'
+    | '/_authenticated/admin_/seo'
     | '/api/public/dashboard-users'
+    | '/api/public/seo-refresh'
     | '/api/public/media/$'
   fileRoutesById: FileRoutesById
 }
@@ -359,6 +383,7 @@ export interface RootRouteChildren {
   ProductsIdRoute: typeof ProductsIdRoute
   ServicesIdRoute: typeof ServicesIdRoute
   ApiPublicDashboardUsersRoute: typeof ApiPublicDashboardUsersRoute
+  ApiPublicSeoRefreshRoute: typeof ApiPublicSeoRefreshRoute
   ApiPublicMediaSplatRoute: typeof ApiPublicMediaSplatRoute
 }
 
@@ -532,11 +557,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCustomersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin_/seo': {
+      id: '/_authenticated/admin_/seo'
+      path: '/admin/seo'
+      fullPath: '/admin/seo'
+      preLoaderRoute: typeof AuthenticatedAdminSeoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/dashboard-users': {
       id: '/api/public/dashboard-users'
       path: '/api/public/dashboard-users'
       fullPath: '/api/public/dashboard-users'
       preLoaderRoute: typeof ApiPublicDashboardUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/seo-refresh': {
+      id: '/api/public/seo-refresh'
+      path: '/api/public/seo-refresh'
+      fullPath: '/api/public/seo-refresh'
+      preLoaderRoute: typeof ApiPublicSeoRefreshRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/media/$': {
@@ -552,11 +591,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
+  AuthenticatedAdminSeoRoute: typeof AuthenticatedAdminSeoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
+  AuthenticatedAdminSeoRoute: AuthenticatedAdminSeoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -586,6 +627,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsIdRoute: ProductsIdRoute,
   ServicesIdRoute: ServicesIdRoute,
   ApiPublicDashboardUsersRoute: ApiPublicDashboardUsersRoute,
+  ApiPublicSeoRefreshRoute: ApiPublicSeoRefreshRoute,
   ApiPublicMediaSplatRoute: ApiPublicMediaSplatRoute,
 }
 export const routeTree = rootRouteImport

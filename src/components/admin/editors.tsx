@@ -202,8 +202,8 @@ function FieldInput({
           aria-label={f.label}
           type="date"
           className={inp}
-          value={(value as string) ?? ""}
-          onChange={(e) => onChange(e.target.value)}
+          value={typeof value === "string" ? value.slice(0,10) : ""}
+          onChange={(e) => onChange(e.target.value || null)}
         />
       );
     case "bool":
@@ -324,10 +324,15 @@ type AnyTable =
   | "product_categories"
   | "bullion_serials"
   | "bullion_checks"
+  | "seo_pages"
+  | "seo_keywords"
+  | "seo_images"
+  | "seo_redirects"
+  | "seo_config"
   | "posts";
 
 async function readRows(table: AnyTable, order: string, ascending: boolean) {
-  if (table === "bullion_serials") {
+  if (table === "bullion_serials" || table.startsWith("seo_")) {
     const rows: Record<string, unknown>[] = [];
     for (let start = 0; ; start += 1000) {
       const result = await supabase.from(table).select("*").order(order, { ascending }).range(start, start + 999);
@@ -360,6 +365,9 @@ function refreshContent(
   void qc.invalidateQueries({ queryKey: ["admin", table] });
   void qc.invalidateQueries({ queryKey });
   void qc.invalidateQueries({ queryKey: ["admin-overview"] });
+  void qc.invalidateQueries({ queryKey: ["seo-bundle"] });
+  void qc.invalidateQueries({ queryKey: ["seo-pages"] });
+  void qc.invalidateQueries({ queryKey: ["seo-audits"] });
   if (table === "posts") void qc.invalidateQueries({ queryKey: ["post"] });
   if (table === "site_settings") void qc.invalidateQueries({ queryKey: ["products"] });
   if (table === "product_groups" || table === "product_categories") {
@@ -376,12 +384,14 @@ export function SingleEditor({
   pk = "id",
   fields,
   queryKey,
+  onValuesChange,
 }: {
   table: AnyTable;
   id: number | string;
   pk?: string;
   fields: Field[];
   queryKey: string[];
+  onValuesChange?: (values: Record<string, unknown>) => void;
 }) {
   const qc = useQueryClient();
   const { data, isLoading, error } = useQuery({
@@ -401,6 +411,7 @@ export function SingleEditor({
   useEffect(() => {
     if (data) setRow(data);
   }, [data]);
+  useEffect(() => { if (data) onValuesChange?.(row); }, [data, row, onValuesChange]);
   const whatsappChecks = fields
     .filter((field) => field.type === "whatsapp" || field.type === "whatsapp_simple")
     .map((field) => ({
@@ -416,6 +427,7 @@ export function SingleEditor({
     setSaving(true);
     try {
       const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
+      if (table.startsWith("seo_")) for (const field of fields) if (field.type === "image" && patch[field.name] == null) patch[field.name] = "";
       for (const { field, result } of whatsappChecks)
         patch[field.name] = result.number === "" && field.optional ? null : result.number;
       const { data: saved, error } = await supabase
@@ -442,7 +454,7 @@ export function SingleEditor({
   if (isLoading || error) return <ReadState loading={isLoading} error={error} />;
   return (
     <div className="space-y-6">
-      <FormGrid fields={fields} row={row} set={(k, v) => setRow({ ...row, [k]: v })} />
+      <FormGrid fields={fields} row={row} set={(k, v) => setRow(previous => ({ ...previous, [k]: v }))} />
       <Button disabled={saving || !data || !!whatsappError} onClick={save}>
         <Save />
         {saving ? "جارٍ الحفظ…" : "حفظ التغييرات"}
@@ -499,6 +511,7 @@ function RowCard({
     setBusy(true);
     try {
       const patch = Object.fromEntries(fields.map((f) => [f.name, row[f.name]]));
+      if (table.startsWith("seo_")) for (const field of fields) if (field.type === "image" && patch[field.name] == null) patch[field.name] = "";
       if (table === "products") {
         patch["making_charge"] = row["making_charge"] ?? 0;
         if (row["pricing_metal"] === "silver") patch["karat"] = null;
@@ -511,7 +524,7 @@ function RowCard({
       const { data: saved, error } = await supabase
         .from(table)
         .update(patch as never)
-        .eq(pk, row[pk] as never)
+        .eq(pk, initial[pk] as never)
         .select();
       if (error) {
         toast.error(error.message);
@@ -576,7 +589,7 @@ function RowCard({
       </Button>
       {open && (
         <div className="space-y-4 border-t border-border p-4">
-          <FormGrid fields={fields.filter((f) => !(f.type === "karat" && row["pricing_metal"] === "silver"))} row={row} set={(k, v) => setRow({ ...row, [k]: v })} />
+          <FormGrid fields={fields.filter((f) => !(f.type === "karat" && row["pricing_metal"] === "silver"))} row={row} set={(k, v) => setRow(previous => ({ ...previous, [k]: v }))} />
           <div className="flex gap-2">
             <Button disabled={busy} onClick={save}>
               <Save /> {busy ? "جارٍ التنفيذ…" : "حفظ"}

@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import type { SiteBundle } from "@/lib/seo";
+import { readAllPages } from "@/lib/seo-pagination";
 
 export function publicSiteClient() {
   const url = process.env["SUPABASE_URL"], key = process.env["SUPABASE_PUBLISHABLE_KEY"];
@@ -10,13 +11,10 @@ export function publicSiteClient() {
 export async function readPublicBundle(): Promise<SiteBundle> {
   const client = publicSiteClient();
   async function rows<T extends keyof Database["public"]["Tables"]>(table: T, order: string) {
-    const output: Database["public"]["Tables"][T]["Row"][] = [];
-    for (let offset = 0; ; offset += 1000) {
-      const { data, error } = await client.from(table).select("*").order(order).range(offset, offset + 999);
-      if (error) throw new Error(`${table}: ${error.message}`);
-      output.push(...data as unknown as Database["public"]["Tables"][T]["Row"][]);
-      if (data.length < 1000) return output;
-    }
+    return readAllPages<Database["public"]["Tables"][T]["Row"]>(async (offset,limit) => {
+      const result = await client.from(table).select("*").order(order).range(offset, offset + limit - 1);
+      return {data: result.data as unknown as Database["public"]["Tables"][T]["Row"][] | null,error:result.error};
+    });
   }
   const [settings, products, posts, services, groups, categories, sections, slides, prices, history, seo, images, config] = await Promise.all([rows("site_settings", "id"), rows("products", "id"), rows("posts", "id"), rows("services", "id"), rows("product_groups", "id"), rows("product_categories", "id"), rows("sections", "key"), rows("slides", "id"), rows("metal_prices", "id"), rows("price_history", "id"), rows("seo_pages", "path"), rows("seo_images", "id"), rows("seo_config", "id")]);
   const first = settings[0]; if (!first) throw new Error("Site settings unavailable");

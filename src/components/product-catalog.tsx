@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Coins, Gift, Gem, LayoutGrid } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
@@ -118,6 +119,7 @@ export function ProductCatalog({ limit }: { limit?: number }) {
             </Button>
           ))}
         </nav>
+        <div className="mb-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground">{groups.data?.map(group => <Link key={group.id} to="/groups/$id" params={{ id: group.id }} className="hover:text-gold">{pick(group,"name",lang)}</Link>)}</div>
         {groupId && (
           <nav
             aria-label={lang === "ar" ? "الأقسام الفرعية" : "Subcategories"}
@@ -172,6 +174,7 @@ export function ProductCatalog({ limit }: { limit?: number }) {
               : "No products in this category yet"}
           </p>
         )}
+        {groupId && <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">{branches.map(category => <Link key={category.id} to="/categories/$id" params={{ id: category.id }} className="hover:text-gold">{pick(category,"name",lang)}</Link>)}</div>}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { SeoImage } from "@/components/seo-image";
 import { loadPublicPage } from "@/lib/seo-public.functions";
 import { seoHead, pageContent, imageAlt } from "@/lib/seo";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
@@ -75,7 +76,7 @@ function ProductPage() {
         <ArrowRight className="h-4 w-4 ltr:rotate-180" /> {t("products")}
       </Link>
       <div className="grid gap-10 md:grid-cols-2">
-        <img
+        <SeoImage
           src={p.image_url || fallbackImages[0]}
           alt={imageAlt(loaded.bundle, p.image_url, name, lang)}
           width={900}

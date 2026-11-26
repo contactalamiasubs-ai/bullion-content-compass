@@ -18,7 +18,7 @@ export const runSeoAudit = createServerFn({ method: "POST" }).middleware([requir
       if (target.origin !== origin || !publicPathSchema.safeParse(target.pathname).success) throw new Error("External audit target rejected");
       const response = await fetch(target.href, { redirect: "manual", signal: AbortSignal.timeout(15000) });
       const location = response.headers.get("location");
-      if (response.status >= 300 && response.status < 400 && location) { const next = new URL(location, target); if (next.origin === SEO_ORIGIN) next.host = new URL(origin).host; next.protocol = new URL(origin).protocol; target = next; continue; }
+      if (response.status >= 300 && response.status < 400 && location) { const next = new URL(location, target); if (next.origin === SEO_ORIGIN) { next.host = new URL(origin).host; next.protocol = new URL(origin).protocol; } target = next; continue; }
       return response;
     }
     throw new Error("Too many redirects");

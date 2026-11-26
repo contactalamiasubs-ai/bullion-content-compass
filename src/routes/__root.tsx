@@ -18,6 +18,7 @@ import { Header, Footer, Popup } from "@/components/site";
 import { Toaster } from "@/components/ui/sonner";
 import { ShoppingProvider } from "@/components/shopping-provider";
 import { seoBundleQuery, seedPublicQueries } from "@/lib/seo-public.functions";
+import { SeoAnalytics } from "@/components/seo-analytics";
 
 function NotFoundComponent() {
   return (
@@ -134,6 +135,7 @@ function RootComponent() {
         {!bare && <Header />}
         {!bare && <Popup />}
         <Outlet />
+        <SeoAnalytics />
         {!bare && <Footer />}
         <Toaster />
         </ShoppingProvider>

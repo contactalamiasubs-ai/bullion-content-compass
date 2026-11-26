@@ -19,6 +19,7 @@ import {
   Trash2,
   UsersRound,
   ScanLine,
+  ScanSearch,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BullionChecksExportButton } from "@/components/admin/bullion-checks-export";
@@ -55,6 +56,7 @@ const bi = (base: string, label: string, type: Field["type"] = "text"): Field[] 
 ];
 
 const tabs = [
+  { id: "seo", l: "إدارة SEO", i: ScanSearch },
   { id: "overview", l: "نظرة عامة", i: LayoutDashboard },
   { id: "users", l: "المستخدمون والصلاحيات", i: UsersRound },
   { id: "customers", l: "إدارة العملاء", i: UsersRound },
@@ -128,8 +130,8 @@ function Admin() {
         <p className="mb-6 text-xs text-muted-foreground">إدارة الموقع</p>
         <nav aria-label="أقسام لوحة التحكم" className="min-h-0 flex-1 space-y-1 overflow-y-auto">
           {visibleTabs.map((t) => (
-            t.id === "customers" ? <Button key={t.id} asChild variant="ghost" className="h-auto min-h-10 w-full justify-start whitespace-normal px-3 py-2 text-sm text-sidebar-foreground">
-              <Link to="/admin/customers"><t.i className="h-4 w-4" />{t.l}</Link>
+            t.id === "customers" || t.id === "seo" ? <Button key={t.id} asChild variant="ghost" className="h-auto min-h-10 w-full justify-start whitespace-normal px-3 py-2 text-sm text-sidebar-foreground">
+              <Link to={t.id === "seo" ? "/admin/seo" : "/admin/customers"}><t.i className="h-4 w-4" />{t.l}</Link>
             </Button> :
             <Button
               variant="ghost"
@@ -186,7 +188,7 @@ function Admin() {
         <select
           aria-label="قسم لوحة التحكم"
           value={activeTab}
-          onChange={(e) => { if (e.target.value === "customers") void nav({ to: "/admin/customers" }); else setTab(e.target.value as typeof tab); }}
+          onChange={(e) => { if (e.target.value === "customers") void nav({ to: "/admin/customers" }); else if (e.target.value === "seo") void nav({ to: "/admin/seo" }); else setTab(e.target.value as typeof tab); }}
           className="mb-4 w-full rounded-md border border-input bg-background px-3 py-2 md:hidden"
         >
           {visibleTabs.map((t) => (
@@ -240,6 +242,8 @@ function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab
       </>;
     case "customers":
       return canAccessTab(access, "customers") ? <Button asChild><Link to="/admin/customers"><UsersRound />إدارة العملاء</Link></Button> : null;
+    case "seo":
+      return <Button asChild><Link to="/admin/seo"><ScanSearch />إدارة SEO</Link></Button>;
     case "users":
       return access.admin ? <Users actorId={actorId} /> : null;
     case "gram-rates":
@@ -469,6 +473,8 @@ function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab
             ...bi("body", "المحتوى", "textarea"),
             { name: "image_url", label: "الصورة", type: "image" },
             { name: "published", label: "منشور", type: "bool" },
+            { name: "publish_at", label: "تاريخ النشر", type: "date" },
+            ...bi("image_alt", "النص البديل للصورة"),
           ]}
         />
       );

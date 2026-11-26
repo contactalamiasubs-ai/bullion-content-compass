@@ -1,3 +1,4 @@
+import { SeoImage } from "@/components/seo-image";
 import { loadPublicPage } from "@/lib/seo-public.functions";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -70,7 +71,7 @@ function About() {
       {/* Company information */}
       <section className="mx-auto max-w-7xl px-4 py-14">
         <div className="grid items-center gap-10 md:grid-cols-2">
-          <img
+          <SeoImage
             src={sec?.["about"]?.image_url || fallbackImages[0]}
             alt=""
             loading="lazy"
@@ -112,7 +113,7 @@ function About() {
                 className="overflow-hidden rounded-xl border border-border bg-card"
               >
                 {(sec[key].image_url || i === 0) && (
-                  <img
+                  <SeoImage
                     src={sec[key].image_url || fallbackImages[i === 0 ? 1 : 2]}
                     alt=""
                     loading="lazy"
@@ -177,7 +178,7 @@ function About() {
                 key={x.id}
                 className="flex flex-col overflow-hidden rounded-xl border border-border bg-card"
               >
-                <img
+                <SeoImage
                   src={x.image_url || fallbackImages[(i + 2) % 4]}
                   alt={pick(x, "title", lang)}
                   loading="lazy"

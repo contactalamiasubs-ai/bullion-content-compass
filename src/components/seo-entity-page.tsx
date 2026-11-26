@@ -1,3 +1,4 @@
+import { SeoImage } from "@/components/seo-image";
 import { Link } from "@tanstack/react-router";
 import { useLang, pick } from "@/lib/i18n";
 import { pageContent, imageAlt, type SiteBundle } from "@/lib/seo";
@@ -16,7 +17,7 @@ export function SeoEntityPage({ bundle, path }: { bundle: SiteBundle; path: stri
     <nav className="mb-8 text-sm text-muted-foreground"><Link to="/">{t("home")}</Link> / <Link to={service ? "/services" : "/products"}>{t(service ? "services" : "products")}</Link></nav>
     <h1 className="mb-10 break-words text-center font-display text-3xl text-gold sm:text-4xl">{name}</h1>
     {service ? <div className="grid items-start gap-8 md:grid-cols-2">
-      {service.image_url && <img src={service.image_url} alt={imageAlt(bundle, service.image_url, name, lang)} width={1000} height={700} className="aspect-[10/7] w-full object-cover" />}
+      {service.image_url && <SeoImage src={service.image_url} alt={imageAlt(bundle, service.image_url, name, lang)} width={1000} height={700} className="aspect-[10/7] w-full object-cover" />}
       <div className="space-y-8"><SeoContent body={pick(service, "body", lang)} /><Button asChild><a href={whatsappLink(bundle.settings.whatsapp_number, name)} target="_blank" rel="noopener noreferrer">{t("contact")}</a></Button></div>
     </div> : <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">{products.map((p,i) => <ProductCard key={p.id} p={p} idx={i} />)}</section>}
   </main>;

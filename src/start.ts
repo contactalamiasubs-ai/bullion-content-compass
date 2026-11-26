@@ -35,6 +35,15 @@ const wwwRedirectMiddleware = createMiddleware().server(async ({ request, next }
 const csrfMiddleware = createCsrfMiddleware({
   filter: (ctx) => ctx.handlerType === "serverFn",
 });
+const seoRedirectMiddleware = createMiddleware().server(async ({ request, next }) => {
+  if (request.method !== "GET" && request.method !== "HEAD") return next();
+  const url = new URL(request.url);
+  if (/^\/(api|_serverFn|@|src|node_modules|admin|auth|account|reset-password|set-password)(\/|$)/.test(url.pathname) || /\.[a-z0-9]{2,6}$/i.test(url.pathname)) return next();
+  const { seoRedirect } = await import("@/lib/seo-redirect.server");
+  const target = await seoRedirect(url.pathname, url.search);
+  if (target) return new Response(null, { status: 301, headers: { location: target } });
+  return next();
+});
 
 // requestMiddleware runs on every request; functionMiddleware only on server functions, where
 // client sendContext is unvalidated input. Append to these arrays, never replace them.
@@ -44,5 +53,5 @@ const csrfMiddleware = createCsrfMiddleware({
 // project did not intentionally replace it.
 export const startInstance = createStart(() => ({
   functionMiddleware: [attachSupabaseAuth],
-  requestMiddleware: [wwwRedirectMiddleware, errorMiddleware, csrfMiddleware],
+  requestMiddleware: [wwwRedirectMiddleware, errorMiddleware, csrfMiddleware, seoRedirectMiddleware],
 }));
