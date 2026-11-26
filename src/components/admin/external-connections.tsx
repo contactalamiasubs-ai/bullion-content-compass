@@ -57,6 +57,7 @@ export function ExternalConnections() {
         <p className="text-sm leading-relaxed text-muted-foreground">تُحفظ مفاتيح تسجيل الدخول في إعدادات الدخول الآمنة، وليس في إعدادات الموقع: افتح Lovable ← More ← Users ← Auth settings ← Sign In Methods ← Google، ثم استخدم بياناتك الخاصة واحفظ Client ID وClient Secret هناك.</p>
         <p className="text-sm leading-relaxed text-muted-foreground">في Google Cloud Console، أضف رابط العودة الظاهر في إعدادات Google إلى Authorized redirect URIs. هذا مختلف عن رابط عودة العميل إلى الموقع أدناه؛ لا تستبدل أحدهما بالآخر.</p>
         <Button asChild variant="outline"><a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer"><KeyRound />فتح إعدادات Google</a></Button>
+        <div className="rounded-md border border-border p-4 space-y-2"><h3 className="font-semibold">اختبار زر Google</h3><p className="text-sm text-muted-foreground">يفتح Google لاختيار حساب، ثم تظهر رسالة توضح نجاح الدخول أو سبب الرفض. انتبه: عند النجاح يتم الدخول بالحساب المختار.</p><GoogleTestButton /></div>
         <h3 className="pt-3 font-semibold">روابط عودة العميل المسموح بها</h3>
         {["https://goldcenterstr.com/auth/callback", "https://www.goldcenterstr.com/auth/callback"].map(url => <div key={url} className="flex items-center gap-3 border-b border-border py-3"><code dir="ltr" className="min-w-0 flex-1 break-all text-sm">{url}</code><Button size="icon" variant="ghost" title="نسخ الرابط" aria-label={`نسخ ${url}`} onClick={() => void copy(url)}><Copy /></Button></div>)}
         <p className="text-sm text-muted-foreground">أضف هذه الروابط في Auth settings ← Advanced ← Redirect URLs؛ يبقى goldcenterstr.com هو النطاق الأساسي.</p>
@@ -68,4 +69,16 @@ export function ExternalConnections() {
     {selected === "hosting" && <section className="space-y-5"><h2 className="text-xl">اتصال خدمات الاستضافة</h2><p role="status" className="text-sm text-muted-foreground">{status.data ? status.data.hostedBridgeConfigured ? "اتصال الخدمات المستضافة مضبوط؛ اختبر الخدمات من صفحاتها للتحقق من عملها." : "لا يوجد اتصال استضافة وسيط مضبوط على هذه النسخة؛ قد تعمل الخدمات مباشرة على Lovable." : "الحالة غير متاحة."}</p><p className="text-sm text-muted-foreground">إعداد الاتصال على هوستنجر يُحفظ في متغيرات الاستضافة، وليس في جدول عام. حالة الإعداد لا تعني نجاح طلبات الخدمة.</p><Button variant="outline" onClick={() => setSelected("search")}><ScanSearch />فحص خدمات Google</Button><Button asChild variant="outline"><Link to="/admin"><Server />إدارة المستخدمين من لوحة التحكم</Link></Button></section>}
     {selected === "contact" && <section className="space-y-5"><h2 className="text-xl">قنوات التواصل</h2><div className="flex gap-4 text-gold"><MessageCircle /><Mail /><MapPin /></div><p className="text-sm text-muted-foreground">واتساب والخرائط يستخدمان روابط مباشرة ولا يحتاجان مفتاح API؛ البريد الحالي يفتح برنامج البريد ولا يرسل الرسائل تلقائيًا.</p><SingleEditor table="site_settings" id={1} queryKey={["settings"]} fields={[{ name: "whatsapp_number", label: "رقم واتساب (بالكود الدولي)", type: "whatsapp" }, { name: "service_whatsapp", label: "رقم واتساب الخدمات", type: "whatsapp" }, { name: "phone", label: "الهاتف" }, { name: "email", label: "البريد الإلكتروني" }]} /></section>}
   </main>;
+}
+function GoogleTestButton() {
+  const [busy, setBusy] = useState(false);
+  const run = async () => {
+    setBusy(true);
+    sessionStorage.setItem("gold-center-google-test", "1");
+    const redirect = `${window.location.origin}/auth/callback`;
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: redirect, queryParams: { prompt: "select_account" } } });
+    if (error) { sessionStorage.removeItem("gold-center-google-test"); setBusy(false); toast.error(`رفض Google الطلب: ${error.message}`); }
+  };
+  return <Button onClick={run} disabled={busy}><KeyRound />{busy ? "جارٍ التحويل إلى Google…" : "اختبار الدخول بـ Google"}</Button>;
 }

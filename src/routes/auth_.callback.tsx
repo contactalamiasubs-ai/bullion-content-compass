@@ -10,14 +10,17 @@ export const Route = createFileRoute("/auth_/callback")({
   component: Callback,
 });
 function Callback() {
-  const nav = useNavigate(); const text = useShoppingText(); const [error, setError] = useState(false);
+  const nav = useNavigate(); const text = useShoppingText(); const [error, setError] = useState(false); const [test, setTest] = useState<null | { ok: boolean; reason?: string }>(null);
   useEffect(() => {
     let active = true;
     const finish = async () => {
       try {
         const url = new URL(window.location.href);
         const hash = new URLSearchParams(url.hash.replace(/^#/, ""));
-        if (url.searchParams.get("error") || hash.get("error")) { if (active) setError(true); return; }
+        const isTest = sessionStorage.getItem("gold-center-google-test") === "1";
+        sessionStorage.removeItem("gold-center-google-test");
+        const errText = url.searchParams.get("error_description") || hash.get("error_description") || url.searchParams.get("error") || hash.get("error");
+        if (errText) { if (active) { if (isTest) setTest({ ok: false, reason: errText }); else setError(true); } return; }
         const code = url.searchParams.get("code");
         if (code) await supabase.auth.exchangeCodeForSession(code).catch(() => undefined);
         let { data } = await supabase.auth.getSession();
@@ -26,6 +29,7 @@ function Callback() {
           ({ data } = await supabase.auth.getSession());
         }
         if (!active) return;
+        if (isTest) { setTest(data.session ? { ok: true, reason: data.session.user.email ?? "" } : { ok: false, reason: "لم تُنشأ جلسة دخول بعد العودة من Google." }); return; }
         if (!data.session) { setError(true); return; }
         const saved = sessionStorage.getItem("gold-center-login-destination");
         sessionStorage.removeItem("gold-center-login-destination");
@@ -36,5 +40,6 @@ function Callback() {
     void finish();
     return () => { active = false; };
   }, [nav]);
+  if (test) return <LoginScene><section className="login-panel"><LoginBrand /><h1 className="text-xl">{test.ok ? "نجح اختبار الدخول بـ Google" : "رفض Google الدخول"}</h1><p role={test.ok ? "status" : "alert"} className="break-words text-sm">{test.ok ? `تم الدخول بالحساب: ${test.reason}` : `السبب: ${test.reason}`}</p><a className="underline text-primary" href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer">فتح Google Cloud Console</a><Button onClick={() => { window.location.href = "/admin/connections"; }}>العودة إلى الاتصالات الخارجية</Button></section></LoginScene>;
   return <LoginScene><section className="login-panel"><LoginBrand /><p role={error ? "alert" : "status"}>{text(error ? "auth_error" : "loading")}</p>{error && <Button onClick={() => nav({ to: "/auth" })}>{text("back_login")}</Button>}</section></LoginScene>;
 }
