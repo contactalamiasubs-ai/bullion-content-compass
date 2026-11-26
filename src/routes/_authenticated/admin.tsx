@@ -224,7 +224,7 @@ function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab
         <h3 className="text-lg font-semibold">طلبات الفحص المرسلة</h3>
         <BullionChecksExportButton />
         <ListEditor table="bullion_checks" order="created_at" titleField="email" queryKey={["bullion-checks"]} canAdd={false}
-          fields={[{ name: "name", label: "الاسم" }, { name: "email", label: "البريد" }, { name: "serial", label: "السيريال" }]} />
+          fields={[{ name: "name", label: "الاسم" }, { name: "email", label: "البريد" }, { name: "customer_number", label: "رقم العميل" }, { name: "serial", label: "السيريال" }]} />
         <BullionImport />
         <ListEditor table="bullion_serials" order="serial" titleField="serial" queryKey={["bullion-serials"]}
           newRow={{ name_ar: "سبيكة جديدة", name_en: "New bar", weight_grams: 1, purity: "999.9", specifications_ar: "", specifications_en: "", active: false }}

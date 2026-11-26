@@ -52,3 +52,5 @@
 
 - [x] Add administrator-managed invitations and scoped permissions. Verified account listing, permission save/reload, product member CRUD, denied price writes and escalation, admin promotion and access revocation on a temporary member; 25 tests passed and desktop/mobile checked. Invitation email receipt and acceptance require the recipient's mailbox and were not exercised.
 - [x] Point the homepage gold-verification card to the bar serial check page and make its label dashboard-editable (serial_check_card); Arabic/English click-through to /check-bar, mobile layout and build verified.
+
+- [x] Add a required customer-number field to the «افحص سبيكتك» form: bilingual label, saved with every check request, shown in the dashboard checks list and the Excel export; empty submissions are rejected. 135 tests passed; real submit, stored value readback and dashboard inspection verified with a temporary record removed.

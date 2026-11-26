@@ -10,18 +10,18 @@ export function BullionChecksExportButton() {
   return <div><Button variant="outline" disabled={busy} onClick={async () => {
     setBusy(true); setError("");
     try {
-      const rows: { name: string; email: string; serial: string; created_at: string }[] = [];
+      const rows: { name: string; email: string; customer_number: string | null; serial: string; created_at: string }[] = [];
       for (let from = 0; ; from += 1000) {
-        const r = await supabase.from("bullion_checks").select("name,email,serial,created_at").order("created_at", { ascending: false }).range(from, from + 999);
+        const r = await supabase.from("bullion_checks").select("name,email,customer_number,serial,created_at").order("created_at", { ascending: false }).range(from, from + 999);
         if (r.error) throw r.error;
         rows.push(...r.data); if (r.data.length < 1000) break;
       }
       const { Workbook } = await import("exceljs");
       const wb = new Workbook();
       const ws = wb.addWorksheet("طلبات الفحص", { views: [{ rightToLeft: true, state: "frozen", ySplit: 1 }] });
-      ws.columns = [{ header: "الاسم", width: 30 }, { header: "البريد الإلكتروني", width: 35 }, { header: "السيريال", width: 25 }, { header: "التاريخ", width: 22 }];
-      const safe = (v: string) => (/^[=+\-@]/.test(v) ? `'${v}` : v);
-      for (const r of rows) ws.addRow([safe(r.name), safe(r.email), safe(r.serial), new Date(r.created_at).toLocaleString("ar-EG")]);
+      ws.columns = [{ header: "الاسم", width: 30 }, { header: "البريد الإلكتروني", width: 35 }, { header: "رقم العميل", width: 20 }, { header: "السيريال", width: 25 }, { header: "التاريخ", width: 22 }];
+      const safe = (v: string | null) => { const s = v ?? ""; return (/^[=+\-@]/.test(s) ? `'${s}` : s); };
+      for (const r of rows) ws.addRow([safe(r.name), safe(r.email), safe(r.customer_number), safe(r.serial), new Date(r.created_at).toLocaleString("ar-EG")]);
       ws.getRow(1).font = { bold: true };
       const bytes = await wb.xlsx.writeBuffer();
       const url = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));

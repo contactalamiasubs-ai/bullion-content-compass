@@ -218,6 +218,20 @@
       "when": 1795686152691,
       "tag": "0030_login_branding_media",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1795692991619,
+      "tag": "0031_add_bullion_check_customer_number",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1795693007049,
+      "tag": "0032_require_bullion_check_customer_number",
+      "breakpoints": true
     }
   ]
 }

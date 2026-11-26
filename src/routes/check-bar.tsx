@@ -2,11 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
-import { ScanLine, ShieldCheck, CircleAlert, LoaderCircle, User, Mail, Barcode, RefreshCw, CircleCheck } from "lucide-react";
+import { ScanLine, ShieldCheck, CircleAlert, LoaderCircle, User, Mail, Barcode, RefreshCw, CircleCheck, IdCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { sectionsQuery, settingsQuery } from "@/lib/data";
 import { pick, useLang } from "@/lib/i18n";
-import { serialSchema } from "@/lib/bullion-serials";
+import { customerNumberSchema, serialSchema } from "@/lib/bullion-serials";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -34,6 +34,7 @@ function CheckBar() {
   const text = (key: string, field = "title") => pick(sections.data?.[`serial_${key}`], field, lang);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [customerNumber, setCustomerNumber] = useState("");
   const [serial, setSerial] = useState("");
   const [captcha, setCaptcha] = useState({ a: 0, b: 0 });
   useEffect(() => setCaptcha(newCaptcha()), []);
@@ -62,14 +63,15 @@ function CheckBar() {
         <p className="text-center text-muted-foreground">{text("heading", "body")}</p>
         <form className="space-y-4" noValidate onSubmit={async event => {
           event.preventDefault(); setError(""); setMatch(null); setChecked(false);
-          const n = nameSchema.safeParse(name), m = emailSchema.safeParse(email), p = serialSchema.safeParse(serial);
+          const n = nameSchema.safeParse(name), m = emailSchema.safeParse(email), c = customerNumberSchema.safeParse(customerNumber), p = serialSchema.safeParse(serial);
           if (!n.success) { setError(ar ? "اكتب اسمك الكامل (حرفان على الأقل)" : "Enter your full name"); return; }
           if (!m.success) { setError(ar ? "البريد الإلكتروني غير صحيح" : "Invalid email address"); return; }
+          if (!c.success) { setError(ar ? "اكتب رقم العميل (حرفان على الأقل)" : "Enter your customer number"); return; }
           if (!p.success) { setError(text("invalid")); return; }
           if (Number(answer) !== captcha.a + captcha.b) { setError(ar ? "إجابة التحقق غير صحيحة" : "Wrong verification answer"); setCaptcha(newCaptcha()); setAnswer(""); return; }
           setBusy(true);
           try {
-            await supabase.from("bullion_checks").insert({ name: n.data, email: m.data.toLowerCase(), serial: p.data });
+            await supabase.from("bullion_checks").insert({ name: n.data, email: m.data.toLowerCase(), customer_number: c.data, serial: p.data });
             const result = await supabase.rpc("lookup_bullion_serial", { _serial: p.data });
             if (result.error) throw result.error;
             setMatch(result.data?.[0] ?? null); setChecked(true); setCaptcha(newCaptcha()); setAnswer("");
@@ -80,6 +82,8 @@ function CheckBar() {
           <div className={field}><User className="h-5 w-5 text-gold" /><input id="bar-name" maxLength={100} value={name} disabled={busy} onChange={e => setName(e.target.value)} placeholder={ar ? "أدخل اسمك الكامل" : "Enter your full name"} className="h-full w-full bg-transparent outline-none" /></div>
           <label htmlFor="bar-email" className="block text-sm font-medium">{ar ? "البريد الإلكتروني" : "Email"} <span className="text-destructive">*</span></label>
           <div className={field}><Mail className="h-5 w-5 text-gold" /><input id="bar-email" type="email" dir="ltr" maxLength={255} value={email} disabled={busy} onChange={e => setEmail(e.target.value)} placeholder="example@email.com" className="h-full w-full bg-transparent outline-none" />{email && (emailOk ? <CircleCheck className="h-5 w-5 text-success" aria-label="valid" /> : <CircleAlert className="h-5 w-5 text-destructive" aria-label="invalid" />)}</div>
+          <label htmlFor="bar-customer" className="block text-sm font-medium">{ar ? "رقم العميل" : "Customer number"} <span className="text-destructive">*</span></label>
+          <div className={field}><IdCard className="h-5 w-5 text-gold" /><input id="bar-customer" dir="ltr" autoComplete="off" maxLength={40} value={customerNumber} disabled={busy} onChange={e => setCustomerNumber(e.target.value)} placeholder={ar ? "أدخل رقم العميل" : "Enter your customer number"} className="h-full w-full bg-transparent outline-none" /></div>
           <label htmlFor="bar-serial" className="block text-sm font-medium">{text("input")} <span className="text-destructive">*</span></label>
           <div className={field}><Barcode className="h-5 w-5 text-gold" /><input id="bar-serial" dir="ltr" autoComplete="off" maxLength={100} value={serial} disabled={busy} onChange={e => { setSerial(e.target.value); setChecked(false); setMatch(null); }} className="h-full w-full bg-transparent outline-none" /></div>
           <label htmlFor="bar-captcha" className="block text-sm font-medium">{ar ? "تحقق أنك لست روبوتًا" : "Verify you are human"} <span className="text-destructive">*</span></label>

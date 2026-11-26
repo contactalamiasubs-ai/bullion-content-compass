@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const serialSchema = z.string().trim().transform(value => value.toUpperCase()).pipe(z.string().regex(/^[A-Z0-9./-]{1,100}$/, "السيريال يجب أن يحتوي على حروف إنجليزية وأرقام فقط أو - / ."));
+export const customerNumberSchema = z.string().trim().transform(value => value.toUpperCase()).pipe(z.string().regex(/^[A-Z0-9 ._/-]{2,40}$/, "رقم العميل يجب أن يكون بين حرفين و40 حرفًا: حروف إنجليزية وأرقام أو - / ."));
 export const bullionRowSchema = z.object({
   serial: serialSchema,
   name_ar: z.string().trim().min(1).max(300),
