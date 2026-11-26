@@ -9,6 +9,7 @@ import { useLang, pick } from "@/lib/i18n";
 import { sectionsQuery } from "@/lib/data";
 
 export const Route = createFileRoute("/account")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [
     { title: "حساب العميل | جولد سنتر" }, { name: "description", content: "دخول العملاء باستخدام جوجل وحفظ السلة والمفضلة في حسابك." },
     { property: "og:title", content: "حساب العميل | جولد سنتر" }, { property: "og:description", content: "حسابك واختياراتك المحفوظة لدى جولد سنتر." },

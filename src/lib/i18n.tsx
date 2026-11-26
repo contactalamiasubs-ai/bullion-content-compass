@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
+import { useLocation, useRouter } from "@tanstack/react-router";
 
 export type Lang = "ar" | "en";
 
@@ -62,18 +63,16 @@ const Ctx = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (k: Key) 
 });
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("ar");
-  useEffect(() => {
-    const saved = localStorage.getItem("lang");
-    if (saved === "en" || saved === "ar") setLangState(saved);
-  }, []);
+  const location = useLocation();
+  const router = useRouter();
+  const lang: Lang = location.search.lang === "en" ? "en" : "ar";
   useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
   }, [lang]);
   const setLang = (l: Lang) => {
     localStorage.setItem("lang", l);
-    setLangState(l);
+    void router.navigate({ to: ".", search: prev => ({ ...prev, lang: l }), replace: true });
   };
   return <Ctx.Provider value={{ lang, setLang, t: (k) => dict[k][lang] }}>{children}</Ctx.Provider>;
 }

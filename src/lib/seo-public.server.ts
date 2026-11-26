@@ -1,0 +1,24 @@
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
+import type { SiteBundle } from "@/lib/seo";
+
+export function publicSiteClient() {
+  const url = process.env["SUPABASE_URL"], key = process.env["SUPABASE_PUBLISHABLE_KEY"];
+  if (!url || !key) throw new Error("Site connection unavailable");
+  return createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false }, global: { fetch: (input, init) => { const headers = new Headers(init?.headers); if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`) headers.delete("Authorization"); headers.set("apikey", key); return fetch(input, { ...init, headers }); } } });
+}
+export async function readPublicBundle(): Promise<SiteBundle> {
+  const client = publicSiteClient();
+  async function rows<T extends keyof Database["public"]["Tables"]>(table: T, order: string) {
+    const output: Database["public"]["Tables"][T]["Row"][] = [];
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await client.from(table).select("*").order(order).range(offset, offset + 999);
+      if (error) throw new Error(`${table}: ${error.message}`);
+      output.push(...data as unknown as Database["public"]["Tables"][T]["Row"][]);
+      if (data.length < 1000) return output;
+    }
+  }
+  const [settings, products, posts, services, groups, categories, sections, slides, prices, history, seo, images, config] = await Promise.all([rows("site_settings", "id"), rows("products", "id"), rows("posts", "id"), rows("services", "id"), rows("product_groups", "id"), rows("product_categories", "id"), rows("sections", "key"), rows("slides", "id"), rows("metal_prices", "id"), rows("price_history", "id"), rows("seo_pages", "path"), rows("seo_images", "id"), rows("seo_config", "id")]);
+  const first = settings[0]; if (!first) throw new Error("Site settings unavailable");
+  return { settings: first, products: products.filter(p => p.active), posts: posts.filter(p => p.published && (!p.publish_at || Date.parse(p.publish_at) <= Date.now())), services, groups, categories, sections, slides: slides.filter(p => p.active), prices, history, seo, images, config: config[0] ?? null };
+}

@@ -1,3 +1,5 @@
+import { loadPublicPage } from "@/lib/seo-public.functions";
+import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -9,16 +11,10 @@ import { PageHero } from "@/components/site";
 import { sectionsQuery, settingsQuery, whatsappLink } from "@/lib/data";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "تواصل معنا | جولد سنتر" },
-      { name: "description", content: "راسلنا لأي استفسار عن الذهب والسبائك والخدمات." },
-      { property: "og:title", content: "تواصل معنا | جولد سنتر" },
-      { property: "og:description", content: "راسلنا لأي استفسار." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  staticData: { sitemap: true },
+  loaderDeps: ({ search }) => ({ lang: search.lang }),
+  loader: ({ context, deps }) => loadPublicPage(context.queryClient, "/contact", deps.lang),
+  head: ({ loaderData }) => seoHead(loaderData?.seo),
   component: Contact,
 });
 

@@ -34,6 +34,7 @@ import { canAccessTab, type DashboardAccess } from "@/lib/dashboard-permissions"
 import { BullionImport } from "@/components/admin/bullion-import";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "لوحة التحكم | جولد سنتر" },

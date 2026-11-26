@@ -24,10 +24,14 @@ import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SetPasswordRouteImport } from './routes/set-password'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthCallbackRouteImport } from './routes/auth_.callback'
+import { Route as CategoriesIdRouteImport } from './routes/categories.$id'
+import { Route as GroupsIdRouteImport } from './routes/groups.$id'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProductsIdRouteImport } from './routes/products_.$id'
+import { Route as ServicesIdRouteImport } from './routes/services_.$id'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin_.customers'
 import { Route as ApiPublicDashboardUsersRouteImport } from './routes/api/public/dashboard-users'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
@@ -106,6 +110,11 @@ const SetPasswordRoute = SetPasswordRouteImport.update({
   path: '/set-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -116,6 +125,16 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoriesIdRoute = CategoriesIdRouteImport.update({
+  id: '/categories/$id',
+  path: '/categories/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsIdRoute = GroupsIdRouteImport.update({
+  id: '/groups/$id',
+  path: '/groups/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PostsSlugRoute = PostsSlugRouteImport.update({
   id: '/posts/$slug',
   path: '/posts/$slug',
@@ -124,6 +143,11 @@ const PostsSlugRoute = PostsSlugRouteImport.update({
 const ProductsIdRoute = ProductsIdRouteImport.update({
   id: '/products_/$id',
   path: '/products/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesIdRoute = ServicesIdRouteImport.update({
+  id: '/services_/$id',
+  path: '/services/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminCustomersRoute =
@@ -158,10 +182,14 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/set-password': typeof SetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/categories/$id': typeof CategoriesIdRoute
+  '/groups/$id': typeof GroupsIdRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/products/$id': typeof ProductsIdRoute
+  '/services/$id': typeof ServicesIdRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
@@ -181,10 +209,14 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/set-password': typeof SetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/categories/$id': typeof CategoriesIdRoute
+  '/groups/$id': typeof GroupsIdRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/products/$id': typeof ProductsIdRoute
+  '/services/$id': typeof ServicesIdRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
@@ -206,10 +238,14 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/set-password': typeof SetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/auth_/callback': typeof AuthCallbackRoute
+  '/categories/$id': typeof CategoriesIdRoute
+  '/groups/$id': typeof GroupsIdRoute
   '/posts/$slug': typeof PostsSlugRoute
   '/products_/$id': typeof ProductsIdRoute
+  '/services_/$id': typeof ServicesIdRoute
   '/_authenticated/admin_/customers': typeof AuthenticatedAdminCustomersRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
@@ -231,10 +267,14 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/services'
     | '/set-password'
+    | '/sitemap.xml'
     | '/admin'
     | '/auth/callback'
+    | '/categories/$id'
+    | '/groups/$id'
     | '/posts/$slug'
     | '/products/$id'
+    | '/services/$id'
     | '/admin/customers'
     | '/api/public/dashboard-users'
     | '/api/public/media/$'
@@ -254,10 +294,14 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/services'
     | '/set-password'
+    | '/sitemap.xml'
     | '/admin'
     | '/auth/callback'
+    | '/categories/$id'
+    | '/groups/$id'
     | '/posts/$slug'
     | '/products/$id'
+    | '/services/$id'
     | '/admin/customers'
     | '/api/public/dashboard-users'
     | '/api/public/media/$'
@@ -278,10 +322,14 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/services'
     | '/set-password'
+    | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/auth_/callback'
+    | '/categories/$id'
+    | '/groups/$id'
     | '/posts/$slug'
     | '/products_/$id'
+    | '/services_/$id'
     | '/_authenticated/admin_/customers'
     | '/api/public/dashboard-users'
     | '/api/public/media/$'
@@ -303,9 +351,13 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   SetPasswordRoute: typeof SetPasswordRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  CategoriesIdRoute: typeof CategoriesIdRoute
+  GroupsIdRoute: typeof GroupsIdRoute
   PostsSlugRoute: typeof PostsSlugRoute
   ProductsIdRoute: typeof ProductsIdRoute
+  ServicesIdRoute: typeof ServicesIdRoute
   ApiPublicDashboardUsersRoute: typeof ApiPublicDashboardUsersRoute
   ApiPublicMediaSplatRoute: typeof ApiPublicMediaSplatRoute
 }
@@ -417,6 +469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -431,6 +490,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categories/$id': {
+      id: '/categories/$id'
+      path: '/categories/$id'
+      fullPath: '/categories/$id'
+      preLoaderRoute: typeof CategoriesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$id': {
+      id: '/groups/$id'
+      path: '/groups/$id'
+      fullPath: '/groups/$id'
+      preLoaderRoute: typeof GroupsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/posts/$slug': {
       id: '/posts/$slug'
       path: '/posts/$slug'
@@ -443,6 +516,13 @@ declare module '@tanstack/react-router' {
       path: '/products/$id'
       fullPath: '/products/$id'
       preLoaderRoute: typeof ProductsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services_/$id': {
+      id: '/services_/$id'
+      path: '/services/$id'
+      fullPath: '/services/$id'
+      preLoaderRoute: typeof ServicesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin_/customers': {
@@ -498,9 +578,13 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   SetPasswordRoute: SetPasswordRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  CategoriesIdRoute: CategoriesIdRoute,
+  GroupsIdRoute: GroupsIdRoute,
   PostsSlugRoute: PostsSlugRoute,
   ProductsIdRoute: ProductsIdRoute,
+  ServicesIdRoute: ServicesIdRoute,
   ApiPublicDashboardUsersRoute: ApiPublicDashboardUsersRoute,
   ApiPublicMediaSplatRoute: ApiPublicMediaSplatRoute,
 }

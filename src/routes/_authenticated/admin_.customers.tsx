@@ -8,6 +8,7 @@ import { pick } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin_/customers")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [
     { title: "إدارة العملاء | جولد سنتر" },
     { name: "description", content: "إدارة حسابات العملاء ومراجعة السلة والمفضلة وسجل النشاط." },

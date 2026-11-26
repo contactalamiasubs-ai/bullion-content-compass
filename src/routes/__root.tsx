@@ -17,6 +17,7 @@ import { LangProvider } from "@/lib/i18n";
 import { Header, Footer, Popup } from "@/components/site";
 import { Toaster } from "@/components/ui/sonner";
 import { ShoppingProvider } from "@/components/shopping-provider";
+import { seoBundleQuery, seedPublicQueries } from "@/lib/seo-public.functions";
 
 function NotFoundComponent() {
   return (
@@ -67,22 +68,21 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
+  staticData: { sitemap: false },
+  validateSearch: (search: Record<string, unknown>): { lang?: "ar" | "en" } => search["lang"] === "en" || search["lang"] === "ar" ? { lang: search["lang"] } : {},
+  loader: async ({ context }) => {
+    const bundle = await context.queryClient.ensureQueryData(seoBundleQuery);
+    seedPublicQueries(context.queryClient, bundle);
+    return bundle;
+  },
+  head: ({ loaderData }) => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "جولد سنتر | ذهب وسبائك ومعادن ثمينة" },
-      {
-        name: "description",
-        content: "أسعار الذهب اليوم، سبائك وجنيهات ذهب، خدمات الشركات والتكرير.",
-      },
-      { property: "og:title", content: "جولد سنتر | ذهب وسبائك" },
-      {
-        property: "og:description",
-        content: "أسعار الذهب اليوم، سبائك وجنيهات ذهب، خدمات الشركات والتكرير.",
-      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      ...(loaderData?.config?.google_verification ? [{ name: "google-site-verification", content: loaderData.config.google_verification }] : []),
+      ...(loaderData?.config?.bing_verification ? [{ name: "msvalidate.01", content: loaderData.config.bing_verification }] : []),
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -102,8 +102,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const location = useLocation();
+  const lang = location.search.lang === "en" ? "en" : "ar";
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning>
+    <html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

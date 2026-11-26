@@ -5,6 +5,7 @@ import { LoginScene, LoginBrand } from "@/components/login-panel";
 import { useShoppingText } from "@/components/shopping-provider";
 import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/auth_/callback")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "تأكيد الدخول | جولد سنتر" }, { name: "description", content: "التحقق من تسجيل الدخول إلى جولد سنتر." }, { property: "og:title", content: "تأكيد الدخول | جولد سنتر" }, { property: "og:description", content: "إكمال تسجيل الدخول الآمن إلى جولد سنتر." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Callback,
 });

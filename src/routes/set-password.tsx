@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/set-password")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [
     { title: "تفعيل حساب الفريق | جولد سنتر" },
     { name: "description", content: "اختيار كلمة مرور لحساب فريق جولد سنتر بعد قبول الدعوة." },

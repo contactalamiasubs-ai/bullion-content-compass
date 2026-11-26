@@ -6,6 +6,7 @@ import { useShoppingText } from "@/components/shopping-provider";
 import { Button } from "@/components/ui/button";
 import { authErrorKey } from "@/lib/login";
 export const Route = createFileRoute("/reset-password")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "استعادة كلمة المرور | جولد سنتر" }, { name: "description", content: "تعيين كلمة مرور جديدة لحساب جولد سنتر من رابط الاستعادة." }, { property: "og:title", content: "استعادة كلمة المرور | جولد سنتر" }, { property: "og:description", content: "استعادة الوصول إلى حسابك في جولد سنتر بأمان." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: ResetPassword,
 });

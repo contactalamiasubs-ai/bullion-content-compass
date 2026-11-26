@@ -1,3 +1,5 @@
+import { loadPublicPage } from "@/lib/seo-public.functions";
+import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -22,25 +24,10 @@ import { PageHero, SectionTitle, fallbackImages } from "@/components/site";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "من نحن | جولد سنتر" },
-      {
-        name: "description",
-        content:
-          "تاريخ جولد سنتر ورؤيته ورسالته وقيمه، وخدماته للأفراد والجملة والتكرير في الذهب والفضة.",
-      },
-      { property: "og:title", content: "من نحن | جولد سنتر" },
-      {
-        property: "og:description",
-        content: "معلومات الشركة وخدماتها: تاريخنا، رؤيتنا، رسالتنا، وقيمنا في سوق الذهب.",
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://goldcenterstr.com/about" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "canonical", href: "https://goldcenterstr.com/about" }],
-  }),
+  staticData: { sitemap: true },
+  loaderDeps: ({ search }) => ({ lang: search.lang }),
+  loader: ({ context, deps }) => loadPublicPage(context.queryClient, "/about", deps.lang),
+  head: ({ loaderData }) => seoHead(loaderData?.seo),
   component: About,
 });
 

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const permissionKeys = ["products", "prices", "content", "settings", "messages", "media", "customers", "serials"] as const;
+export const permissionKeys = ["products", "prices", "content", "settings", "messages", "media", "customers", "serials", "seo"] as const;
 export type Permission = (typeof permissionKeys)[number];
 export const permissionLabels: Record<Permission, string> = {
   products: "المنتجات وأقسامها",
@@ -11,6 +11,7 @@ export const permissionLabels: Record<Permission, string> = {
   media: "رفع الصور وإدارة الوسائط",
   customers: "إدارة العملاء والتحليلات وتنزيل Excel",
   serials: "افحص سبيكتك — إدارة السيريالات ورفع Excel",
+  seo: "إدارة SEO والكلمات والتقارير",
 };
 export const accessSchema = z.object({
   admin: z.boolean(),
@@ -22,6 +23,7 @@ export const deleteAccountSchema = z.object({ userId: z.string().uuid() });
 export type DashboardAccess = { admin: boolean; permissions: string[] };
 
 const tabPermissions: Record<string, Permission> = {
+  seo: "seo",
   products: "products", "product-groups": "products", "product-categories": "products", serials: "serials", customers: "customers",
   prices: "prices", "gram-rates": "prices", source: "prices", history: "prices",
   sections: "content", catalog: "content", services: "content", posts: "content", slides: "content",

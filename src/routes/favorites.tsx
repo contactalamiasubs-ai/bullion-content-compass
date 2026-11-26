@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ShoppingPage } from "@/components/shopping-pages";
 
 export const Route = createFileRoute("/favorites")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [
+    { name: "robots", content: "noindex" },
     { title: "المنتجات المفضلة | جولد سنتر" },
     { name: "description", content: "منتجات الذهب والفضة التي أضفتها إلى مفضلتك في جولد سنتر." },
     { property: "og:title", content: "المنتجات المفضلة | جولد سنتر" },

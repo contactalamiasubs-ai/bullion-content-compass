@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { loadPublicPage } from "@/lib/seo-public.functions";
+import { seoHead, pageContent, imageAlt } from "@/lib/seo";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { MessageCircle, ArrowRight } from "lucide-react";
@@ -20,35 +22,23 @@ import { canOrderProduct, productAvailability } from "@/lib/product-availability
 import { useShopping, useShoppingText } from "@/components/shopping-provider";
 
 export const Route = createFileRoute("/products_/$id")({
-  loader: ({ params, context }) => context.queryClient.ensureQueryData(productQuery(params.id)),
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: loaderData?.active ? `${loaderData.name_ar} | جولد سنتر` : "تفاصيل المنتج | جولد سنتر" },
-      {
-        name: "description",
-        content: loaderData?.description_ar || "تفاصيل المنتج وسعره، واطلبه مباشرة عبر واتساب من جولد سنتر.",
-      },
-      { property: "og:title", content: loaderData?.active ? `${loaderData.name_ar} | جولد سنتر` : "تفاصيل المنتج | جولد سنتر" },
-      { property: "og:description", content: loaderData?.description_ar || "تفاصيل المنتج واطلبه عبر واتساب." },
-      { property: "og:type", content: "product" },
-      { name: "twitter:card", content: "summary_large_image" },
-      ...(loaderData?.active && loaderData.image_url?.startsWith("https://") ? [
-        { property: "og:image", content: loaderData.image_url },
-        { name: "twitter:image", content: loaderData.image_url },
-      ] : []),
-    ],
-  }),
+  staticData: { sitemap: true },
+  loaderDeps: ({ search }) => ({ lang: search.lang }),
+  loader: async ({ params, context, deps }) => { const result = await loadPublicPage(context.queryClient, `/products/${params.id}`, deps.lang); if (!result.seo.exists) throw notFound(); return result; },
+  head: ({ loaderData }) => seoHead(loaderData?.seo),
   component: ProductPage,
 });
 
 function ProductPage() {
-  const { id } = Route.useParams();
+  const loaded = Route.useLoaderData();
+  const product = pageContent(loaded.bundle, loaded.seo.page?.path ?? loaded.seo.canonical.replace("https://goldcenterstr.com", "").split("?")[0] ?? "").product;
+  const id = product?.id ?? Route.useParams().id;
   const { view, ready } = useShopping();
   useEffect(() => { if (ready) view(id); }, [id, view, ready]);
   const { lang, t } = useLang();
   const shoppingText = useShoppingText();
   // The loader snapshot must also seed the first browser render, matching SSR.
-  const { data: p, isLoading } = useQuery({ ...productQuery(id), initialData: Route.useLoaderData() });
+  const { data: p, isLoading } = useQuery({ ...productQuery(id), ...(product ? { initialData: product } : {}) });
   const { data: s } = useQuery(settingsQuery);
   const { data: all = [] } = useQuery(productsQuery);
   const { data: groups = [] } = useQuery(productGroupsQuery);
@@ -87,7 +77,9 @@ function ProductPage() {
       <div className="grid gap-10 md:grid-cols-2">
         <img
           src={p.image_url || fallbackImages[0]}
-          alt={name}
+          alt={imageAlt(loaded.bundle, p.image_url, name, lang)}
+          width={900}
+          height={900}
           className="aspect-square w-full rounded-xl border border-border object-cover"
         />
         <div className="flex flex-col justify-center">

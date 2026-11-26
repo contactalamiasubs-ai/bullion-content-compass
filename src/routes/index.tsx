@@ -1,3 +1,5 @@
+import { loadPublicPage } from "@/lib/seo-public.functions";
+import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { FileText, BookOpen, Download, ShieldCheck, Smartphone } from "lucide-react";
@@ -17,22 +19,10 @@ import {
 } from "@/components/site";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "جولد سنتر | أسعار الذهب اليوم وسبائك الذهب" },
-      {
-        name: "description",
-        content: "تابع أسعار الذهب والفضة لحظة بلحظة، واطلب السبائك والجنيهات الذهب عبر واتساب.",
-      },
-      { property: "og:title", content: "جولد سنتر | أسعار الذهب اليوم" },
-      {
-        property: "og:description",
-        content: "أسعار الذهب والفضة، سبائك وجنيهات، وحاسبة زكاة الذهب.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  staticData: { sitemap: true },
+  loaderDeps: ({ search }) => ({ lang: search.lang }),
+  loader: ({ context, deps }) => loadPublicPage(context.queryClient, "/", deps.lang),
+  head: ({ loaderData }) => seoHead(loaderData?.seo),
   component: Index,
 });
 

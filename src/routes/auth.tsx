@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [
     { title: "دخول لوحة التحكم | جولد سنتر" },
     { name: "description", content: "تسجيل الدخول الآمن إلى لوحة إدارة جولد سنتر." },

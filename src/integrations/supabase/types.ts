@@ -231,8 +231,11 @@ export type Database = {
           excerpt_ar: string | null
           excerpt_en: string | null
           id: string
+          image_alt_ar: string
+          image_alt_en: string
           image_url: string | null
           kind: string
+          publish_at: string | null
           published: boolean
           slug: string
           title_ar: string
@@ -245,8 +248,11 @@ export type Database = {
           excerpt_ar?: string | null
           excerpt_en?: string | null
           id?: string
+          image_alt_ar?: string
+          image_alt_en?: string
           image_url?: string | null
           kind?: string
+          publish_at?: string | null
           published?: boolean
           slug: string
           title_ar: string
@@ -259,8 +265,11 @@ export type Database = {
           excerpt_ar?: string | null
           excerpt_en?: string | null
           id?: string
+          image_alt_ar?: string
+          image_alt_en?: string
           image_url?: string | null
           kind?: string
+          publish_at?: string | null
           published?: boolean
           slug?: string
           title_ar?: string
@@ -509,6 +518,236 @@ export type Database = {
           key?: string
           title_ar?: string | null
           title_en?: string | null
+        }
+        Relationships: []
+      }
+      seo_audits: {
+        Row: {
+          checked_at: string
+          path: string
+          report: Json
+          score: number | null
+        }
+        Insert: {
+          checked_at?: string
+          path: string
+          report?: Json
+          score?: number | null
+        }
+        Update: {
+          checked_at?: string
+          path?: string
+          report?: Json
+          score?: number | null
+        }
+        Relationships: []
+      }
+      seo_config: {
+        Row: {
+          bing_verification: string
+          google_verification: string
+          id: number
+          measurement_id: string
+        }
+        Insert: {
+          bing_verification?: string
+          google_verification?: string
+          id?: number
+          measurement_id?: string
+        }
+        Update: {
+          bing_verification?: string
+          google_verification?: string
+          id?: number
+          measurement_id?: string
+        }
+        Relationships: []
+      }
+      seo_images: {
+        Row: {
+          alt_ar: string
+          alt_en: string
+          decorative: boolean
+          id: string
+          optimized_url: string
+          url: string
+        }
+        Insert: {
+          alt_ar?: string
+          alt_en?: string
+          decorative?: boolean
+          id?: string
+          optimized_url?: string
+          url: string
+        }
+        Update: {
+          alt_ar?: string
+          alt_en?: string
+          decorative?: boolean
+          id?: string
+          optimized_url?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      seo_keywords: {
+        Row: {
+          category: string
+          id: string
+          keyword_ar: string
+          keyword_en: string
+          page_path: string
+        }
+        Insert: {
+          category?: string
+          id?: string
+          keyword_ar?: string
+          keyword_en?: string
+          page_path?: string
+        }
+        Update: {
+          category?: string
+          id?: string
+          keyword_ar?: string
+          keyword_en?: string
+          page_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_keywords_page_path_fkey"
+            columns: ["page_path"]
+            isOneToOne: false
+            referencedRelation: "seo_pages"
+            referencedColumns: ["path"]
+          },
+        ]
+      }
+      seo_pages: {
+        Row: {
+          canonical_url: string
+          description_ar: string
+          description_en: string
+          entity_id: string | null
+          entity_type: string
+          focus_keyword_ar: string
+          focus_keyword_en: string
+          image_url: string
+          og_description_ar: string
+          og_description_en: string
+          og_title_ar: string
+          og_title_en: string
+          path: string
+          robots: string
+          secondary_keywords_ar: string
+          secondary_keywords_en: string
+          title_ar: string
+          title_en: string
+          twitter_card: string
+          twitter_description_ar: string
+          twitter_description_en: string
+          twitter_title_ar: string
+          twitter_title_en: string
+          updated_at: string
+          url_slug: string
+        }
+        Insert: {
+          canonical_url?: string
+          description_ar?: string
+          description_en?: string
+          entity_id?: string | null
+          entity_type?: string
+          focus_keyword_ar?: string
+          focus_keyword_en?: string
+          image_url?: string
+          og_description_ar?: string
+          og_description_en?: string
+          og_title_ar?: string
+          og_title_en?: string
+          path: string
+          robots?: string
+          secondary_keywords_ar?: string
+          secondary_keywords_en?: string
+          title_ar?: string
+          title_en?: string
+          twitter_card?: string
+          twitter_description_ar?: string
+          twitter_description_en?: string
+          twitter_title_ar?: string
+          twitter_title_en?: string
+          updated_at?: string
+          url_slug?: string
+        }
+        Update: {
+          canonical_url?: string
+          description_ar?: string
+          description_en?: string
+          entity_id?: string | null
+          entity_type?: string
+          focus_keyword_ar?: string
+          focus_keyword_en?: string
+          image_url?: string
+          og_description_ar?: string
+          og_description_en?: string
+          og_title_ar?: string
+          og_title_en?: string
+          path?: string
+          robots?: string
+          secondary_keywords_ar?: string
+          secondary_keywords_en?: string
+          title_ar?: string
+          title_en?: string
+          twitter_card?: string
+          twitter_description_ar?: string
+          twitter_description_en?: string
+          twitter_title_ar?: string
+          twitter_title_en?: string
+          updated_at?: string
+          url_slug?: string
+        }
+        Relationships: []
+      }
+      seo_redirects: {
+        Row: {
+          active: boolean
+          created_at: string
+          source_path: string
+          target_path: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          source_path: string
+          target_path: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          source_path?: string
+          target_path?: string
+        }
+        Relationships: []
+      }
+      seo_reports: {
+        Row: {
+          error: string
+          provider: string
+          refreshed_at: string | null
+          selected_property: string
+          snapshot: Json | null
+        }
+        Insert: {
+          error?: string
+          provider: string
+          refreshed_at?: string | null
+          selected_property?: string
+          snapshot?: Json | null
+        }
+        Update: {
+          error?: string
+          provider?: string
+          refreshed_at?: string | null
+          selected_property?: string
+          snapshot?: Json | null
         }
         Relationships: []
       }

@@ -5,6 +5,7 @@ import { mediaResponse, publicMediaPath, publishedMediaOrigin } from "@/lib/medi
 
 // Media files stay in the private bucket; each request gets a fresh short-lived signed link.
 export const Route = createFileRoute("/api/public/media/$")({
+  staticData: { sitemap: false },
   server: { handlers: {
     GET: async ({ params }) => {
       const path = params._splat ?? "";

@@ -1,3 +1,5 @@
+import { loadPublicPage } from "@/lib/seo-public.functions";
+import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
@@ -12,13 +14,10 @@ import type { Database } from "@/integrations/supabase/types";
 
 type Match = Database["public"]["Functions"]["lookup_bullion_serial"]["Returns"][number];
 export const Route = createFileRoute("/check-bar")({
-  head: () => ({ meta: [
-    { title: "افحص سبيكتك | جولد سنتر" },
-    { name: "description", content: "تحقق من سيريال السبيكة واستعرض مواصفاتها المسجلة لدى جولد سنتر." },
-    { property: "og:title", content: "افحص سبيكتك | جولد سنتر" },
-    { property: "og:description", content: "مطابقة سيريال السبيكة مع سجل جولد سنتر ومواصفاتها." },
-    { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
-  ] }),
+  staticData: { sitemap: true },
+  loaderDeps: ({ search }) => ({ lang: search.lang }),
+  loader: ({ context, deps }) => loadPublicPage(context.queryClient, "/check-bar", deps.lang),
+  head: ({ loaderData }) => seoHead(loaderData?.seo),
   component: CheckBar,
 });
 const emailSchema = z.string().trim().max(255).regex(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i);

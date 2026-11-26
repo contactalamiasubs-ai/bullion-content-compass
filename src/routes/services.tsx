@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { loadPublicPage } from "@/lib/seo-public.functions";
+import { seoHead } from "@/lib/seo";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useLang, pick } from "@/lib/i18n";
 import { servicesQuery, settingsQuery, whatsappLink } from "@/lib/data";
@@ -6,16 +8,10 @@ import { PageHero, fallbackImages } from "@/components/site";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/services")({
-  head: () => ({
-    meta: [
-      { title: "خدماتنا | جولد سنتر" },
-      { name: "description", content: "خدمات الشركات والجملة والتكرير للذهب والفضة." },
-      { property: "og:title", content: "خدماتنا | جولد سنتر" },
-      { property: "og:description", content: "خدمات الشركات والجملة والتكرير." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  staticData: { sitemap: true },
+  loaderDeps: ({ search }) => ({ lang: search.lang }),
+  loader: ({ context, deps }) => loadPublicPage(context.queryClient, "/services", deps.lang),
+  head: ({ loaderData }) => seoHead(loaderData?.seo),
   component: Services,
 });
 
@@ -37,6 +33,7 @@ function Services() {
             />
             <div>
               <h2 className="mb-3 text-3xl text-gold-gradient">{pick(x, "title", lang)}</h2>
+              <Link to="/services/$id" params={{ id: x.id }} className="mb-4 inline-block text-gold underline">{t("readMore")}</Link>
               <p className="mb-5 whitespace-pre-line leading-relaxed text-muted-foreground">
                 {pick(x, "body", lang)}
               </p>

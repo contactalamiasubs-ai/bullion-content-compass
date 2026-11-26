@@ -1,19 +1,15 @@
+import { loadPublicPage } from "@/lib/seo-public.functions";
+import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useLang } from "@/lib/i18n";
 import { PageHero } from "@/components/site";
 import { ProductCatalog } from "@/components/product-catalog";
 
 export const Route = createFileRoute("/products")({
-  head: () => ({
-    meta: [
-      { title: "منتجاتنا | جولد سنتر" },
-      { name: "description", content: "سبائك ذهب وجنيهات ومشغولات، اطلبها مباشرة عبر واتساب." },
-      { property: "og:title", content: "منتجاتنا | جولد سنتر" },
-      { property: "og:description", content: "سبائك ذهب وجنيهات ومشغولات." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  staticData: { sitemap: true },
+  loaderDeps: ({ search }) => ({ lang: search.lang }),
+  loader: ({ context, deps }) => loadPublicPage(context.queryClient, "/products", deps.lang),
+  head: ({ loaderData }) => seoHead(loaderData?.seo),
   component: Products,
 });
 

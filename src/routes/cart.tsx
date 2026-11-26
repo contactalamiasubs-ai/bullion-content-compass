@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ShoppingPage } from "@/components/shopping-pages";
 
 export const Route = createFileRoute("/cart")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [
+    { name: "robots", content: "noindex" },
     { title: "سلة المنتجات | جولد سنتر" },
     { name: "description", content: "راجع منتجات الذهب والفضة والكميات وأرسل طلبك أو استفسارك عبر واتساب." },
     { property: "og:title", content: "سلة المنتجات | جولد سنتر" },

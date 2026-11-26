@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/api/public/dashboard-users")({
+  staticData: { sitemap: false },
   server: { handlers: {
     POST: async ({ request }) => {
       const { createAdminBridgeHandler } = await import("@/lib/admin-users.server");

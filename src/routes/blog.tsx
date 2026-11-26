@@ -1,3 +1,5 @@
+import { loadPublicPage } from "@/lib/seo-public.functions";
+import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/lib/i18n";
@@ -5,16 +7,10 @@ import { postsQuery } from "@/lib/data";
 import { PageHero, PostCard } from "@/components/site";
 
 export const Route = createFileRoute("/blog")({
-  head: () => ({
-    meta: [
-      { title: "المدونة | جولد سنتر" },
-      { name: "description", content: "مقالات وأدلة عن الذهب والفضة والادخار." },
-      { property: "og:title", content: "المدونة | جولد سنتر" },
-      { property: "og:description", content: "مقالات وأدلة عن الذهب والفضة." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  staticData: { sitemap: true },
+  loaderDeps: ({ search }) => ({ lang: search.lang }),
+  loader: ({ context, deps }) => loadPublicPage(context.queryClient, "/blog", deps.lang),
+  head: ({ loaderData }) => seoHead(loaderData?.seo),
   component: () => <PostList kind="blog" />,
 });
 
