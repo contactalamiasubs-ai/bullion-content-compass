@@ -582,3 +582,4 @@
 /* Remove dark backing from customer logo artwork without changing the uploaded file. */
 .login-brand-logo { display: block; width: min(240px, 62vw); height: 150px; max-width: 100%; margin: 0 auto 8px; object-fit: contain; filter: url(#login-logo-transparent); }
 @media (max-width: 640px) { .login-brand-logo { width: min(190px, 55vw); height: 118px; } }
+.serial-brand-logo { display: block; width: 180px; height: 112px; max-width: 100%; object-fit: contain; filter: url(#serial-logo-transparent); }

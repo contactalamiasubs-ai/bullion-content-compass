@@ -54,7 +54,10 @@ function CheckBar() {
     </div>
     <section className="relative mx-auto max-w-xl space-y-6 px-4 py-12">
       <div className="serial-card space-y-5 rounded-3xl border border-gold/60 bg-card/85 p-6 backdrop-blur sm:p-8">
-        <div className="flex justify-center"><ShieldCheck className="h-14 w-14 text-gold" /></div>
+        <div className="flex justify-center">
+          <svg width="0" height="0" aria-hidden="true" className="login-logo-filter"><defs><filter id="serial-logo-transparent" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1.5 1.5 1.5 1 -1.3" /></filter></defs></svg>
+          {bg?.logo_url && <img src={bg.logo_url} alt={pick(bg, "site_name", lang)} width={180} height={112} className="serial-brand-logo" />}
+        </div>
         <h1 className="text-center font-display text-3xl text-gold sm:text-4xl">{text("heading")}</h1>
         <p className="text-center text-muted-foreground">{text("heading", "body")}</p>
         <form className="space-y-4" noValidate onSubmit={async event => {
