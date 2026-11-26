@@ -81,6 +81,9 @@ function ProductPage() {
           alt={imageAlt(loaded.bundle, p.image_url, name, lang)}
           width={900}
           height={900}
+          loading="eager"
+          fetchPriority="high"
+          sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) 50vw, 620px"
           className="aspect-square w-full rounded-xl border border-border object-cover"
         />
         <div className="flex flex-col justify-center">

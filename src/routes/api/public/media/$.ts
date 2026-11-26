@@ -2,18 +2,28 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { mediaResponse, publicMediaPath, publishedMediaOrigin } from "@/lib/media-access";
+import { requestedImageWidth } from "@/lib/responsive-images";
+import { cachedMediaBytes } from "@/lib/media-delivery";
 
 // Media files stay in the private bucket; each request gets a fresh short-lived signed link.
 export const Route = createFileRoute("/api/public/media/$")({
   staticData: { sitemap: false },
   server: { handlers: {
-    GET: async ({ params }) => {
+    GET: async ({ params, request }) => {
       const path = params._splat ?? "";
       const publicPath = publicMediaPath(path);
       if (!publicPath) return new Response("Not found", { status: 404 });
+      const width = requestedImageWidth(new URL(request.url).searchParams.get("w"));
+      const deliver = async (url: string) => {
+        const range = request.headers.get("Range");
+        const response = await fetch(url, range ? { headers: { Range: range } } : {});
+        return cachedMediaBytes(response);
+      };
       if (!process.env["SUPABASE_SERVICE_ROLE_KEY"]) {
-        // External hosting has no private key: let the published app sign the link.
-        return new Response(null, { status: 302, headers: { Location: `${publishedMediaOrigin}${publicPath}`, "Cache-Control": "no-store" } });
+        // External hosting delegates authorization to the pinned app and streams its media.
+        const response = await fetch(`${publishedMediaOrigin}${publicPath}${width ? `?w=${width}` : ""}`, { redirect: "follow", ...(request.headers.get("Range") ? { headers: { Range: request.headers.get("Range") ?? "" } } : {}) });
+        if (!response.ok) return new Response("Not found", { status: response.status, headers: { "Cache-Control": "no-store" } });
+        return cachedMediaBytes(response);
       }
       const url = process.env["SUPABASE_URL"];
       const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
@@ -28,6 +38,7 @@ export const Route = createFileRoute("/api/public/media/$")({
         } },
       });
       return mediaResponse(path, {
+        deliver,
         isPublished: async (_url) => {
           const { data, error } = await publicClient.rpc("is_published_media", { _url });
           return !error && data === true;
@@ -38,7 +49,7 @@ export const Route = createFileRoute("/api/public/media/$")({
           const { data, error } = await supabaseAdmin.storage.from("media").createSignedUrl(objectPath, 60 * 60);
           return !error && data ? data.signedUrl : null;
         },
-      });
+      }, width);
     },
   } },
 });

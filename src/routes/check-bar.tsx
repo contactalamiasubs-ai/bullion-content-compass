@@ -11,6 +11,7 @@ import { pick, useLang } from "@/lib/i18n";
 import { customerNumberSchema, serialSchema } from "@/lib/bullion-serials";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { SeoImage } from "@/components/seo-image";
 
 type Match = Database["public"]["Functions"]["lookup_bullion_serial"]["Returns"][number];
 export const Route = createFileRoute("/check-bar")({
@@ -48,7 +49,7 @@ function CheckBar() {
   const field = "flex h-12 items-center gap-3 rounded-full border border-gold/40 bg-background/70 px-4 focus-within:ring-2 focus-within:ring-ring";
   return <main className="serial-scene relative overflow-hidden" data-style={bg?.serial_bg_style ?? "particles"} data-animated={bg?.serial_bg_enabled === false ? "false" : "true"} style={{ ["--serial-speed" as string]: speed }}>
     <div aria-hidden className="serial-bg">
-      {bg?.serial_bg_image && <img src={bg.serial_bg_image} alt="" className="serial-bg-image" />}
+      {bg?.serial_bg_image && <SeoImage src={bg.serial_bg_image} alt="" loading="eager" fetchPriority="high" width={1920} height={1080} sizes="(max-width: 767px) 150vw, 100vw" className="serial-bg-image" />}
       <div className="serial-bg-glow" />
       {dots.map((d, i) => <span key={i} className="serial-dot" style={{ left: `${d.left}%`, width: d.size, height: d.size, animationDelay: `-${d.delay * 2}s` }} />)}
     </div>
@@ -56,7 +57,7 @@ function CheckBar() {
       <div className="serial-card space-y-5 rounded-3xl border border-gold/60 bg-card/85 p-6 backdrop-blur sm:p-8">
         <div className="flex justify-center">
           <svg width="0" height="0" aria-hidden="true" className="login-logo-filter"><defs><filter id="serial-logo-transparent" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1.5 1.5 1.5 1 -1.3" /></filter></defs></svg>
-          {bg?.logo_url && <img src={bg.logo_url} alt={pick(bg, "site_name", lang)} width={180} height={112} className="serial-brand-logo" />}
+          {bg?.logo_url && <SeoImage src={bg.logo_url} alt={pick(bg, "site_name", lang)} width={180} height={112} loading="eager" sizes="180px" maxWidth={960} className="serial-brand-logo" />}
         </div>
         <h1 className="text-center font-display text-3xl text-gold sm:text-4xl">{text("heading")}</h1>
         <p className="text-center text-muted-foreground">{text("heading", "body")}</p>

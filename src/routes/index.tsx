@@ -1,4 +1,6 @@
 import { SeoImage } from "@/components/seo-image";
+import { responsiveImage } from "@/lib/responsive-images";
+import { catalogSearch } from "@/lib/catalog-pagination";
 import { loadPublicPage } from "@/lib/seo-public.functions";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -21,9 +23,15 @@ import {
 
 export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
+  validateSearch: catalogSearch,
   loaderDeps: ({ search }) => ({ lang: search.lang }),
   loader: ({ context, deps }) => loadPublicPage(context.queryClient, "/", deps.lang),
-  head: ({ loaderData }) => seoHead(loaderData?.seo),
+  head: ({ loaderData }) => {
+    const head = seoHead(loaderData?.seo);
+    const image = loaderData?.bundle.slides.find(slide => slide.active)?.image_url;
+    const responsive = responsiveImage(image ?? undefined);
+    return { ...head, links: [...head.links, ...(image ? [{ rel: "preload", as: "image", href: responsive.src || image, imageSrcSet: responsive.srcSet, imageSizes: "(max-width: 767px) 180vw, 100vw", fetchPriority: "high" as const }] : [])] };
+  },
   component: Index,
 });
 

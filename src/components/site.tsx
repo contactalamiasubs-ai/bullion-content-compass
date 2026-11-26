@@ -1,16 +1,8 @@
 import { SeoImage } from "@/components/seo-image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useNearViewport } from "@/hooks/use-near-viewport";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import {
   Menu,
   X,
@@ -49,15 +41,15 @@ import {
   sectionsQuery,
   slidesQuery,
   pricesQuery,
-  historyQuery,
   verifiedPricesQuery,
   whatsappLink,
   calcZakat,
 } from "@/lib/data";
-import s1 from "@/assets/slide-1.jpg";
-import s2 from "@/assets/slide-2.jpg";
-import s3 from "@/assets/slide-3.jpg";
-import s4 from "@/assets/slide-4.jpg";
+import { staticImages } from "@/lib/static-images";
+const s1 = staticImages["slide-1"];
+const s2 = staticImages["slide-2"];
+const s3 = staticImages["slide-3"];
+const s4 = staticImages["slide-4"];
 
 export const fallbackImages = [s1, s2, s3, s4];
 const fmt = (n: number, lang: string) =>
@@ -104,7 +96,7 @@ export function Header() {
           <Link to="/" className="flex min-w-0 items-center gap-2" onClick={() => setOpen(false)}>
             <span className="brand-mark relative grid h-11 w-11 shrink-0 place-items-center rounded-full sm:h-[52px] sm:w-[52px]">
               {s?.logo_url ? (
-                <SeoImage src={s.logo_url} alt={pick(s, "site_name", lang)} className="relative z-10 h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" />
+                <SeoImage src={s.logo_url} loading="eager" maxWidth={160} sizes="52px" width={52} height={52} alt={pick(s, "site_name", lang)} className="relative z-10 h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" />
               ) : (
                 <span className="relative z-10 grid h-10 w-10 place-items-center rounded-full bg-gold-gradient font-display text-lg font-bold text-primary-foreground sm:h-12 sm:w-12">Au</span>
               )}
@@ -411,9 +403,19 @@ export function HeroSlider() {
   const { data: slides = [] } = useQuery(slidesQuery);
   const active = slides.filter((x) => x.active);
   const [i, setI] = useState(0);
+  const [loadedSlides, setLoadedSlides] = useState([0]);
   useEffect(() => {
-    if (active.length < 2) return;
-    const id = setInterval(() => setI((p) => (p + 1) % active.length), 6000);
+    if (!active.length) return;
+    setLoadedSlides(previous => previous.includes(i % active.length) ? previous : [...previous, i % active.length]);
+    const warm = setTimeout(() => setLoadedSlides(previous => {
+      const next = (i + 1) % active.length;
+      return previous.includes(next) ? previous : [...previous, next];
+    }), 3000);
+    return () => clearTimeout(warm);
+  }, [i, active.length]);
+  useEffect(() => {
+    if (active.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setInterval(() => { if (!document.hidden) setI((p) => (p + 1) % active.length); }, 6000);
     return () => clearInterval(id);
   }, [active.length]);
   if (!active.length) return <div className="h-[70vh] bg-card" />;
@@ -422,18 +424,19 @@ export function HeroSlider() {
   const go = (d: number) => setI((p) => (p + d + active.length) % active.length);
   return (
     <section className="relative h-[62svh] min-h-[420px] max-h-[640px] overflow-hidden sm:h-[70vh] md:h-[75vh] md:min-h-[480px] md:max-h-none">
-      {active.map((sl, idx) => (
+      {active.map((sl, idx) => loadedSlides.includes(idx) ? (
         <SeoImage
           key={sl.id}
           src={sl.image_url || fallbackImages[idx % 4]}
           alt={pick(sl, "title", lang)}
           width={1920}
           height={912}
+          sizes="(max-width: 767px) 180vw, 100vw"
           loading={idx === 0 ? "eager" : "lazy"}
           fetchPriority={idx === 0 ? "high" : "low"}
           className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000 ${idx === i % active.length ? "opacity-100" : "opacity-0"}`}
         />
-      ))}
+      ) : null)}
       <div className="absolute inset-0 bg-hero-fade" />
       <div className="relative mx-auto flex h-full max-w-7xl items-end px-4 pb-24 md:pb-28">
         <div
@@ -591,80 +594,11 @@ export function PriceTable() {
   );
 }
 
+const LazyPriceChart = lazy(() => import("@/components/price-chart"));
 export function PriceChart() {
-  const { t, lang } = useLang();
-  const { data: rows = [] } = useQuery(historyQuery);
-  const [range, setRange] = useState(12);
-  const [cur, setCur] = useState<"usd" | "egp">("usd");
-  const data = useMemo(() => {
-    const from = new Date();
-    from.setMonth(from.getMonth() - range);
-    return rows
-      .filter((r) => new Date(r.day) >= from)
-      .map((r) => ({ day: r.day, v: Number(r[cur]) }));
-  }, [rows, range, cur]);
-  return (
-    <div className="rounded-xl border border-border bg-card p-5">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-lg">{t("marketRange")}</h3>
-        <div className="flex flex-wrap gap-2 text-xs">
-          {(["usd", "egp"] as const).map((c) => (
-            <button
-              key={c}
-              onClick={() => setCur(c)}
-              className={`rounded px-2.5 py-1 border ${cur === c ? "border-gold text-gold" : "border-border text-muted-foreground"}`}
-            >
-              {c.toUpperCase()}
-            </button>
-          ))}
-          {[
-            [1, t("month")],
-            [12, t("year")],
-            [36, t("y3")],
-            [60, t("y5")],
-          ].map(([m, l]) => (
-            <button
-              key={m}
-              onClick={() => setRange(m as number)}
-              className={`rounded px-2.5 py-1 ${range === m ? "bg-gold-gradient text-primary-foreground" : "bg-secondary text-muted-foreground"}`}
-            >
-              {l}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="h-64" dir="ltr">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
-            <defs>
-              <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--gold)" stopOpacity={0.5} />
-                <stop offset="100%" stopColor="var(--gold)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
-            <XAxis
-              dataKey="day"
-              stroke="var(--muted-foreground)"
-              fontSize={11}
-              tickFormatter={(d) => String(d).slice(0, 7)}
-            />
-            <YAxis
-              stroke="var(--muted-foreground)"
-              fontSize={11}
-              domain={["auto", "auto"]}
-              width={60}
-            />
-            <Tooltip
-              contentStyle={{ background: "var(--card)", border: "1px solid var(--border)" }}
-              formatter={(v: number) => fmt(v, lang)}
-            />
-            <Area type="monotone" dataKey="v" stroke="var(--gold)" fill="url(#g)" strokeWidth={2} />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
+  const { ref, near } = useNearViewport<HTMLDivElement>();
+  const placeholder = <div className="h-[344px] rounded-xl border border-border bg-card" />;
+  return <div ref={ref}>{near ? <Suspense fallback={placeholder}><LazyPriceChart /></Suspense> : placeholder}</div>;
 }
 
 export function ZakatCalculator() {
@@ -786,6 +720,8 @@ export function ProductCard({ p, idx }: { p: ProductRow; idx: number }) {
           alt={name}
           width={600}
           height={600}
+          maxWidth={640}
+          sizes="(max-width: 767px) 50vw, (max-width: 1023px) 33vw, 300px"
           loading="lazy"
           className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-105"
         />
@@ -871,7 +807,7 @@ export function PostCard({ p, idx }: { p: PostRow; idx: number }) {
 export function PageHero({ title, centered = false }: { title: string; centered?: boolean }) {
   return (
     <section className="relative h-56 overflow-hidden">
-      <SeoImage src={s1} alt="" aria-hidden="true" width={1920} height={600} className="absolute inset-0 h-full w-full object-cover opacity-40" />
+      <SeoImage src={s1} alt="" aria-hidden="true" width={1920} height={600} loading="eager" fetchPriority="high" sizes="100vw" className="absolute inset-0 h-full w-full object-cover opacity-40" />
       <div className="absolute inset-0 bg-hero-fade" />
       <div className={`relative mx-auto flex h-full max-w-7xl px-4 ${centered ? "items-center justify-center text-center" : "items-end pb-8"}`}>
         <h1 className="text-4xl font-bold text-gold-gradient">{title}</h1>

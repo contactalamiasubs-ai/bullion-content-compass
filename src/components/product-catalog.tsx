@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { Coins, Gift, Gem, LayoutGrid } from "lucide-react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { Coins, Gift, Gem, LayoutGrid, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
 import { productsQuery, productGroupsQuery, productCategoriesQuery } from "@/lib/data";
 import { matchesProductCategory } from "@/lib/product-categories";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/site";
+import { catalogPage } from "@/lib/catalog-pagination";
 
 function CategoryIcon({ name, main = false }: { name: string; main?: boolean }) {
   const normalized = name.trim().toLowerCase();
@@ -61,8 +61,14 @@ export function ProductCatalog({ limit }: { limit?: number }) {
   const products = useQuery(productsQuery);
   const groups = useQuery(productGroupsQuery);
   const categories = useQuery(productCategoriesQuery);
-  const [selectedGroup, setGroup] = useState("");
-  const [selectedCategory, setCategory] = useState("");
+  const search = useSearch({ strict: false });
+  const navigate = useNavigate();
+  const selectedGroup = search.group ?? "";
+  const selectedCategory = search.category ?? "";
+  const destination = limit ? "/" : "/products";
+  const setGroup = (group: string) => void navigate({ to: destination, search: previous => ({ ...previous, group, category: "", page: 1 }), resetScroll: false });
+  const setCategory = (category: string) => void navigate({ to: destination, search: previous => ({ ...previous, category, page: 1 }), resetScroll: false });
+  const setPage = (page: number) => void navigate({ to: destination, search: previous => ({ ...previous, page }), resetScroll: false });
   const groupId = groups.data?.some((group) => group.id === selectedGroup) ? selectedGroup : "";
   const categoryId = categories.data?.some(
     (category) => category.id === selectedCategory && category.group_id === groupId,
@@ -80,6 +86,8 @@ export function ProductCatalog({ limit }: { limit?: number }) {
   );
   const loading = products.isLoading || groups.isLoading || categories.isLoading;
   const error = products.error || groups.error || categories.error;
+  const pagination = catalogPage(visible, search.page ?? 1);
+  const pageItems = limit ? visible.slice(0, limit) : pagination.items;
   return (
     <div>
         <nav
@@ -92,7 +100,6 @@ export function ProductCatalog({ limit }: { limit?: number }) {
             aria-pressed={!groupId}
             onClick={() => {
               setGroup("");
-              setCategory("");
             }}
           >
             <span className="category-medallion">
@@ -109,7 +116,6 @@ export function ProductCatalog({ limit }: { limit?: number }) {
               aria-pressed={groupId === group.id}
               onClick={() => {
                 setGroup(group.id);
-                setCategory("");
               }}
             >
               <span className="category-medallion">
@@ -163,7 +169,7 @@ export function ProductCatalog({ limit }: { limit?: number }) {
           </p>
         ) : visible.length ? (
           <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
-            {visible.slice(0, limit).map((p, i) => (
+            {pageItems.map((p, i) => (
               <ProductCard key={p.id} p={p} idx={i} />
             ))}
           </div>
@@ -173,6 +179,17 @@ export function ProductCatalog({ limit }: { limit?: number }) {
               ? "لا توجد منتجات في هذا القسم حاليًا"
               : "No products in this category yet"}
           </p>
+        )}
+        {!limit && pagination.totalPages > 1 && (
+          <nav className="mt-8 flex items-center justify-center gap-3" aria-label={t("products")}>
+            <Button variant="outline" size="icon" disabled={pagination.page === 1} onClick={() => setPage(pagination.page - 1)} aria-label={lang === "ar" ? "الصفحة السابقة" : "Previous page"}>
+              <ChevronRight className="ltr:rotate-180" />
+            </Button>
+            <span className="min-w-16 text-center tabular-nums" aria-live="polite">{pagination.page} / {pagination.totalPages}</span>
+            <Button variant="outline" size="icon" disabled={pagination.page === pagination.totalPages} onClick={() => setPage(pagination.page + 1)} aria-label={lang === "ar" ? "الصفحة التالية" : "Next page"}>
+              <ChevronLeft className="ltr:rotate-180" />
+            </Button>
+          </nav>
         )}
         {groupId && <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">{branches.map(category => <Link key={category.id} to="/categories/$id" params={{ id: category.id }} className="hover:text-gold">{pick(category,"name",lang)}</Link>)}</div>}
     </div>

@@ -9,6 +9,7 @@ import { productsQuery, settingsQuery, whatsappLink } from "@/lib/data";
 import { useLang, pick } from "@/lib/i18n";
 import { cartLines, cartTotal, cartMessage } from "@/lib/shopping";
 import { validateWhatsappNumber } from "@/lib/whatsapp";
+import { SeoImage } from "@/components/seo-image";
 
 export function ShoppingPage({ mode }: { mode: "cart" | "favorites" }) {
   const { state, ready, user, syncError, retry, quantity, clear } = useShopping();
@@ -53,7 +54,7 @@ export function ShoppingPage({ mode }: { mode: "cart" | "favorites" }) {
         <div className="min-w-0 divide-y divide-border">
           {unavailable.length > 0 && <div className="flex flex-wrap items-center justify-between gap-3 py-4 text-sm text-muted-foreground"><p>{text("missing")}</p><Button variant="ghost" onClick={() => unavailable.forEach((id) => quantity(id, 0))}><Trash2 />{text("remove")}</Button></div>}
           {lines.map(({ product, quantity: qty, price, total: subtotal }) => <article key={product.id} className="flex gap-4 py-6 first:pt-0">
-            <Link to="/products/$id" params={{ id: product.id }} className="w-24 shrink-0 sm:w-32"><img src={product.image_url || fallbackImages[0]} alt={pick(product, "name", lang)} className="aspect-square w-full rounded-md border border-border object-cover" /></Link>
+            <Link to="/products/$id" params={{ id: product.id }} className="w-24 shrink-0 sm:w-32"><SeoImage src={product.image_url || fallbackImages[0]} alt={pick(product, "name", lang)} width={128} height={128} sizes="128px" maxWidth={640} className="aspect-square w-full rounded-md border border-border object-cover" /></Link>
             <div className="min-w-0 flex-1 space-y-3">
               <div className="flex items-start justify-between gap-2"><Link to="/products/$id" params={{ id: product.id }} className="break-words text-lg font-medium hover:text-gold">{pick(product, "name", lang)}</Link>
                 <Button size="icon" variant="ghost" title={text("remove")} aria-label={text("remove")} onClick={() => quantity(product.id, 0)} className="shrink-0 text-muted-foreground"><Trash2 /></Button></div>
