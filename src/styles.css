@@ -476,7 +476,7 @@
 .login-scene-content { display: grid; place-items: center; min-height: 100svh; padding: 46px 20px; }
 .login-panel { width: min(100%, 490px); padding: 24px 34px 16px; border: 1px solid color-mix(in srgb, var(--login-gold) 75%, var(--login-border)); border-radius: 28px; background: color-mix(in srgb, var(--login-surface) 90%, transparent); backdrop-filter: blur(20px); box-shadow: var(--login-shadow); text-align: center; }
 .login-brand { color: var(--login-gold-light); margin-bottom: 16px; }
-.login-brand > svg { width: 58px; height: 58px; margin: 0 auto 6px; stroke-width: 1.4; }
+.login-logo-filter { position: absolute; width: 0; height: 0; pointer-events: none; }
 .login-brand-english { font: 32px/1.25 Georgia, serif; }
 .login-brand-arabic { display: flex; justify-content: center; align-items: center; gap: 14px; font: 22px/1.7 var(--font-display); }
 .login-brand-arabic span { height: 1px; width: 58px; background: var(--login-gold); }
@@ -520,7 +520,6 @@
   .login-scene-content { padding-block: 20px; }
   .login-panel { padding-block: 16px 10px; }
   .login-brand { margin-bottom: 8px; }
-  .login-brand > svg { width: 40px; height: 40px; }
   .login-brand-english { font-size: 28px; }
   .login-brand-arabic { font-size: 18px; }
   .login-panel h1 { font-size: 24px; }
@@ -580,6 +579,6 @@
   @keyframes brand-draw { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 0.7; } }
 }
 
-/* Blend black-backed brand artwork into the customer sign-in surface. */
-.login-brand-logo { display: block; width: 128px; height: 72px; max-width: 100%; margin: 0 auto 8px; object-fit: contain; mix-blend-mode: screen; }
+/* Remove dark backing from customer logo artwork without changing the uploaded file. */
+.login-brand-logo { display: block; width: 128px; height: 72px; max-width: 100%; margin: 0 auto 8px; object-fit: contain; filter: url(#login-logo-transparent); }
 @media (max-width: 640px) { .login-brand-logo { width: 112px; height: 64px; } }
