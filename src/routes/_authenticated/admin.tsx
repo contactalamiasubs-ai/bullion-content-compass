@@ -20,18 +20,18 @@ import {
   UsersRound,
   ScanLine,
   ScanSearch,
+  Plug,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BullionChecksExportButton } from "@/components/admin/bullion-checks-export";
 import { SingleEditor, ListEditor, type Field } from "@/components/admin/editors";
-import { useServerFn } from "@tanstack/react-start";
-import { refreshVerifiedPrices } from "@/lib/prices.functions";
-import { verifiedPricesQuery, productGroupsQuery, settingsQuery } from "@/lib/data";
+import { productGroupsQuery, settingsQuery } from "@/lib/data";
 import { pick } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Users } from "@/components/admin/users";
 import { canAccessTab, type DashboardAccess } from "@/lib/dashboard-permissions";
+import { PriceSource } from "@/components/admin/price-source";
 import { BullionImport } from "@/components/admin/bullion-import";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -56,6 +56,7 @@ const bi = (base: string, label: string, type: Field["type"] = "text"): Field[] 
 ];
 
 const tabs = [
+  { id: "connections", l: "الاتصالات الخارجية", i: Plug },
   { id: "seo", l: "إدارة SEO", i: ScanSearch },
   { id: "overview", l: "نظرة عامة", i: LayoutDashboard },
   { id: "users", l: "المستخدمون والصلاحيات", i: UsersRound },
@@ -130,8 +131,8 @@ function Admin() {
         <p className="mb-6 text-xs text-muted-foreground">إدارة الموقع</p>
         <nav aria-label="أقسام لوحة التحكم" className="min-h-0 flex-1 space-y-1 overflow-y-auto">
           {visibleTabs.map((t) => (
-            t.id === "customers" || t.id === "seo" ? <Button key={t.id} asChild variant="ghost" className="h-auto min-h-10 w-full justify-start whitespace-normal px-3 py-2 text-sm text-sidebar-foreground">
-              <Link to={t.id === "seo" ? "/admin/seo" : "/admin/customers"}><t.i className="h-4 w-4" />{t.l}</Link>
+            t.id === "customers" || t.id === "seo" || t.id === "connections" ? <Button key={t.id} asChild variant="ghost" className="h-auto min-h-10 w-full justify-start whitespace-normal px-3 py-2 text-sm text-sidebar-foreground">
+              <Link to={t.id === "connections" ? "/admin/connections" : t.id === "seo" ? "/admin/seo" : "/admin/customers"}><t.i className="h-4 w-4" />{t.l}</Link>
             </Button> :
             <Button
               variant="ghost"
@@ -188,7 +189,7 @@ function Admin() {
         <select
           aria-label="قسم لوحة التحكم"
           value={activeTab}
-          onChange={(e) => { if (e.target.value === "customers") void nav({ to: "/admin/customers" }); else if (e.target.value === "seo") void nav({ to: "/admin/seo" }); else setTab(e.target.value as typeof tab); }}
+          onChange={(e) => { if (e.target.value === "customers") void nav({ to: "/admin/customers" }); else if (e.target.value === "connections") void nav({ to: "/admin/connections" }); else if (e.target.value === "seo") void nav({ to: "/admin/seo" }); else setTab(e.target.value as typeof tab); }}
           className="mb-4 w-full rounded-md border border-input bg-background px-3 py-2 md:hidden"
         >
           {visibleTabs.map((t) => (
@@ -209,6 +210,8 @@ type TabId = (typeof tabs)[number]["id"];
 function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab: TabId) => void; access: DashboardAccess; actorId: string }) {
   const { data: groups = [] } = useQuery(productGroupsQuery);
   switch (tab) {
+    case "connections":
+      return access.admin ? <Button asChild><Link to="/admin/connections"><Plug />الاتصالات الخارجية</Link></Button> : null;
     case "catalog":
       return <SingleEditor table="sections" pk="key" id="catalog_download" queryKey={["sections"]} fields={[
         ...bi("title", "نص زر تحميل الكتالوج"),
@@ -484,63 +487,6 @@ function Panel({ tab, onSelect, access, actorId }: { tab: string; onSelect: (tab
   return null;
 }
 
-function PriceSource() {
-  const qc = useQueryClient();
-  const refresh = useServerFn(refreshVerifiedPrices);
-  const [busy, setBusy] = useState(false);
-  const { data: updates = [] } = useQuery(verifiedPricesQuery);
-  return (
-    <div className="space-y-6">
-      <SingleEditor
-        table="site_settings"
-        id={1}
-        queryKey={["settings"]}
-        fields={[
-          { name: "price_source_enabled", label: "تفعيل مصدر Gold API", type: "bool" },
-          { name: "gold_source_url", label: "مصدر الذهب (https://api.gold-api.com/price/XAU)" },
-          { name: "silver_source_url", label: "مصدر الفضة (https://api.gold-api.com/price/XAG)" },
-        ]}
-      />
-      <Button
-        disabled={busy}
-        onClick={async () => {
-          setBusy(true);
-          try {
-            await refresh();
-            await Promise.all([
-              qc.invalidateQueries({ queryKey: ["settings"] }),
-              qc.invalidateQueries({ queryKey: ["verified-prices"] }),
-              qc.invalidateQueries({ queryKey: ["admin", "site_settings"] }),
-            ]);
-            toast.success("تم توثيق وتحديث أسعار الذهب والفضة");
-          } catch (err) {
-            toast.error(err instanceof Error ? err.message : "تعذر تحديث الأسعار");
-          } finally {
-            setBusy(false);
-          }
-        }}
-      >
-        <Coins />
-        {busy ? "جارٍ التحليل والتوثيق…" : "جلب الأسعار وتحليلها وتحديثها"}
-      </Button>
-      {updates.map((update) => (
-        <div key={update.id} className="space-y-2 border-t border-border py-4">
-          <p dir="ltr">
-            XAU: {update.gold_usd} USD · XAG: {update.silver_usd} USD
-          </p>
-          <p>
-            {new Date(update.verified_at).toLocaleString("ar-EG", { timeZone: "Africa/Cairo" })}
-          </p>
-          <p className="text-sm text-muted-foreground">{update.summary_ar}</p>
-          <p className="text-xs text-muted-foreground">
-            وقت مصدر الذهب: {new Date(update.gold_source_at).toLocaleString("ar-EG")} · الفضة:{" "}
-            {new Date(update.silver_source_at).toLocaleString("ar-EG")}
-          </p>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 function Overview({ onSelect, access }: { onSelect: (tab: TabId) => void; access: DashboardAccess }) {
   const { data, isLoading, error, refetch } = useQuery({

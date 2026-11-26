@@ -32,6 +32,7 @@ import { Route as GroupsIdRouteImport } from './routes/groups.$id'
 import { Route as PostsSlugRouteImport } from './routes/posts.$slug'
 import { Route as ProductsIdRouteImport } from './routes/products_.$id'
 import { Route as ServicesIdRouteImport } from './routes/services_.$id'
+import { Route as AuthenticatedAdminConnectionsRouteImport } from './routes/_authenticated/admin_.connections'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin_.customers'
 import { Route as AuthenticatedAdminSeoRouteImport } from './routes/_authenticated/admin_.seo'
 import { Route as ApiPublicDashboardUsersRouteImport } from './routes/api/public/dashboard-users'
@@ -153,6 +154,12 @@ const ServicesIdRoute = ServicesIdRouteImport.update({
   path: '/services/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminConnectionsRoute =
+  AuthenticatedAdminConnectionsRouteImport.update({
+    id: '/admin_/connections',
+    path: '/admin/connections',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminCustomersRoute =
   AuthenticatedAdminCustomersRouteImport.update({
     id: '/admin_/customers',
@@ -208,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/posts/$slug': typeof PostsSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/services/$id': typeof ServicesIdRoute
+  '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
@@ -238,6 +246,7 @@ export interface FileRoutesByTo {
   '/posts/$slug': typeof PostsSlugRoute
   '/products/$id': typeof ProductsIdRoute
   '/services/$id': typeof ServicesIdRoute
+  '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
@@ -270,6 +279,7 @@ export interface FileRoutesById {
   '/posts/$slug': typeof PostsSlugRoute
   '/products_/$id': typeof ProductsIdRoute
   '/services_/$id': typeof ServicesIdRoute
+  '/_authenticated/admin_/connections': typeof AuthenticatedAdminConnectionsRoute
   '/_authenticated/admin_/customers': typeof AuthenticatedAdminCustomersRoute
   '/_authenticated/admin_/seo': typeof AuthenticatedAdminSeoRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
@@ -302,6 +312,7 @@ export interface FileRouteTypes {
     | '/posts/$slug'
     | '/products/$id'
     | '/services/$id'
+    | '/admin/connections'
     | '/admin/customers'
     | '/admin/seo'
     | '/api/public/dashboard-users'
@@ -332,6 +343,7 @@ export interface FileRouteTypes {
     | '/posts/$slug'
     | '/products/$id'
     | '/services/$id'
+    | '/admin/connections'
     | '/admin/customers'
     | '/admin/seo'
     | '/api/public/dashboard-users'
@@ -363,6 +375,7 @@ export interface FileRouteTypes {
     | '/posts/$slug'
     | '/products_/$id'
     | '/services_/$id'
+    | '/_authenticated/admin_/connections'
     | '/_authenticated/admin_/customers'
     | '/_authenticated/admin_/seo'
     | '/api/public/dashboard-users'
@@ -563,6 +576,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin_/connections': {
+      id: '/_authenticated/admin_/connections'
+      path: '/admin/connections'
+      fullPath: '/admin/connections'
+      preLoaderRoute: typeof AuthenticatedAdminConnectionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin_/customers': {
       id: '/_authenticated/admin_/customers'
       path: '/admin/customers'
@@ -610,12 +630,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminConnectionsRoute: typeof AuthenticatedAdminConnectionsRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
   AuthenticatedAdminSeoRoute: typeof AuthenticatedAdminSeoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminConnectionsRoute: AuthenticatedAdminConnectionsRoute,
   AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
   AuthenticatedAdminSeoRoute: AuthenticatedAdminSeoRoute,
 }

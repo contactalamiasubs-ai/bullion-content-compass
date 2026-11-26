@@ -6,3 +6,4 @@
 - Hostinger Google actions use the pinned Lovable bridge with an independently checked SEO-authorized bearer; provider credentials never move to browser code or arbitrary destinations.
 - Public SEO images require a published original reference without recursive media checks; configuration reads use the fixed public tag projection so drafts and future settings stay private.
 - Resolve bundled CDN image pointers against the pinned published origin, not the current host; external hosting has no Lovable asset endpoint. Warmed hero slides load eagerly at low priority, while unmounted slides remain deferred.
+- External connections reuse existing price/Google editors on an admin-only page; server status rechecks full-admin access and returns capability flags only. OAuth credentials remain in managed Auth settings, never content tables.
