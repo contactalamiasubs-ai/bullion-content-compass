@@ -1,3 +1,6 @@
 - Public media signing must verify an exact published-content reference before loading privileged storage; staff previews use user-scoped storage access so drafts remain private.
 - Invitation destinations come from pinned or configured allowlisted origins, never request headers; this prevents forged email destinations.
 - New-account triggers never bootstrap administrators after deployment; existing administrators explicitly grant access to avoid public signup escalation.
+- Public SEO metadata and sitemap share published-content reads; protected audits and cached Google reports require the separate SEO permission to prevent administrative data exposure.
+- New SEO routes declare sitemap eligibility, and dynamic sources paginate to completion or fail the whole response so discovery never silently omits later content.
+- Hostinger Google actions use the pinned Lovable bridge with an independently checked SEO-authorized bearer; provider credentials never move to browser code or arbitrary destinations.

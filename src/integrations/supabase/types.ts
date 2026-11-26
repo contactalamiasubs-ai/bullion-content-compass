@@ -751,6 +751,33 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_sync_state: {
+        Row: {
+          blocked: boolean
+          id: number
+          retry_at: string | null
+          sitemap_hash: string
+          sitemap_status: Json | null
+          submitted_at: string | null
+        }
+        Insert: {
+          blocked?: boolean
+          id?: number
+          retry_at?: string | null
+          sitemap_hash?: string
+          sitemap_status?: Json | null
+          submitted_at?: string | null
+        }
+        Update: {
+          blocked?: boolean
+          id?: number
+          retry_at?: string | null
+          sitemap_hash?: string
+          sitemap_status?: Json | null
+          submitted_at?: string | null
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           body_ar: string | null

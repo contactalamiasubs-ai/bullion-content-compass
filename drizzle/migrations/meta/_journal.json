@@ -246,6 +246,20 @@
       "when": 1795696647327,
       "tag": "0034_seo_content_safety_and_publication",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1795697585258,
+      "tag": "0035_seo_daily_sync_and_readable_links",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1795697683486,
+      "tag": "0036_seo_staff_image_uploads",
+      "breakpoints": true
     }
   ]
 }

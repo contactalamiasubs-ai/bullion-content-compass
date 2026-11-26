@@ -1,0 +1,2 @@
+CREATE POLICY "seo media insert" ON storage.objects FOR INSERT TO authenticated WITH CHECK(bucket_id='media' AND public.has_dashboard_permission(auth.uid(),'seo'));
+CREATE POLICY "seo media read" ON storage.objects FOR SELECT TO authenticated USING(bucket_id='media' AND public.has_dashboard_permission(auth.uid(),'seo'));

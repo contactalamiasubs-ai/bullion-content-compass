@@ -6,5 +6,5 @@ import { imageAlt } from "@/lib/seo";
 export function SeoImage({ src, alt = "", ...props }: ImgHTMLAttributes<HTMLImageElement>) {
   const { data } = useQuery(seoBundleQuery); const { lang } = useLang();
   const record = data?.images.find(i => i.url === src);
-  return <img {...props} src={record?.optimized_url || src} alt={data ? imageAlt(data,src,alt,lang) : alt} />;
+  return <img decoding="async" {...props} src={record?.optimized_url || src} alt={data ? imageAlt(data,src,alt,lang) : alt} />;
 }

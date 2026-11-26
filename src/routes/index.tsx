@@ -88,7 +88,9 @@ function Index() {
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 md:grid-cols-2">
         <SeoImage
           src={sec?.["about"]?.image_url || fallbackImages[0]}
-          alt=""
+          alt={pick(sec?.["about"], "title", lang) || t("about")}
+          width={800}
+          height={600}
           loading="lazy"
           className="aspect-[4/3] w-full rounded-xl border border-border object-cover object-center md:aspect-auto md:h-auto"
         />

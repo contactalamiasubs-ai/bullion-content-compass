@@ -73,7 +73,9 @@ function About() {
         <div className="grid items-center gap-10 md:grid-cols-2">
           <SeoImage
             src={sec?.["about"]?.image_url || fallbackImages[0]}
-            alt=""
+            alt={pick(sec?.["about"], "title", lang) || t("about")}
+            width={800}
+            height={600}
             loading="lazy"
             className="aspect-4/3 w-full rounded-xl border border-border object-cover"
           />
@@ -115,7 +117,9 @@ function About() {
                 {(sec[key].image_url || i === 0) && (
                   <SeoImage
                     src={sec[key].image_url || fallbackImages[i === 0 ? 1 : 2]}
-                    alt=""
+                    alt={pick(sec[key], "title", lang)}
+                    width={800}
+                    height={450}
                     loading="lazy"
                     className="aspect-video w-full object-cover"
                   />

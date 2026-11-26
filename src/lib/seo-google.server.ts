@@ -2,6 +2,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@/integrations/supabase/types";
 import { SEO_ORIGIN } from "@/lib/seo";
 export type SiteEntry = { siteUrl: string; permissionLevel?: string };
+export class GoogleRequestError extends Error {
+  constructor(message: string, public status: number, public retryAt: string | null = null) { super(message); }
+}
 export function coversTarget(siteUrl: string, target: string) {
   const url = new URL(target);
   if (siteUrl.startsWith("sc-domain:")) { const domain = siteUrl.slice(10).toLowerCase(); return url.hostname === domain || url.hostname.endsWith(`.${domain}`); }
@@ -11,7 +14,12 @@ export async function googleCall(path: string, method = "GET", body?: object) {
   const key = process.env["GOOGLE_SEARCH_CONSOLE_API_KEY"], api = process.env["LOVABLE_API_KEY"];
   if (!key || !api) throw new Error("Search Console غير متصل على هذه الاستضافة");
   const response = await fetch(`https://connector-gateway.lovable.dev/google_search_console${path}`, { method, headers: { Authorization: `Bearer ${api}`, "X-Connection-Api-Key": key, "Content-Type": "application/json" }, ...(body ? { body: JSON.stringify(body) } : {}), signal: AbortSignal.timeout(20000) });
-  if (!response.ok) { const error = await response.text(); console.error(`Search Console [${response.status}]: ${error}`); throw new Error(`Google [${response.status}]: ${error}`); }
+  if (!response.ok) { const error = await response.text(); console.error(`Search Console [${response.status}]: ${error}`);
+    const wait = response.headers.get("Retry-After"); const seconds = wait ? Number(wait) : NaN;
+    const retry = Number.isFinite(seconds) ? Date.now()+Math.max(0,seconds)*1000 : Date.parse(wait ?? "");
+    const retryAt = response.status===429 ? new Date(Number.isFinite(retry)?retry:Date.now()+3600000).toISOString() : null;
+    throw new GoogleRequestError(`Google [${response.status}]: ${error}`,response.status,retryAt);
+  }
   const text = await response.text(); return text ? JSON.parse(text) as Json : null;
 }
 export async function matchingSites() {

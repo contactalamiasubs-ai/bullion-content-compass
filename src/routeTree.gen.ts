@@ -35,6 +35,7 @@ import { Route as ServicesIdRouteImport } from './routes/services_.$id'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin_.customers'
 import { Route as AuthenticatedAdminSeoRouteImport } from './routes/_authenticated/admin_.seo'
 import { Route as ApiPublicDashboardUsersRouteImport } from './routes/api/public/dashboard-users'
+import { Route as ApiPublicSeoGoogleRouteImport } from './routes/api/public/seo-google'
 import { Route as ApiPublicSeoRefreshRouteImport } from './routes/api/public/seo-refresh'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
@@ -168,6 +169,11 @@ const ApiPublicDashboardUsersRoute = ApiPublicDashboardUsersRouteImport.update({
   path: '/api/public/dashboard-users',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicSeoGoogleRoute = ApiPublicSeoGoogleRouteImport.update({
+  id: '/api/public/seo-google',
+  path: '/api/public/seo-google',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSeoRefreshRoute = ApiPublicSeoRefreshRouteImport.update({
   id: '/api/public/seo-refresh',
   path: '/api/public/seo-refresh',
@@ -205,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
+  '/api/public/seo-google': typeof ApiPublicSeoGoogleRoute
   '/api/public/seo-refresh': typeof ApiPublicSeoRefreshRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -234,6 +241,7 @@ export interface FileRoutesByTo {
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
+  '/api/public/seo-google': typeof ApiPublicSeoGoogleRoute
   '/api/public/seo-refresh': typeof ApiPublicSeoRefreshRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -265,6 +273,7 @@ export interface FileRoutesById {
   '/_authenticated/admin_/customers': typeof AuthenticatedAdminCustomersRoute
   '/_authenticated/admin_/seo': typeof AuthenticatedAdminSeoRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
+  '/api/public/seo-google': typeof ApiPublicSeoGoogleRoute
   '/api/public/seo-refresh': typeof ApiPublicSeoRefreshRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -296,6 +305,7 @@ export interface FileRouteTypes {
     | '/admin/customers'
     | '/admin/seo'
     | '/api/public/dashboard-users'
+    | '/api/public/seo-google'
     | '/api/public/seo-refresh'
     | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
@@ -325,6 +335,7 @@ export interface FileRouteTypes {
     | '/admin/customers'
     | '/admin/seo'
     | '/api/public/dashboard-users'
+    | '/api/public/seo-google'
     | '/api/public/seo-refresh'
     | '/api/public/media/$'
   id:
@@ -355,6 +366,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin_/customers'
     | '/_authenticated/admin_/seo'
     | '/api/public/dashboard-users'
+    | '/api/public/seo-google'
     | '/api/public/seo-refresh'
     | '/api/public/media/$'
   fileRoutesById: FileRoutesById
@@ -383,6 +395,7 @@ export interface RootRouteChildren {
   ProductsIdRoute: typeof ProductsIdRoute
   ServicesIdRoute: typeof ServicesIdRoute
   ApiPublicDashboardUsersRoute: typeof ApiPublicDashboardUsersRoute
+  ApiPublicSeoGoogleRoute: typeof ApiPublicSeoGoogleRoute
   ApiPublicSeoRefreshRoute: typeof ApiPublicSeoRefreshRoute
   ApiPublicMediaSplatRoute: typeof ApiPublicMediaSplatRoute
 }
@@ -571,6 +584,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicDashboardUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/seo-google': {
+      id: '/api/public/seo-google'
+      path: '/api/public/seo-google'
+      fullPath: '/api/public/seo-google'
+      preLoaderRoute: typeof ApiPublicSeoGoogleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/seo-refresh': {
       id: '/api/public/seo-refresh'
       path: '/api/public/seo-refresh'
@@ -627,6 +647,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsIdRoute: ProductsIdRoute,
   ServicesIdRoute: ServicesIdRoute,
   ApiPublicDashboardUsersRoute: ApiPublicDashboardUsersRoute,
+  ApiPublicSeoGoogleRoute: ApiPublicSeoGoogleRoute,
   ApiPublicSeoRefreshRoute: ApiPublicSeoRefreshRoute,
   ApiPublicMediaSplatRoute: ApiPublicMediaSplatRoute,
 }

@@ -9,7 +9,7 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useMemo, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -22,7 +22,7 @@ import { SeoAnalytics } from "@/components/seo-analytics";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-gold-gradient">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">الصفحة غير موجودة</h2>
@@ -35,7 +35,7 @@ function NotFoundComponent() {
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -125,6 +125,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const bundle = Route.useLoaderData();
+  useMemo(() => {
+    queryClient.setQueryData(seoBundleQuery.queryKey, bundle);
+    seedPublicQueries(queryClient, bundle);
+  }, [queryClient, bundle]);
   const { pathname } = useLocation();
   const bare = pathname.startsWith("/admin") || pathname.startsWith("/auth") || pathname === "/set-password" || pathname === "/reset-password" || pathname === "/account";
 
