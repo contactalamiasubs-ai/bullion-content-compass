@@ -13,6 +13,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { externalConnectionsStatus } from "@/lib/external-connections.functions";
+import { mailStatus, sendTestMail } from "@/lib/mail.functions";
 import { seoBundleQuery } from "@/lib/seo-public.functions";
 import { pagePath } from "@/lib/seo";
 
@@ -22,6 +23,7 @@ const services = [
   { id: "search", label: "البحث والتحليلات", icon: ScanSearch },
   { id: "ai", label: "تحليل الأسعار بالذكاء الاصطناعي", icon: Sparkles },
   { id: "hosting", label: "اتصال الاستضافة", icon: Server },
+  { id: "mail", label: "البريد الإلكتروني", icon: Mail },
   { id: "contact", label: "واتساب والبريد والخرائط", icon: MessageCircle },
 ] as const;
 type Service = typeof services[number]["id"];
@@ -72,9 +74,56 @@ export function ExternalConnections() {
     {selected === "search" && <SeoGoogle lang="ar" bi={bi} paths={bundle.data?.seo.map(pagePath) ?? ["/"]} />}
     {selected === "ai" && <section className="space-y-4"><h2 className="text-xl">تحليل الأسعار بالذكاء الاصطناعي</h2><p role="status" className="text-sm text-muted-foreground">{status.data ? status.data.aiConfigured ? "إعداد التحليل متاح على هذه الاستضافة؛ تنفيذ التحليل يتم عند تحديث الأسعار." : "إعداد التحليل غير متاح على هذه الاستضافة." : "الحالة غير متاحة."}</p><p className="text-sm text-muted-foreground">التحليل مرتبط بمصدر الأسعار؛ لا تحتاج إلى إدخال مفتاح داخل الموقع، ولا تظهر المفاتيح السرية هنا.</p><Button variant="outline" onClick={() => setSelected("prices")}><Coins />مصدر الأسعار والتوثيق</Button></section>}
     {selected === "hosting" && <section className="space-y-5"><h2 className="text-xl">اتصال خدمات الاستضافة</h2><p role="status" className="text-sm text-muted-foreground">{status.data ? status.data.hostedBridgeConfigured ? "اتصال الخدمات المستضافة مضبوط؛ اختبر الخدمات من صفحاتها للتحقق من عملها." : "لا يوجد اتصال استضافة وسيط مضبوط على هذه النسخة؛ قد تعمل الخدمات مباشرة على Lovable." : "الحالة غير متاحة."}</p><p className="text-sm text-muted-foreground">إعداد الاتصال على هوستنجر يُحفظ في متغيرات الاستضافة، وليس في جدول عام. حالة الإعداد لا تعني نجاح طلبات الخدمة.</p><Button variant="outline" onClick={() => setSelected("search")}><ScanSearch />فحص خدمات Google</Button><Button asChild variant="outline"><Link to="/admin"><Server />إدارة المستخدمين من لوحة التحكم</Link></Button></section>}
+    {selected === "mail" && <MailPanel />}
     {selected === "contact" && <section className="space-y-5"><h2 className="text-xl">قنوات التواصل</h2><div className="flex gap-4 text-gold"><MessageCircle /><Mail /><MapPin /></div><p className="text-sm text-muted-foreground">واتساب والخرائط يستخدمان روابط مباشرة ولا يحتاجان مفتاح API؛ البريد الحالي يفتح برنامج البريد ولا يرسل الرسائل تلقائيًا.</p><SingleEditor table="site_settings" id={1} queryKey={["settings"]} fields={[{ name: "whatsapp_number", label: "رقم واتساب (بالكود الدولي)", type: "whatsapp" }, { name: "service_whatsapp", label: "رقم واتساب الخدمات", type: "whatsapp" }, { name: "phone", label: "الهاتف" }, { name: "email", label: "البريد الإلكتروني" }]} /></section>}
   </main>;
 }
+const mailEnv = [
+  { name: "SMTP_HOST", value: "smtp.hostinger.com", note: "سيرفر إرسال البريد" },
+  { name: "SMTP_PORT", value: "465", note: "منفذ آمن" },
+  { name: "SMTP_USER", value: "info@goldcenterstr.com", note: "البريد كاملًا" },
+  { name: "SMTP_PASS", value: "كلمة مرور البريد", note: "سر — في الاستضافة فقط" },
+  { name: "MAIL_TO", value: "البريد الذي تصله الرسائل", note: "اختياري" },
+];
+
+function MailPanel() {
+  const check = useServerFn(mailStatus);
+  const test = useServerFn(sendTestMail);
+  const mail = useQuery({ queryKey: ["mail-status"], queryFn: () => check(), staleTime: 30000 });
+  const [busy, setBusy] = useState(false);
+  const run = async () => {
+    setBusy(true);
+    try {
+      const result = await test();
+      if (result.sent) toast.success("وصلت رسالة الاختبار إلى بريد الاستلام.");
+      else if (result.reason === "not_configured") toast.error("أضف بريد هوستنجر وكلمة مروره في متغيرات الاستضافة أولًا.");
+      else toast.error(`تعذر الإرسال: ${result.reason ?? "سبب غير معروف"}`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "تعذر فحص البريد؛ حاول مرة أخرى.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  const ready = mail.data?.configured === true;
+  return <section className="space-y-5">
+    <h2 className="text-xl">البريد الإلكتروني للإرسال (SMTP)</h2>
+    <p role="status" className="text-sm text-muted-foreground">{mail.isPending ? "جارٍ التحقق…" : mail.error ? mail.error.message : ready ? `البريد مضبوط على ${mail.data?.host}:${mail.data?.port} ويُرسل من ${mail.data?.from} إلى ${mail.data?.to}.` : "لم يُضبط بريد الإرسال بعد."}</p>
+    <p className="text-sm text-muted-foreground">الضبط يتم في متغيرات الاستضافة على هوستنجر، ولا تُدخل كلمة المرور هنا ولا في أي صفحة من الموقع. بعد الحفظ أعد تشغيل نسخة هوستنجر، ثم اضغط زر الاختبار.</p>
+    <div className="rounded-md border border-border p-4 space-y-2">
+      <h3 className="font-semibold">المتغيرات المطلوبة</h3>
+      {mailEnv.map(item => <div key={item.name} className="flex flex-wrap items-center gap-3 border-b border-border py-2 last:border-0">
+        <code dir="ltr" className="text-sm">{item.name}</code>
+        <span className="min-w-0 flex-1 text-sm text-muted-foreground">{item.note}{item.value ? ` — مثال: ${item.value}` : ""}</span>
+      </div>)}
+    </div>
+    <div className="flex flex-wrap gap-3">
+      <Button onClick={run} disabled={busy || mail.isPending || !ready}><Mail />{busy ? "جارٍ الإرسال…" : "إرسال رسالة اختبار"}</Button>
+      <Button variant="outline" disabled={mail.isFetching} onClick={() => void mail.refetch()}><RefreshCw className={mail.isFetching ? "animate-spin" : ""} />إعادة فحص البريد</Button>
+    </div>
+    <p className="text-sm text-muted-foreground">رسائل استمارات التواصل تصل تلقائيًا إلى بريد الاستلام عند ضبط المتغيرات. صفحة دخول المسؤول وحسابات العملاء لا تتأثر.</p>
+  </section>;
+}
+
 function GoogleTestButton() {
   const [busy, setBusy] = useState(false);
   const run = async () => {

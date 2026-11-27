@@ -3,7 +3,9 @@ import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { notifyContactMessage } from "@/lib/mail.functions";
 import { MessageCircle, Phone } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +26,7 @@ function Contact() {
   const { data: sections } = useQuery(sectionsQuery);
   const [f, setF] = useState({ name: "", email: "", phone: "", message: "" });
   const [busy, setBusy] = useState(false);
+  const notify = useServerFn(notifyContactMessage);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
@@ -36,6 +39,8 @@ function Contact() {
       return;
     }
     toast.success(t("sent"));
+    // Owner notice must never block or fail the visitor's submission.
+    void notify({ data: { ...f, phone: f.phone || "" } }).catch(() => {});
     setF({ name: "", email: "", phone: "", message: "" });
   };
   const inp = "w-full rounded-md border border-input bg-background px-3 py-2.5";
