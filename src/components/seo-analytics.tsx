@@ -5,7 +5,7 @@ import { seoBundleQuery } from "@/lib/seo-public.functions";
 type AnalyticsWindow = Window & { dataLayer?: unknown[]; gtag?: (...args: unknown[]) => void };
 export function SeoAnalytics() {
   const { data } = useQuery(seoBundleQuery); const location = useLocation();
-  const id = data?.config?.measurement_id;
+  const id = data?.config?.measurement_id || import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_ANALYTICS_API_KEY"];
   useEffect(() => {
     if (!id || !/^G-[A-Z0-9]+$/.test(id)) return;
     const w = window as AnalyticsWindow;
