@@ -30,7 +30,7 @@ function ResetPassword() {
     return () => { active = false; data.subscription.unsubscribe(); };
   }, []);
   return <LoginScene><section className="login-panel"><LoginBrand /><h1>{text("reset_title")}</h1>
-    {loading ? <p role="status">{text("loading")}</p> : done ? <><p role="status" className="login-notice">{text("password_saved")}</p><Button asChild className="login-submit"><Link to="/auth">{text("back_login")}</Link></Button></> : !ready ? <><p role="alert" className="login-error">{text("recovery_invalid")}</p><Button asChild variant="link"><Link to="/auth">{text("back_login")}</Link></Button></> : <form className="login-form" onSubmit={async event => {
+    {loading ? <p role="status">{text("loading")}</p> : done ? <><p role="status" className="login-notice">{text("password_saved")}</p><Button asChild className="login-submit"><Link to="/login">{text("back_login")}</Link></Button></> : !ready ? <><p role="alert" className="login-error">{text("recovery_invalid")}</p><Button asChild variant="link"><Link to="/login">{text("back_login")}</Link></Button></> : <form className="login-form" onSubmit={async event => {
       event.preventDefault(); setError("");
       if (password !== confirm) { setError(text("password_mismatch")); return; }
       setBusy(true);

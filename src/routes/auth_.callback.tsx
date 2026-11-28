@@ -47,5 +47,5 @@ function Callback() {
     return () => { active = false; };
   }, [nav]);
   if (test) return <LoginScene><section className="login-panel"><LoginBrand /><h1 className="text-xl">{test.ok ? "نجح اختبار الدخول بـ Google" : "رفض Google الدخول"}</h1><p role={test.ok ? "status" : "alert"} className="break-words text-sm">{test.ok ? `تم الدخول بالحساب: ${test.reason}` : `السبب: ${test.reason}`}</p><a className="underline text-primary" href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer">فتح Google Cloud Console</a><Button onClick={() => { window.location.href = "/admin/connections"; }}>العودة إلى الاتصالات الخارجية</Button></section></LoginScene>;
-  return <LoginScene><section className="login-panel"><LoginBrand /><p role={error ? "alert" : "status"}>{text(error ? "auth_error" : "loading")}</p>{error && <Button onClick={() => nav({ to: "/auth" })}>{text("back_login")}</Button>}</section></LoginScene>;
+  return <LoginScene><section className="login-panel"><LoginBrand /><p role={error ? "alert" : "status"}>{text(error ? "auth_error" : "loading")}</p>{error && <Button onClick={() => nav({ to: "/login" })}>{text("back_login")}</Button>}</section></LoginScene>;
 }
