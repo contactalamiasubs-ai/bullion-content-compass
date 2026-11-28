@@ -41,6 +41,7 @@ import { Route as ServicesIdRouteImport } from './routes/services_.$id'
 import { Route as AuthenticatedAdminConnectionsRouteImport } from './routes/_authenticated/admin_.connections'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin_.customers'
 import { Route as AuthenticatedAdminSeoRouteImport } from './routes/_authenticated/admin_.seo'
+import { Route as ApiPublicCustomerDataRouteImport } from './routes/api/public/customer-data'
 import { Route as ApiPublicDashboardUsersRouteImport } from './routes/api/public/dashboard-users'
 import { Route as ApiPublicGoogleLoginRouteImport } from './routes/api/public/google-login'
 import { Route as ApiPublicSeoGoogleRouteImport } from './routes/api/public/seo-google'
@@ -208,6 +209,11 @@ const AuthenticatedAdminSeoRoute = AuthenticatedAdminSeoRouteImport.update({
   path: '/admin/seo',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicCustomerDataRoute = ApiPublicCustomerDataRouteImport.update({
+  id: '/api/public/customer-data',
+  path: '/api/public/customer-data',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicDashboardUsersRoute = ApiPublicDashboardUsersRouteImport.update({
   id: '/api/public/dashboard-users',
   path: '/api/public/dashboard-users',
@@ -266,6 +272,7 @@ export interface FileRoutesByFullPath {
   '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
+  '/api/public/customer-data': typeof ApiPublicCustomerDataRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
   '/api/public/google-login': typeof ApiPublicGoogleLoginRoute
   '/api/public/seo-google': typeof ApiPublicSeoGoogleRoute
@@ -304,6 +311,7 @@ export interface FileRoutesByTo {
   '/admin/connections': typeof AuthenticatedAdminConnectionsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
+  '/api/public/customer-data': typeof ApiPublicCustomerDataRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
   '/api/public/google-login': typeof ApiPublicGoogleLoginRoute
   '/api/public/seo-google': typeof ApiPublicSeoGoogleRoute
@@ -344,6 +352,7 @@ export interface FileRoutesById {
   '/_authenticated/admin_/connections': typeof AuthenticatedAdminConnectionsRoute
   '/_authenticated/admin_/customers': typeof AuthenticatedAdminCustomersRoute
   '/_authenticated/admin_/seo': typeof AuthenticatedAdminSeoRoute
+  '/api/public/customer-data': typeof ApiPublicCustomerDataRoute
   '/api/public/dashboard-users': typeof ApiPublicDashboardUsersRoute
   '/api/public/google-login': typeof ApiPublicGoogleLoginRoute
   '/api/public/seo-google': typeof ApiPublicSeoGoogleRoute
@@ -384,6 +393,7 @@ export interface FileRouteTypes {
     | '/admin/connections'
     | '/admin/customers'
     | '/admin/seo'
+    | '/api/public/customer-data'
     | '/api/public/dashboard-users'
     | '/api/public/google-login'
     | '/api/public/seo-google'
@@ -422,6 +432,7 @@ export interface FileRouteTypes {
     | '/admin/connections'
     | '/admin/customers'
     | '/admin/seo'
+    | '/api/public/customer-data'
     | '/api/public/dashboard-users'
     | '/api/public/google-login'
     | '/api/public/seo-google'
@@ -461,6 +472,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin_/connections'
     | '/_authenticated/admin_/customers'
     | '/_authenticated/admin_/seo'
+    | '/api/public/customer-data'
     | '/api/public/dashboard-users'
     | '/api/public/google-login'
     | '/api/public/seo-google'
@@ -497,6 +509,7 @@ export interface RootRouteChildren {
   PostsSlugRoute: typeof PostsSlugRoute
   ProductsIdRoute: typeof ProductsIdRoute
   ServicesIdRoute: typeof ServicesIdRoute
+  ApiPublicCustomerDataRoute: typeof ApiPublicCustomerDataRoute
   ApiPublicDashboardUsersRoute: typeof ApiPublicDashboardUsersRoute
   ApiPublicGoogleLoginRoute: typeof ApiPublicGoogleLoginRoute
   ApiPublicSeoGoogleRoute: typeof ApiPublicSeoGoogleRoute
@@ -730,6 +743,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSeoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/customer-data': {
+      id: '/api/public/customer-data'
+      path: '/api/public/customer-data'
+      fullPath: '/api/public/customer-data'
+      preLoaderRoute: typeof ApiPublicCustomerDataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/dashboard-users': {
       id: '/api/public/dashboard-users'
       path: '/api/public/dashboard-users'
@@ -814,6 +834,7 @@ const rootRouteChildren: RootRouteChildren = {
   PostsSlugRoute: PostsSlugRoute,
   ProductsIdRoute: ProductsIdRoute,
   ServicesIdRoute: ServicesIdRoute,
+  ApiPublicCustomerDataRoute: ApiPublicCustomerDataRoute,
   ApiPublicDashboardUsersRoute: ApiPublicDashboardUsersRoute,
   ApiPublicGoogleLoginRoute: ApiPublicGoogleLoginRoute,
   ApiPublicSeoGoogleRoute: ApiPublicSeoGoogleRoute,
