@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { sectionsQuery, settingsQuery } from "@/lib/data";
 import { pick, useLang } from "@/lib/i18n";
 import { customerNumberSchema, serialSchema } from "@/lib/bullion-serials";
-import { lookupBullionSerial, submitBullionCheck } from "@/lib/site-data.functions";
+import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { SeoImage } from "@/components/seo-image";
 
@@ -71,9 +71,10 @@ function CheckBar() {
           if (Number(answer) !== captcha.a + captcha.b) { setError(ar ? "إجابة التحقق غير صحيحة" : "Wrong verification answer"); setCaptcha(newCaptcha()); setAnswer(""); return; }
           setBusy(true);
           try {
-            await submitBullionCheck({ data: { name: n.data, email: m.data.toLowerCase(), customer_number: c.data, serial: p.data } });
-            const rows = await lookupBullionSerial({ data: { serial: p.data } });
-            setMatch((rows[0] ?? null) as Match | null); setChecked(true); setCaptcha(newCaptcha()); setAnswer("");
+            await supabase.from("bullion_checks").insert({ name: n.data, email: m.data.toLowerCase(), customer_number: c.data, serial: p.data });
+            const result = await supabase.rpc("lookup_bullion_serial", { _serial: p.data });
+            if (result.error) throw result.error;
+            setMatch(result.data?.[0] ?? null); setChecked(true); setCaptcha(newCaptcha()); setAnswer("");
           } catch { setError(text("error")); }
           finally { setBusy(false); }
         }}>

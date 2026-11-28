@@ -3,12 +3,12 @@ import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { submitContactMessage } from "@/lib/site-data.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { notifyContactMessage } from "@/lib/mail.functions";
 import { MessageCircle, Phone } from "lucide-react";
 import { useLang, pick } from "@/lib/i18n";
+import { supabase } from "@/integrations/supabase/client";
 import { PageHero } from "@/components/site";
 import { sectionsQuery, settingsQuery, whatsappLink } from "@/lib/data";
 
@@ -27,18 +27,17 @@ function Contact() {
   const [f, setF] = useState({ name: "", email: "", phone: "", message: "" });
   const [busy, setBusy] = useState(false);
   const notify = useServerFn(notifyContactMessage);
-  const submitContact = useServerFn(submitContactMessage);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    try {
-      await submitContact({ data: { ...f, phone: f.phone || null } });
-    } catch {
-      setBusy(false);
-      toast.error(lang === "ar" ? "تعذر إرسال الرسالة، تأكد من البيانات وحاول مجددًا" : "Could not send the message. Check your details and try again.");
+    const { error } = await supabase
+      .from("contact_messages")
+      .insert({ ...f, phone: f.phone || null });
+    setBusy(false);
+    if (error) {
+      toast.error(error.message);
       return;
     }
-    setBusy(false);
     toast.success(t("sent"));
     // Owner notice must never block or fail the visitor's submission.
     void notify({ data: { ...f, phone: f.phone || "" } }).catch(() => {});

@@ -1,5 +1,5 @@
 # Gold Center updates
-- [x] Move all remaining site data to Hostinger MySQL (content, prices, serials, bar checks, contact messages, 217 media files) with matching counts; site reads/saves there. Verified contact form write lands in MySQL only.
+- [ ] (Reverted at user request: site stopped working) Move all remaining site data to Hostinger MySQL (content, prices, serials, bar checks, contact messages, 217 media files) with matching counts; site reads/saves there. Verified contact form write lands in MySQL only.
 - [ ] Hostinger deployment must have MYSQL_HOST/USER/PASSWORD/DATABASE set (MYSQL_HOST=localhost there); publish Lovable and redeploy Hostinger. Staff sign-in, team permissions and SEO tools remain on Cloud because staff login lives there.
 - [x] Move customer authentication and customer data to the user's separate project: customer tables/RLS/functions created there, 7 existing customer accounts (staff excluded) with 6 carts and 41 activity rows copied with the same IDs; customer pages and dashboard customer views now use it. Old copies kept on Cloud untouched.
 - [ ] Existing migrated customers must use "forgot password" once (passwords cannot be copied), and customer Google sign-in is hidden until Google is enabled in the customer project. Hostinger needs CUSTOMER_PROJECT_MANAGEMENT_TOKEN in its environment for dashboard customer views.
