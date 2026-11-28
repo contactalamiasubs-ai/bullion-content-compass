@@ -459,6 +459,115 @@
 .google-sign-in, .google-sign-in:hover { background: var(--google-background); border: 1px solid var(--google-border); color: var(--google-text); padding: 10px 12px; gap: 10px; font: 500 14px/20px "Google Sans", var(--font-sans); height: auto; }
 @media (max-width: 639px) { .main-nav-shortcut { width: 50px; } }
 
+/* Phone / tablet only: the icon column pinned to the screen edge. */
+@media (max-width: 1279px) {
+  body.has-side-rail { padding-inline-end: 60px; }
+  body.has-side-rail.mobile-nav-open { overflow: hidden; }
+}
+.mobile-side-rail {
+  display: none;
+  position: fixed;
+  z-index: 45;
+  inset-inline-end: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  align-items: center;
+  gap: 6px;
+  padding: 7px 5px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklch, var(--gold) 26%, var(--border));
+  background: color-mix(in oklch, var(--background) 90%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 28px -14px rgb(0 0 0 / 0.65);
+}
+@media (max-width: 1279px) {
+  .mobile-side-rail { display: flex; flex-direction: column; }
+}
+.mobile-side-rail .rail-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted-foreground);
+}
+.mobile-side-rail .rail-btn:hover,
+.mobile-side-rail .rail-btn.site-nav-active {
+  color: var(--gold);
+  border-color: color-mix(in oklch, var(--gold) 42%, var(--border));
+  background: color-mix(in oklch, var(--gold) 12%, transparent);
+}
+.mobile-side-rail .rail-btn svg { width: 20px; height: 20px; }
+.rail-count {
+  position: absolute;
+  top: 1px;
+  inset-inline-end: 1px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 9px;
+  line-height: 15px;
+  text-align: center;
+}
+.mobile-side-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 44;
+  background: rgb(0 0 0 / 0.55);
+}
+.mobile-side-drawer {
+  display: none;
+  position: fixed;
+  z-index: 45;
+  inset-block: 0;
+  inset-inline-end: 60px;
+  width: min(74vw, 250px);
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  padding: 16px 10px 28px;
+  background: color-mix(in oklch, var(--background) 97%, transparent);
+  border-inline-start: 1px solid color-mix(in oklch, var(--gold) 24%, var(--border));
+}
+@media (max-width: 1279px) {
+  .mobile-side-backdrop { display: block; }
+  .mobile-side-drawer { display: flex; }
+}
+.drawer-title {
+  padding: 0 8px 8px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+}
+.drawer-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  height: auto;
+  padding: 6px 8px;
+  white-space: normal;
+  text-align: start;
+  font-size: 14px;
+  color: var(--muted-foreground);
+  border-radius: 8px;
+}
+.drawer-link:hover, .drawer-link.site-nav-active { color: var(--gold); background: var(--accent); }
+.drawer-link .nav-icon { width: 34px; height: 34px; border-color: var(--border); background: var(--card); }
+
 /* Isolated luxury sign-in surface, independent of the storefront theme. */
 :root {
   --login-background: #0d1117;

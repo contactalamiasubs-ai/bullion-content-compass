@@ -89,7 +89,22 @@ export function Header() {
     { to: "/favorites", icon: Heart, label: shoppingText("favorites"), count: state.favorites.length },
     { to: "/cart", icon: ShoppingBag, label: shoppingText("cart"), count: cartCount },
   ] as const;
+  useEffect(() => {
+    document.body.classList.add("has-side-rail");
+    return () => document.body.classList.remove("has-side-rail");
+  }, []);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("keydown", onKey);
+    document.body.classList.add("mobile-nav-open");
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.classList.remove("mobile-nav-open");
+    };
+  }, [open]);
   return (
+    <>
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur">
       <div className="mx-auto max-w-7xl px-3 sm:px-6">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3">
@@ -117,8 +132,8 @@ export function Header() {
           </div>
         </div>
         <nav aria-label={lang === "ar" ? "التنقل الرئيسي" : "Main navigation"}
-          className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-border/60 py-2 xl:flex xl:justify-between">
-          <div className="hidden min-w-0 items-center gap-1 xl:flex">
+          className="hidden border-t border-border/60 py-2 xl:flex xl:items-center xl:justify-between">
+          <div className="flex min-w-0 items-center gap-1">
             {links.map((x) => (
               <Button asChild variant="ghost" key={x.l} className="site-nav-link">
                 <Link to={x.to} hash={"hash" in x ? x.hash : ""} title={x.l}
@@ -130,12 +145,7 @@ export function Header() {
               </Button>
             ))}
           </div>
-          <Button variant="ghost" className="h-12 justify-start gap-2 px-2 text-sm xl:hidden"
-            onClick={() => setOpen(!open)} aria-label={lang === "ar" ? "القائمة" : "Menu"}
-            aria-expanded={open} aria-controls="mobile-navigation">
-            {open ? <X /> : <Menu />} <span>{lang === "ar" ? "القائمة" : "Menu"}</span>
-          </Button>
-          <div className="flex shrink-0 items-center gap-1 sm:gap-3 xl:border-s xl:border-border xl:ps-4">
+          <div className="flex shrink-0 items-center gap-1 border-s border-border ps-4 sm:gap-3">
             {shortcuts.map((item) => (
               <Button key={item.to} asChild variant="ghost" className="main-nav-shortcut">
                 <Link to={item.to} onClick={() => setOpen(false)}
@@ -151,22 +161,46 @@ export function Header() {
             ))}
           </div>
         </nav>
-        {open && (
-          <nav id="mobile-navigation" aria-label={lang === "ar" ? "أقسام الموقع" : "Site sections"}
-            className="grid max-h-[60dvh] grid-cols-2 gap-2 overflow-y-auto border-t border-border py-3 sm:grid-cols-4 xl:hidden">
-            {links.map((x) => (
-              <Button key={x.l} asChild variant="ghost" className="mobile-nav-link">
-                <Link to={x.to} hash={"hash" in x ? x.hash : ""} onClick={() => setOpen(false)}
-                  activeProps={{ className: "site-nav-active", "aria-current": "page" }}
-                  activeOptions={{ exact: x.to === "/", includeHash: true }}>
-                  <span className="nav-icon"><x.icon strokeWidth={1.7} aria-hidden="true" /></span><span>{x.l}</span>
-                </Link>
-              </Button>
-            ))}
-          </nav>
-        )}
       </div>
     </header>
+    <div className="mobile-side-rail xl:hidden">
+      <Button variant="ghost" className="rail-btn"
+        onClick={() => setOpen(!open)} aria-label={lang === "ar" ? "القائمة" : "Menu"}
+        aria-expanded={open} aria-controls="mobile-navigation"
+        title={lang === "ar" ? "القائمة" : "Menu"}>
+        {open ? <X /> : <Menu />}
+      </Button>
+      {shortcuts.map((item) => (
+        <Button key={item.to} asChild variant="ghost" className="rail-btn">
+          <Link to={item.to} onClick={() => setOpen(false)}
+            aria-label={item.to === "/account" ? item.label : `${item.label} (${item.count})`} title={item.label}
+            activeProps={{ className: "site-nav-active", "aria-current": "page" }}>
+            <item.icon strokeWidth={1.7} aria-hidden="true" />
+            {item.count > 0 && <span className="rail-count" aria-hidden="true">{item.count > 99 ? "99+" : item.count}</span>}
+          </Link>
+        </Button>
+      ))}
+    </div>
+    {open && (
+      <>
+        <div className="mobile-side-backdrop xl:hidden" onClick={() => setOpen(false)} />
+        <nav id="mobile-navigation" aria-label={lang === "ar" ? "أقسام الموقع" : "Site sections"}
+          className="mobile-side-drawer xl:hidden">
+          <p className="drawer-title">{lang === "ar" ? "أقسام الموقع" : "Site sections"}</p>
+          {links.map((x) => (
+            <Button key={x.l} asChild variant="ghost" className="drawer-link">
+              <Link to={x.to} hash={"hash" in x ? x.hash : ""} onClick={() => setOpen(false)}
+                activeProps={{ className: "site-nav-active", "aria-current": "page" }}
+                activeOptions={{ exact: x.to === "/", includeHash: true }}>
+                <span className="nav-icon"><x.icon strokeWidth={1.7} aria-hidden="true" /></span>
+                <span className="min-w-0">{x.l}</span>
+              </Link>
+            </Button>
+          ))}
+        </nav>
+      </>
+    )}
+    </>
   );
 }
 
@@ -443,7 +477,7 @@ export function HeroSlider() {
           key={cur.id}
           className="max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-700"
         >
-          <h1 className="mb-3 line-clamp-3 text-2xl font-bold leading-snug sm:text-4xl md:mb-4 md:text-6xl md:leading-tight text-gold-gradient">
+          <h1 className="mb-3 line-clamp-3 ps-2 text-2xl font-bold leading-snug sm:text-4xl md:mb-4 md:text-6xl md:leading-tight text-gold-gradient">
             {pick(cur, "title", lang)}
           </h1>
           <p className="mb-5 line-clamp-3 text-sm text-foreground/85 sm:text-base md:mb-6 md:text-lg">{pick(cur, "body", lang)}</p>
@@ -496,7 +530,7 @@ export function PriceTicker() {
     Number(audit.silver_usd) === Number(s?.silver_usd);
   if (!s) return null;
   return (
-    <div className="mx-auto -mt-10 grid max-w-4xl grid-cols-2 gap-4 px-4 relative z-10">
+    <div className="mx-auto -mt-10 grid max-w-4xl grid-cols-1 gap-4 px-4 relative z-10 sm:grid-cols-2">
       {[
         { l: t("goldPrice"), v: s.gold_usd },
         { l: t("silverPrice"), v: s.silver_usd },
@@ -506,13 +540,13 @@ export function PriceTicker() {
           className="rounded-xl border border-gold/30 bg-card p-5 text-center shadow-gold"
         >
           <p className="text-sm text-muted-foreground">{x.l}</p>
-          <p className="my-1 font-display text-3xl font-bold text-gold-gradient" dir="ltr">
+          <p className="price-value my-1 font-display text-3xl font-bold text-gold-gradient" dir="ltr">
             {fmt(x.v, "en")} USD
           </p>
           <p className="text-xs text-muted-foreground">{t("perOz")}</p>
         </div>
       ))}
-      <div className="col-span-2 text-center text-xs text-muted-foreground">
+      <div className="col-span-1 text-center text-xs text-muted-foreground sm:col-span-2">
         {verified ? (
           <>
             <p>
