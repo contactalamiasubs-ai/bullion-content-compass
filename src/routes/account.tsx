@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Heart, LogOut, ShieldCheck, ShoppingBag } from "lucide-react";
+import { Heart, LogOut, ShieldCheck, ShoppingBag, Home, Gem, ScanSearch, Info, Phone, Newspaper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CustomerAvatar } from "@/components/customer-avatar";
 import { useState } from "react";
@@ -32,23 +32,52 @@ function Account() {
   } });
   const qc = useQueryClient(); const nav = useNavigate();
   if (!user) return <LoginPanel />;
-  return <main className="mx-auto min-h-[60vh] max-w-3xl px-4 py-12">
-    <h1 className="mb-10 text-center text-3xl text-gold-gradient sm:text-4xl">{text(user ? "account" : "customer_login")}</h1>
+  const t = (key: string, ar: string, en: string) => text(key) || (lang === "ar" ? ar : en);
+  const cartCount = Object.values(state.cart).reduce((sum, n) => sum + n, 0);
+  const shortcuts = [
+    { to: "/", icon: Home, label: t("account_home", "الرئيسية", "Home") },
+    { to: "/products", icon: Gem, label: t("account_products", "المنتجات", "Products") },
+    { to: "/favorites", icon: Heart, label: `${text("favorites")} (${state.favorites.length})` },
+    { to: "/cart", icon: ShoppingBag, label: `${text("cart")} (${cartCount})` },
+    { to: "/check-bar", icon: ScanSearch, label: t("account_check", "افحص سبيكتك", "Check your bar") },
+    { to: "/news", icon: Newspaper, label: t("account_news", "الأخبار", "News") },
+    { to: "/about", icon: Info, label: t("account_about", "من نحن", "About us") },
+    { to: "/contact", icon: Phone, label: t("account_contact", "تواصل معنا", "Contact us") },
+  ] as const;
+  return <main className="mx-auto min-h-[60vh] max-w-4xl px-4 py-10 sm:py-14">
+    <div className="mb-8 flex items-center justify-between gap-3">
+      <Link to="/" aria-label={t("account_home", "الرئيسية", "Home")} className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-gold/40 text-gold transition-colors hover:bg-gold/10"><Home className="size-5" /></Link>
+      <h1 className="min-w-0 truncate text-center text-3xl text-gold-gradient sm:text-4xl">{text("account")}</h1>
+      <span className="size-11 shrink-0" aria-hidden="true" />
+    </div>
     {!authReady ? <p role="status" className="text-center">{text("loading")}</p> : <div className="space-y-8">
-      <div className="flex flex-wrap items-center gap-4 border-b border-border pb-6">
-        <CustomerAvatar userId={user.id} name={profile.data?.display_name || user.email || ""} url={profile.data?.avatar_url} size="md" onChanged={() => { void supabase.auth.refreshSession(); void qc.invalidateQueries({ queryKey: ["customer-profile", user.id] }); }} />
-        <div className="min-w-0 flex-1"><h2 className="break-words text-xl">{profile.data?.display_name}</h2><p className="break-all text-sm text-muted-foreground" dir="ltr">{user.email}</p></div>
-        <Button variant="outline" onClick={async () => { await qc.cancelQueries(); qc.clear(); await supabase.auth.signOut(); await nav({ to: "/account", replace: true }); }}><LogOut />{text("signout")}</Button>
-      </div>
-      {syncError ? <div role="alert" className="space-y-3 text-destructive"><p>{text("sync_error")}</p><Button onClick={retry} variant="outline">{text("retry")}</Button></div>
-        : <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground"><ShieldCheck className="text-gold" />{text(ready ? "account_saved" : "loading")}</p>}
+      <section className="relative overflow-hidden rounded-3xl border border-gold/30 bg-card p-6 shadow-[0_20px_60px_-30px_color-mix(in_oklab,var(--gold)_45%,transparent)] sm:p-8">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-gold to-transparent" />
+        <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-start">
+          <CustomerAvatar userId={user.id} name={profile.data?.display_name || user.email || ""} url={profile.data?.avatar_url} size="md" onChanged={() => { void supabase.auth.refreshSession(); void qc.invalidateQueries({ queryKey: ["customer-profile", user.id] }); }} />
+          <div className="min-w-0 flex-1">
+            <h2 className="break-words text-2xl">{profile.data?.display_name}</h2>
+            <p className="break-all text-sm text-muted-foreground" dir="ltr">{user.email}</p>
+            {syncError ? <div role="alert" className="mt-3 space-y-2 text-destructive"><p>{text("sync_error")}</p><Button onClick={retry} variant="outline" size="sm">{text("retry")}</Button></div>
+              : <p role="status" className="mt-2 flex items-center justify-center gap-2 text-sm text-muted-foreground sm:justify-start"><ShieldCheck className="size-4 text-gold" />{text(ready ? "account_saved" : "loading")}</p>}
+          </div>
+          <Button variant="outline" onClick={async () => { await qc.cancelQueries(); qc.clear(); await supabase.auth.signOut(); await nav({ to: "/account", replace: true }); }}><LogOut />{text("signout")}</Button>
+        </div>
+      </section>
       {profile.error && <p role="alert" className="text-destructive">{text("sync_error")}</p>}
-      <div className="grid grid-cols-2 gap-4">
-        <Button asChild variant="outline" className="h-auto min-h-24 flex-col gap-3 whitespace-normal"><Link to="/favorites"><Heart className="text-gold" />{text("favorites")} ({state.favorites.length})</Link></Button>
-        <Button asChild variant="outline" className="h-auto min-h-24 flex-col gap-3 whitespace-normal"><Link to="/cart"><ShoppingBag className="text-gold" />{text("cart")} ({Object.values(state.cart).reduce((sum, n) => sum + n, 0)})</Link></Button>
-      </div>
+      <nav aria-label={t("account_shortcuts", "وصول سريع", "Quick access")}>
+        <h2 className="mb-4 text-center text-lg text-gold">{t("account_shortcuts", "وصول سريع", "Quick access")}</h2>
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+          {shortcuts.map(({ to, icon: Icon, label }) => <li key={to}>
+            <Link to={to} className="group flex h-full min-h-28 flex-col items-center justify-center gap-3 rounded-2xl border border-border bg-card p-4 text-center text-sm transition-all hover:-translate-y-0.5 hover:border-gold/60">
+              <span className="inline-flex size-12 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-gold transition-colors group-hover:bg-gold/20"><Icon className="size-5" /></span>
+              <span className="break-words">{label}</span>
+            </Link>
+          </li>)}
+        </ul>
+      </nav>
       <PasswordChange />
-      <p className="whitespace-pre-line text-sm leading-loose text-muted-foreground">{pick(sections.data?.["shopping_customer_notice"], "body", lang)}</p>
+      <p className="whitespace-pre-line text-center text-sm leading-loose text-muted-foreground">{pick(sections.data?.["shopping_customer_notice"], "body", lang)}</p>
     </div>}
   </main>;
 }
