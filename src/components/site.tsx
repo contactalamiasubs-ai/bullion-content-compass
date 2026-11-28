@@ -90,9 +90,9 @@ export function Header() {
     { to: "/cart", icon: ShoppingBag, label: shoppingText("cart"), count: cartCount },
   ] as const;
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur">
+    <header className="site-header sticky z-40 border-b border-border/60 bg-background/95 backdrop-blur">
       <div className="mx-auto max-w-7xl px-3 sm:px-6">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3">
+        <div className="site-header-brand-row grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3">
           <Link to="/" className="flex min-w-0 items-center gap-2" onClick={() => setOpen(false)}>
             <svg width="0" height="0" aria-hidden="true" className="login-logo-filter"><defs><filter id="header-logo-transparent" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1.5 1.5 1.5 1 -1.3" /></filter></defs></svg>
             <span className="brand-mark relative grid h-11 w-11 shrink-0 place-items-center rounded-full sm:h-[52px] sm:w-[52px]">

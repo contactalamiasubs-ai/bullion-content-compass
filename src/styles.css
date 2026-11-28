@@ -385,6 +385,15 @@
 }
 
 /* Ensure navigational artwork stays legible over generic button sizing. */
+.site-header {
+  --header-brand-height: 68px;
+  top: calc(-1 * var(--header-brand-height));
+}
+.site-header-brand-row { height: var(--header-brand-height); }
+@media (min-width: 640px) {
+  .site-header { --header-brand-height: 76px; }
+}
+
 .shortcut-icon svg, .favorite-control svg { width: 22px; height: 22px; }
 .nav-icon svg { width: 20px; height: 20px; }
 .mobile-nav-link .nav-icon svg { width: 22px; height: 22px; }
