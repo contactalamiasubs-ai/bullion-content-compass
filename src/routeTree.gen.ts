@@ -29,6 +29,7 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SetPasswordRouteImport } from './routes/set-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthCallbackRouteImport } from './routes/auth_.callback'
 import { Route as CategoriesIdRouteImport } from './routes/categories.$id'
@@ -144,6 +145,11 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -242,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/set-password': typeof SetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/welcome': typeof WelcomeRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/categories/$id': typeof CategoriesIdRoute
@@ -278,6 +285,7 @@ export interface FileRoutesByTo {
   '/set-password': typeof SetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/welcome': typeof WelcomeRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/categories/$id': typeof CategoriesIdRoute
@@ -316,6 +324,7 @@ export interface FileRoutesById {
   '/set-password': typeof SetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/welcome': typeof WelcomeRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/auth_/callback': typeof AuthCallbackRoute
   '/categories/$id': typeof CategoriesIdRoute
@@ -354,6 +363,7 @@ export interface FileRouteTypes {
     | '/set-password'
     | '/sitemap.xml'
     | '/verify-email'
+    | '/welcome'
     | '/admin'
     | '/auth/callback'
     | '/categories/$id'
@@ -390,6 +400,7 @@ export interface FileRouteTypes {
     | '/set-password'
     | '/sitemap.xml'
     | '/verify-email'
+    | '/welcome'
     | '/admin'
     | '/auth/callback'
     | '/categories/$id'
@@ -427,6 +438,7 @@ export interface FileRouteTypes {
     | '/set-password'
     | '/sitemap.xml'
     | '/verify-email'
+    | '/welcome'
     | '/_authenticated/admin'
     | '/auth_/callback'
     | '/categories/$id'
@@ -465,6 +477,7 @@ export interface RootRouteChildren {
   SetPasswordRoute: typeof SetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  WelcomeRoute: typeof WelcomeRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CategoriesIdRoute: typeof CategoriesIdRoute
   GroupsIdRoute: typeof GroupsIdRoute
@@ -620,6 +633,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -766,6 +786,7 @@ const rootRouteChildren: RootRouteChildren = {
   SetPasswordRoute: SetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  WelcomeRoute: WelcomeRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CategoriesIdRoute: CategoriesIdRoute,
   GroupsIdRoute: GroupsIdRoute,

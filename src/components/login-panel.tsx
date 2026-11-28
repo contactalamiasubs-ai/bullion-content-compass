@@ -99,10 +99,10 @@ export function RegisterPanel() {
     try {
       rememberLogin(true);
       const email = f.email.trim();
-      const result = await supabase.auth.signUp({ email, password: f.password, options: { emailRedirectTo: window.location.origin, data: { full_name: f.name.trim(), phone: phone.number } } });
+      const result = await supabase.auth.signUp({ email, password: f.password, options: { emailRedirectTo: `${window.location.origin}/welcome`, data: { full_name: f.name.trim(), phone: phone.number } } });
       if (result.error) { setError(text(authErrorKey(result.error))); return; }
       if (!result.data.session) { await nav({ to: "/verify-email", search: { email } }); return; }
-      toast.success(text("auth_success")); await nav({ to: "/account", replace: true });
+      await nav({ to: "/welcome", replace: true });
     } catch { setError(text("auth_error")); } finally { setBusy(false); }
   };
   const labels = ["", text("strength_weak"), text("strength_medium"), text("strength_strong")];
@@ -127,7 +127,7 @@ export function VerifyEmailPanel({ email }: { email: string }) {
   const text = useShoppingText(); const [busy, setBusy] = useState(false); const [msg, setMsg] = useState(""); const [error, setError] = useState("");
   const resend = async () => {
     if (busy || !emailOk(email)) return; setBusy(true); setMsg(""); setError("");
-    try { const r = await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: window.location.origin } }); if (r.error) setError(text(authErrorKey(r.error))); else setMsg(text("verify_resent")); }
+    try { const r = await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: `${window.location.origin}/welcome` } }); if (r.error) setError(text(authErrorKey(r.error))); else setMsg(text("verify_resent")); }
     catch { setError(text("auth_error")); } finally { setBusy(false); }
   };
   return <AuthShell title={text("verify_title")} welcome={text("verify_body")}>

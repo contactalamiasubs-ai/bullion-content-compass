@@ -1,4 +1,6 @@
 # Gold Center updates
+- [x] Customer /welcome page after signup/email confirmation: photo or initial in gold ring, one-time success message (verified first claim true, second false), account card, 4 service cards, editable texts; photo/password change on /account. Signed-out view verified desktop/mobile.
+- [ ] Test /welcome with a real new account (photo upload, confirmation link). "Track orders" opens the cart because orders are sent by WhatsApp and not stored.
 - [ ] (Reverted at user request: site stopped working) Move all remaining site data to Hostinger MySQL (content, prices, serials, bar checks, contact messages, 217 media files) with matching counts; site reads/saves there. Verified contact form write lands in MySQL only.
 - [ ] Hostinger deployment must have MYSQL_HOST/USER/PASSWORD/DATABASE set (MYSQL_HOST=localhost there); publish Lovable and redeploy Hostinger. Staff sign-in, team permissions and SEO tools remain on Cloud because staff login lives there.
 - [x] Move customer authentication and customer data to the user's separate project: customer tables/RLS/functions created there, 7 existing customer accounts (staff excluded) with 6 carts and 41 activity rows copied with the same IDs; customer pages and dashboard customer views now use it. Old copies kept on Cloud untouched.

@@ -615,3 +615,36 @@
 .auth-verify-icon svg { width: 32px; height: 32px; }
 .auth-email { color: var(--login-gold-light); font-weight: 600; word-break: break-all; }
 @media (max-width: 480px) { .auth-title span { width: 18px; } .auth-title { font-size: 24px !important; } }
+
+/* Customer welcome page */
+.welcome-panel { position: relative; z-index: 1; width: min(100%, 640px); padding: 26px 30px 30px; border: 1px solid color-mix(in srgb, var(--login-gold) 75%, var(--login-border)); border-radius: 28px; background: color-mix(in srgb, var(--login-surface) 90%, transparent); backdrop-filter: blur(20px); box-shadow: var(--login-shadow); text-align: center; color: var(--login-text); }
+.welcome-name { margin: 14px 0 4px; font-size: 26px; line-height: 1.4; color: var(--login-gold-light); overflow-wrap: anywhere; }
+.welcome-hello { color: color-mix(in srgb, var(--login-text) 75%, transparent); }
+.welcome-success { margin: 10px auto 0; max-width: 460px; padding: 14px 16px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--login-gold) 45%, transparent); background: color-mix(in srgb, var(--login-gold) 8%, transparent); box-shadow: 0 0 28px -10px var(--login-gold); }
+.welcome-success p { color: color-mix(in srgb, var(--login-text) 80%, transparent); font-size: 14px; line-height: 1.8; }
+.welcome-success-title { display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 19px !important; color: var(--login-gold-light) !important; font-weight: 700; }
+.welcome-success-title svg { color: var(--success, oklch(0.72 0.17 150)); width: 26px; height: 26px; filter: drop-shadow(0 0 6px color-mix(in srgb, oklch(0.72 0.17 150) 60%, transparent)); }
+.welcome-card { margin-top: 20px; padding: 16px; border-radius: 18px; border: 1px solid color-mix(in srgb, var(--login-gold) 30%, transparent); text-align: start; }
+.welcome-card h2 { font-size: 15px; color: var(--login-gold-light); margin-bottom: 10px; }
+.welcome-card-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; }
+.welcome-card dt { font-size: 12px; color: color-mix(in srgb, var(--login-text) 60%, transparent); }
+.welcome-card dd { margin: 0 0 6px; }
+.welcome-services { margin-top: 18px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.welcome-service { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 16px 10px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--login-gold) 30%, transparent); background: color-mix(in srgb, var(--login-gold) 4%, transparent); transition: border-color 200ms, transform 200ms, box-shadow 200ms; }
+.welcome-service svg { color: var(--login-gold); width: 28px; height: 28px; }
+.welcome-service strong { color: var(--login-gold-light); }
+.welcome-service span { font-size: 12px; color: color-mix(in srgb, var(--login-text) 65%, transparent); }
+.welcome-service:hover, .welcome-service:focus-visible { border-color: var(--login-gold); transform: translateY(-2px); box-shadow: 0 10px 30px -14px var(--login-gold); }
+.welcome-actions { margin-top: 22px; display: grid; gap: 10px; }
+@media (min-width: 640px) { .welcome-actions { grid-template-columns: 1fr 1fr; } }
+.welcome-actions a { min-height: 46px; border-radius: 10px; }
+.welcome-home { border-color: var(--login-gold) !important; color: var(--login-gold-light) !important; background: transparent !important; }
+.customer-avatar { position: relative; display: inline-block; margin-inline: auto; }
+.customer-avatar-ring { border-radius: 9999px; padding: 3px; background: linear-gradient(135deg, var(--login-gold-light), var(--login-gold), color-mix(in srgb, var(--login-gold) 50%, black)); box-shadow: 0 0 24px -4px var(--login-gold); }
+.customer-avatar-ring > * { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 9999px; object-fit: cover; background: var(--login-surface); color: var(--login-gold-light); font-weight: 700; }
+.customer-avatar-lg .customer-avatar-ring { width: 112px; height: 112px; font-size: 42px; }
+.customer-avatar-md .customer-avatar-ring { width: 64px; height: 64px; font-size: 24px; }
+.customer-avatar-edit { position: absolute; inset-inline-end: -2px; bottom: -2px; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9999px; background: var(--login-gold); color: var(--login-surface); border: 2px solid var(--login-surface); }
+.customer-avatar-md .customer-avatar-edit { width: 26px; height: 26px; }
+.customer-avatar-edit svg { width: 16px; height: 16px; }
+@media (max-width: 639px) { .welcome-panel { padding: 22px 16px 22px; border-radius: 22px; } .welcome-name { font-size: 22px; } }
