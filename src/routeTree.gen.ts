@@ -19,12 +19,16 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckBarRouteImport } from './routes/check-bar'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as ProductsRouteImport } from './routes/products'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SetPasswordRouteImport } from './routes/set-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthCallbackRouteImport } from './routes/auth_.callback'
 import { Route as CategoriesIdRouteImport } from './routes/categories.$id'
@@ -90,6 +94,16 @@ const FavoritesRoute = FavoritesRouteImport.update({
   path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NewsRoute = NewsRouteImport.update({
   id: '/news',
   path: '/news',
@@ -98,6 +112,11 @@ const NewsRoute = NewsRouteImport.update({
 const ProductsRoute = ProductsRouteImport.update({
   id: '/products',
   path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -118,6 +137,11 @@ const SetPasswordRoute = SetPasswordRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -208,12 +232,16 @@ export interface FileRoutesByFullPath {
   '/check-bar': typeof CheckBarRoute
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
+  '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/set-password': typeof SetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/categories/$id': typeof CategoriesIdRoute
@@ -240,12 +268,16 @@ export interface FileRoutesByTo {
   '/check-bar': typeof CheckBarRoute
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
+  '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/set-password': typeof SetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/categories/$id': typeof CategoriesIdRoute
@@ -274,12 +306,16 @@ export interface FileRoutesById {
   '/check-bar': typeof CheckBarRoute
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/products': typeof ProductsRoute
+  '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/set-password': typeof SetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/auth_/callback': typeof AuthCallbackRoute
   '/categories/$id': typeof CategoriesIdRoute
@@ -308,12 +344,16 @@ export interface FileRouteTypes {
     | '/check-bar'
     | '/contact'
     | '/favorites'
+    | '/forgot-password'
+    | '/login'
     | '/news'
     | '/products'
+    | '/register'
     | '/reset-password'
     | '/services'
     | '/set-password'
     | '/sitemap.xml'
+    | '/verify-email'
     | '/admin'
     | '/auth/callback'
     | '/categories/$id'
@@ -340,12 +380,16 @@ export interface FileRouteTypes {
     | '/check-bar'
     | '/contact'
     | '/favorites'
+    | '/forgot-password'
+    | '/login'
     | '/news'
     | '/products'
+    | '/register'
     | '/reset-password'
     | '/services'
     | '/set-password'
     | '/sitemap.xml'
+    | '/verify-email'
     | '/admin'
     | '/auth/callback'
     | '/categories/$id'
@@ -373,12 +417,16 @@ export interface FileRouteTypes {
     | '/check-bar'
     | '/contact'
     | '/favorites'
+    | '/forgot-password'
+    | '/login'
     | '/news'
     | '/products'
+    | '/register'
     | '/reset-password'
     | '/services'
     | '/set-password'
     | '/sitemap.xml'
+    | '/verify-email'
     | '/_authenticated/admin'
     | '/auth_/callback'
     | '/categories/$id'
@@ -407,12 +455,16 @@ export interface RootRouteChildren {
   CheckBarRoute: typeof CheckBarRoute
   ContactRoute: typeof ContactRoute
   FavoritesRoute: typeof FavoritesRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LoginRoute: typeof LoginRoute
   NewsRoute: typeof NewsRoute
   ProductsRoute: typeof ProductsRoute
+  RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   SetPasswordRoute: typeof SetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  VerifyEmailRoute: typeof VerifyEmailRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CategoriesIdRoute: typeof CategoriesIdRoute
   GroupsIdRoute: typeof GroupsIdRoute
@@ -498,6 +550,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/news': {
       id: '/news'
       path: '/news'
@@ -510,6 +576,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products'
       preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -538,6 +611,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -676,12 +756,16 @@ const rootRouteChildren: RootRouteChildren = {
   CheckBarRoute: CheckBarRoute,
   ContactRoute: ContactRoute,
   FavoritesRoute: FavoritesRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  LoginRoute: LoginRoute,
   NewsRoute: NewsRoute,
   ProductsRoute: ProductsRoute,
+  RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   SetPasswordRoute: SetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  VerifyEmailRoute: VerifyEmailRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CategoriesIdRoute: CategoriesIdRoute,
   GroupsIdRoute: GroupsIdRoute,

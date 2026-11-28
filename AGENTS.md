@@ -66,3 +66,4 @@ use the editor.
 - Customer exports fetch every page under customer-permission RLS and generate XLSX locally in the browser; export strings as text, never formulas, and exclude credentials.
 - Bar serials use a separate serial permission in navigation and RLS; public lookup returns only one active exact match, and Excel parsing runs in the browser with atomic validated upserts. Backfill existing product members' serial permission when separating access.
 - Hostinger privileged Auth actions relay to the pinned Lovable endpoint with a validated admin bearer; secrets stay hosted and invitation origins are allowlisted.
+- Customer sign-in, sign-up, email verification and forgot-password are separate routes (/login, /register, /verify-email, /forgot-password) sharing AuthShell in login-panel.tsx; sign-up stores full name and E.164 phone in Auth metadata so no schema change is needed.

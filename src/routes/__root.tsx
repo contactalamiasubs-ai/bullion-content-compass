@@ -132,7 +132,7 @@ function RootComponent() {
     seedPublicQueries(queryClient, bundle);
   }, [queryClient, bundle]);
   const { pathname } = useLocation();
-  const bare = pathname.startsWith("/admin") || pathname.startsWith("/auth") || pathname === "/set-password" || pathname === "/reset-password" || pathname === "/account";
+  const bare = pathname.startsWith("/admin") || pathname.startsWith("/auth") || pathname === "/set-password" || pathname === "/reset-password" || pathname === "/account" || ["/login", "/register", "/forgot-password", "/verify-email"].includes(pathname);
 
   return (
     <QueryClientProvider client={queryClient}>

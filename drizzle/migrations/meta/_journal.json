@@ -281,6 +281,13 @@
       "when": 1795714525508,
       "tag": "0039_google_login_admin_rpcs",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1795859740260,
+      "tag": "0040_auth_pages_texts",
+      "breakpoints": true
     }
   ]
 }
