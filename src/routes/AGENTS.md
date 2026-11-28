@@ -1,0 +1,1 @@
+- Customer /welcome success shows once via customer-project `claim_welcome()` (atomic welcome_shown_at update); photos go to the owner-folder `avatars` bucket and sync through Auth metadata, because the profile trigger copies metadata.

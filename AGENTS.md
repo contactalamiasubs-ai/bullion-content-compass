@@ -67,4 +67,3 @@ use the editor.
 - Bar serials use a separate serial permission in navigation and RLS; public lookup returns only one active exact match, and Excel parsing runs in the browser with atomic validated upserts. Backfill existing product members' serial permission when separating access.
 - Hostinger privileged Auth actions relay to the pinned Lovable endpoint with a validated admin bearer; secrets stay hosted and invitation origins are allowlisted.
 - Customer auth pages share AuthShell; name/phone go in customer Auth metadata. Customer Google stays hidden until enabled in the customer project.
-- Customer /welcome success shows once via customer-project `claim_welcome()` (atomic welcome_shown_at update); photos go to the owner-folder `avatars` bucket and sync through Auth metadata, because the profile trigger copies metadata.
