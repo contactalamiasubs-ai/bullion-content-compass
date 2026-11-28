@@ -1,4 +1,5 @@
 import { SeoImage } from "@/components/seo-image";
+import { createPortal } from "react-dom";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useNearViewport } from "@/hooks/use-near-viewport";
 import { Link } from "@tanstack/react-router";
@@ -151,11 +152,13 @@ export function Header() {
             ))}
           </div>
         </nav>
-        {open && (
+        {open && typeof document !== "undefined" && createPortal(<>
+          <button type="button" aria-label={lang === "ar" ? "إغلاق القائمة" : "Close menu"}
+            className="fixed inset-0 z-40 bg-black/60 xl:hidden" onClick={() => setOpen(false)} />
           <nav id="mobile-navigation" aria-label={lang === "ar" ? "أقسام الموقع" : "Site sections"}
-            className="grid max-h-[60dvh] grid-cols-2 gap-2 overflow-y-auto border-t border-border py-3 sm:grid-cols-4 xl:hidden">
+            className="fixed inset-y-0 start-0 z-50 flex w-64 max-w-[80vw] flex-col gap-1 overflow-y-auto border-e border-gold/40 bg-card p-3 pt-6 shadow-2xl xl:hidden">
             {links.map((x) => (
-              <Button key={x.l} asChild variant="ghost" className="mobile-nav-link">
+              <Button key={x.l} asChild variant="ghost" className="mobile-nav-link !h-12 !flex-row !justify-start gap-3">
                 <Link to={x.to} hash={"hash" in x ? x.hash : ""} onClick={() => setOpen(false)}
                   activeProps={{ className: "site-nav-active", "aria-current": "page" }}
                   activeOptions={{ exact: x.to === "/", includeHash: true }}>
@@ -164,7 +167,7 @@ export function Header() {
               </Button>
             ))}
           </nav>
-        )}
+        </>, document.body)}
       </div>
     </header>
   );
