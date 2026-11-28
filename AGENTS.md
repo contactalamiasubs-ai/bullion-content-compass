@@ -33,11 +33,11 @@ use the editor.
 
 ## Project rules
 
-- All site content (texts, prices, slides, products, posts) lives in Cloud tables with `_ar`/`_en` columns; UI reads them via `pick()` in `src/lib/i18n.tsx` so every text stays editable from /admin.
+- Site content/prices/serials/checks/messages/media live in Hostinger MySQL (`mysql.server.ts`, `site-schema.ts`) behind server functions with Cloud permission checks; staff auth, permissions and SEO stay on Cloud. Texts keep `_ar`/`_en` + `pick()`.
 - Admin dashboard uses the generic `ListEditor`/`SingleEditor` in `src/components/admin/editors.tsx`; add new editable tables by declaring fields there, not by writing new forms.
 - Admin editor mutations invalidate the public collection, post detail and overview queries, and expose pending/error states so saved content is reflected without silent failures.
 - Writes use full-admin or scoped dashboard permission RLS; settings updates also validate changed fields so price access cannot edit unrelated settings. The first signed-up user becomes admin through a trigger.
-- Media bucket is private; content stores `/api/public/media/<path>` links that sign a fresh one-hour URL per request.
+- Media bytes live in MySQL media_files; `/api/public/media/<path>` serves only published references.
 - Catalog PDF uses the generic editor and the catalog_download section; prefetch its signed file into a Blob for click-time mobile downloads.
 - Price refresh requires authenticated price permission; only exact Gold API XAU/XAG HTTPS endpoints are allowed to prevent SSRF, and validated USD-per-ounce quotes must match AI output exactly before publication.
 - Price audit records retain source timestamps, payload and model response ID; manual prices are not labeled source-verified.

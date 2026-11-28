@@ -10,7 +10,14 @@ export function publicSiteClient() {
 }
 export async function readPublicBundle(): Promise<SiteBundle> {
   const client = publicSiteClient();
+  const siteTables = new Set(["site_settings","products","posts","services","product_groups","product_categories","sections","slides","metal_prices","price_history"]);
   async function rows<T extends keyof Database["public"]["Tables"]>(table: T, order: string) {
+    // Site content comes from the Hostinger database; SEO tables stay on Cloud.
+    if (siteTables.has(table)) {
+      const { sql, normalize } = await import("./mysql.server");
+      const found = await sql(`SELECT * FROM \`${table}\` ORDER BY \`${order}\``);
+      return found.map((r) => normalize(table as never, r)) as unknown as Database["public"]["Tables"][T]["Row"][];
+    }
     return readAllPages<Database["public"]["Tables"][T]["Row"]>(async (offset,limit) => {
       const result = await client.from(table).select("*").order(order).range(offset, offset + limit - 1);
       return {data: result.data as unknown as Database["public"]["Tables"][T]["Row"][] | null,error:result.error};

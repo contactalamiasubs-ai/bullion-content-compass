@@ -1,7 +1,7 @@
+import { readStaffRows } from "@/lib/site-data.functions";
 import { useState } from "react";
 import { Download, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 
 /** Downloads every bar-check request (name, email, serial, date) as Excel. Strings are written as text, never formulas. */
 export function BullionChecksExportButton() {
@@ -11,11 +11,7 @@ export function BullionChecksExportButton() {
     setBusy(true); setError("");
     try {
       const rows: { name: string; email: string; customer_number: string | null; serial: string; created_at: string }[] = [];
-      for (let from = 0; ; from += 1000) {
-        const r = await supabase.from("bullion_checks").select("name,email,customer_number,serial,created_at").order("created_at", { ascending: false }).range(from, from + 999);
-        if (r.error) throw r.error;
-        rows.push(...r.data); if (r.data.length < 1000) break;
-      }
+      rows.push(...((await readStaffRows({ data: { table: "bullion_checks", order: "created_at", ascending: false } })) as typeof rows));
       const { Workbook } = await import("exceljs");
       const wb = new Workbook();
       const ws = wb.addWorksheet("طلبات الفحص", { views: [{ rightToLeft: true, state: "frozen", ySplit: 1 }] });

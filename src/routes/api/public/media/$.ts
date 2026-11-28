@@ -1,53 +1,42 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
-import { mediaResponse, publicMediaPath, publishedMediaOrigin } from "@/lib/media-access";
+import { mediaResponse, publicMediaPath } from "@/lib/media-access";
 import { requestedImageWidth } from "@/lib/responsive-images";
 import { cachedMediaBytes } from "@/lib/media-delivery";
 
-// Media files stay in the private bucket; each request gets a fresh short-lived signed link.
+// Media files live in the Hostinger database (media_files) and are served only when published content references them.
 export const Route = createFileRoute("/api/public/media/$")({
   staticData: { sitemap: false },
   server: { handlers: {
     GET: async ({ params, request }) => {
       const path = params._splat ?? "";
-      const publicPath = publicMediaPath(path);
-      if (!publicPath) return new Response("Not found", { status: 404 });
+      if (!publicMediaPath(path)) return new Response("Not found", { status: 404 });
       const width = requestedImageWidth(new URL(request.url).searchParams.get("w"));
-      const deliver = async (url: string) => {
-        const range = request.headers.get("Range");
-        const response = await fetch(url, range ? { headers: { Range: range } } : {});
-        return cachedMediaBytes(response);
-      };
-      if (!process.env["SUPABASE_SERVICE_ROLE_KEY"]) {
-        // External hosting delegates authorization to the pinned app and streams its media.
-        const response = await fetch(`${publishedMediaOrigin}${publicPath}${width ? `?w=${width}` : ""}`, { redirect: "follow", ...(request.headers.get("Range") ? { headers: { Range: request.headers.get("Range") ?? "" } } : {}) });
-        if (!response.ok) return new Response("Not found", { status: response.status, headers: { "Cache-Control": "no-store" } });
-        return cachedMediaBytes(response);
-      }
-      const url = process.env["SUPABASE_URL"];
-      const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
-      if (!url || !key) return new Response("Unavailable", { status: 503 });
-      const publicClient = createClient<Database>(url, key, {
-        auth: { persistSession: false, autoRefreshToken: false },
-        global: { fetch: (input, init) => {
-          const headers = new Headers(init?.headers);
-          if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`) headers.delete("Authorization");
-          headers.set("apikey", key);
-          return fetch(input, { ...init, headers });
-        } },
-      });
+      const { sql } = await import("@/lib/mysql.server");
       return mediaResponse(path, {
-        deliver,
-        isPublished: async (_url) => {
-          const { data, error } = await publicClient.rpc("is_published_media", { _url });
+        isPublished: async (url) => {
+          const ref = await sql(`SELECT 1 FROM products WHERE active = 1 AND image_url = ?
+            UNION SELECT 1 FROM slides WHERE active = 1 AND (image_url = ? OR link = ?)
+            UNION SELECT 1 FROM posts WHERE published = 1 AND image_url = ?
+            UNION SELECT 1 FROM services WHERE image_url = ?
+            UNION SELECT 1 FROM sections WHERE image_url = ?
+            UNION SELECT 1 FROM site_settings WHERE id = 1 AND (logo_url = ? OR app_link = ? OR login_logo_url = ? OR login_background_url = ? OR (popup_enabled = 1 AND popup_link = ?) OR (serial_bg_enabled = 1 AND serial_bg_image = ?)) LIMIT 1`, Array(12).fill(url));
+          if (ref.length) return true;
+          // SEO share images are still managed with the SEO tools.
+          const supaUrl = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+          const key = process.env["SUPABASE_PUBLISHABLE_KEY"] ?? process.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+          if (!supaUrl || !key) return false;
+          const client = createClient<Database>(supaUrl, key, { auth: { persistSession: false, autoRefreshToken: false } });
+          const { data, error } = await client.rpc("is_published_media", { _url: url });
           return !error && data === true;
         },
-        sign: async (objectPath) => {
-          // Only a file referenced by anonymously readable content reaches privileged signing.
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          const { data, error } = await supabaseAdmin.storage.from("media").createSignedUrl(objectPath, 60 * 60);
-          return !error && data ? data.signedUrl : null;
+        // "sign" only confirms the stored file exists; bytes come from deliver.
+        sign: async (objectPath) => ((await sql("SELECT 1 FROM media_files WHERE path = ? LIMIT 1", [objectPath])).length ? objectPath : null),
+        deliver: async (objectPath) => {
+          const [file] = await sql<{ mime: string; data: Buffer }>("SELECT mime, data FROM media_files WHERE path = ?", [objectPath]);
+          if (!file) return new Response("Not found", { status: 404, headers: { "Cache-Control": "no-store" } });
+          return cachedMediaBytes(new Response(new Uint8Array(file.data), { headers: { "Content-Type": file.mime, "Content-Length": String(file.data.length) } }));
         },
       }, width);
     },

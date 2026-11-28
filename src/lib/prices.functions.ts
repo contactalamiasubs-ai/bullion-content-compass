@@ -11,15 +11,14 @@ export const refreshVerifiedPrices = createServerFn({ method: "POST" })
       _permission: "prices",
     });
     if (roleError || !allowed) throw new Error("غير مسموح");
-    const { data: settings, error } = await supabase
-      .from("site_settings")
-      .select("price_source_enabled,gold_source_url,silver_source_url")
-      .eq("id", 1)
-      .single();
-    if (error || !settings?.price_source_enabled)
+    const { sql, exec } = await import("./mysql.server");
+    const [settings] = await sql<{ price_source_enabled: number; gold_source_url: string | null; silver_source_url: string | null }>(
+      "SELECT price_source_enabled, gold_source_url, silver_source_url FROM site_settings WHERE id = 1",
+    );
+    if (!settings || !Number(settings.price_source_enabled))
       throw new Error("فعّل المصدر واحفظ الإعدادات أولًا");
-    const goldUrl = validateSourceUrl(settings.gold_source_url, "XAU");
-    const silverUrl = validateSourceUrl(settings.silver_source_url, "XAG");
+    const goldUrl = validateSourceUrl(settings.gold_source_url ?? "", "XAU");
+    const silverUrl = validateSourceUrl(settings.silver_source_url ?? "", "XAG");
     const [gold, silver] = await Promise.all([
       fetchValidatedQuote(goldUrl, "XAU"),
       fetchValidatedQuote(silverUrl, "XAG"),
@@ -62,29 +61,17 @@ export const refreshVerifiedPrices = createServerFn({ method: "POST" })
       // Recheck freshness after inference, not just before it.
       validateQuote(gold, "XAU");
       validateQuote(silver, "XAG");
-      const { data: update, error: insertError } = await supabase
-        .from("price_updates")
-        .insert({
-          gold_usd: gold.price,
-          silver_usd: silver.price,
-          gold_source_url: goldUrl,
-          silver_source_url: silverUrl,
-          gold_source_at: gold.updatedAt,
-          silver_source_at: silver.updatedAt,
-          model: "openai/gpt-6-astra",
-          summary_ar: analysis.summary_ar,
-          summary_en: analysis.summary_en,
-          source_payload: { gold, silver },
-          response_id: response.id,
-          created_by: userId,
-        })
-        .select("id")
-        .single();
-      if (insertError || !update) throw new Error("تعذر حفظ توثيق الأسعار");
-      const { error: applyError } = await supabase.rpc("apply_verified_prices", {
-        _update_id: update.id,
-      });
-      if (applyError) throw new Error("تم حفظ التوثيق ولكن تعذر تطبيق الأسعار");
+      const id = crypto.randomUUID();
+      const at = (v: string) => new Date(v).toISOString().replace("T", " ").replace("Z", "");
+      try {
+        await exec(
+          "INSERT INTO price_updates (id, gold_usd, silver_usd, gold_source_url, silver_source_url, gold_source_at, silver_source_at, verified_at, model, summary_ar, summary_en, source_payload, response_id, created_by) VALUES (?,?,?,?,?,?,?,UTC_TIMESTAMP(3),?,?,?,?,?,?)",
+          [id, gold.price, silver.price, goldUrl, silverUrl, at(gold.updatedAt), at(silver.updatedAt), "openai/gpt-6-astra", analysis.summary_ar, analysis.summary_en, JSON.stringify({ gold, silver }), response.id, userId],
+        );
+      } catch { throw new Error("تعذر حفظ توثيق الأسعار"); }
+      try {
+        await exec("UPDATE site_settings SET gold_usd = ?, silver_usd = ?, updated_at = UTC_TIMESTAMP(3) WHERE id = 1", [gold.price, silver.price]);
+      } catch { throw new Error("تم حفظ التوثيق ولكن تعذر تطبيق الأسعار"); }
       return { success: true };
     } catch (err) {
       if (err instanceof GatewayError)

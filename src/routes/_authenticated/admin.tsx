@@ -23,6 +23,7 @@ import {
   Plug,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { countMessages, countSiteRows, deleteSiteRow, readStaffRows } from "@/lib/site-data.functions";
 import { BullionChecksExportButton } from "@/components/admin/bullion-checks-export";
 import { SingleEditor, ListEditor, type Field } from "@/components/admin/editors";
 import { productGroupsQuery, settingsQuery } from "@/lib/data";
@@ -493,14 +494,8 @@ function Overview({ onSelect, access }: { onSelect: (tab: TabId) => void; access
     queryKey: ["admin-overview"],
     enabled: access.admin,
     queryFn: async () => {
-      const results = await Promise.all([
-        supabase.from("products").select("id", { count: "exact", head: true }),
-        supabase.from("slides").select("id", { count: "exact", head: true }),
-        supabase.from("posts").select("id", { count: "exact", head: true }),
-        supabase.from("contact_messages").select("id", { count: "exact", head: true }),
-      ]);
-      for (const result of results) if (result.error) throw result.error;
-      return results.map((result) => result.count ?? 0);
+      const [counts, messages] = await Promise.all([countSiteRows(), countMessages()]);
+      return [counts.products, counts.slides, counts.posts, messages];
     },
   });
   const metrics = [
@@ -581,20 +576,14 @@ function Messages() {
   } = useQuery({
     queryKey: ["admin", "messages"],
     queryFn: async () => {
-      const result = await supabase
-        .from("contact_messages")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (result.error) throw result.error;
-      return result.data ?? [];
+      return (await readStaffRows({ data: { table: "contact_messages", order: "created_at", ascending: false } })) as { id: string; name: string; email: string; phone: string | null; message: string; created_at: string }[];
     },
   });
   const del = async (id: string) => {
     if (!confirm("حذف هذه الرسالة؟")) return;
     setDeleting(id);
     try {
-      const result = await supabase.from("contact_messages").delete().eq("id", id);
-      if (result.error) throw result.error;
+      await deleteSiteRow({ data: { table: "contact_messages", id } });
       toast.success("تم حذف الرسالة");
       void qc.invalidateQueries({ queryKey: ["admin", "messages"] });
       void qc.invalidateQueries({ queryKey: ["admin-overview"] });
