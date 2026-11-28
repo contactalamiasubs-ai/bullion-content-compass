@@ -1,4 +1,6 @@
 # Gold Center updates
+- [x] Restore Google on customer login/register using separate customer-project PKCE/account chooser. Existing provider enabled; both buttons verified at 394/1280px without overflow; 10 tests passed, staff login unchanged.
+- [ ] Complete Google customer login: Google returns 401 deleted_client for the customer's existing credentials; needs a replacement active Google OAuth client/secret with the customer-project callback authorized, then real account consent. Deploy updated source to Hostinger for restored buttons there.
 - [x] Customer /welcome page after signup/email confirmation: photo or initial in gold ring, one-time success message (verified first claim true, second false), account card, 4 service cards, editable texts; photo/password change on /account. Signed-out view verified desktop/mobile.
 - [ ] Test /welcome with a real new account (photo upload, confirmation link). "Track orders" opens the cart because orders are sent by WhatsApp and not stored.
 - [ ] (Reverted at user request: site stopped working) Move all remaining site data to Hostinger MySQL (content, prices, serials, bar checks, contact messages, 217 media files) with matching counts; site reads/saves there. Verified contact form write lands in MySQL only.

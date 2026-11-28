@@ -18,6 +18,7 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckBarRouteImport } from './routes/check-bar'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CustomerCallbackRouteImport } from './routes/customer-callback'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LoginRouteImport } from './routes/login'
@@ -88,6 +89,11 @@ const CheckBarRoute = CheckBarRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomerCallbackRoute = CustomerCallbackRouteImport.update({
+  id: '/customer-callback',
+  path: '/customer-callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -237,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/check-bar': typeof CheckBarRoute
   '/contact': typeof ContactRoute
+  '/customer-callback': typeof CustomerCallbackRoute
   '/favorites': typeof FavoritesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
@@ -274,6 +281,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/check-bar': typeof CheckBarRoute
   '/contact': typeof ContactRoute
+  '/customer-callback': typeof CustomerCallbackRoute
   '/favorites': typeof FavoritesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
@@ -313,6 +321,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/check-bar': typeof CheckBarRoute
   '/contact': typeof ContactRoute
+  '/customer-callback': typeof CustomerCallbackRoute
   '/favorites': typeof FavoritesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
@@ -352,6 +361,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/check-bar'
     | '/contact'
+    | '/customer-callback'
     | '/favorites'
     | '/forgot-password'
     | '/login'
@@ -389,6 +399,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/check-bar'
     | '/contact'
+    | '/customer-callback'
     | '/favorites'
     | '/forgot-password'
     | '/login'
@@ -427,6 +438,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/check-bar'
     | '/contact'
+    | '/customer-callback'
     | '/favorites'
     | '/forgot-password'
     | '/login'
@@ -466,6 +478,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckBarRoute: typeof CheckBarRoute
   ContactRoute: typeof ContactRoute
+  CustomerCallbackRoute: typeof CustomerCallbackRoute
   FavoritesRoute: typeof FavoritesRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
@@ -554,6 +567,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customer-callback': {
+      id: '/customer-callback'
+      path: '/customer-callback'
+      fullPath: '/customer-callback'
+      preLoaderRoute: typeof CustomerCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -775,6 +795,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckBarRoute: CheckBarRoute,
   ContactRoute: ContactRoute,
+  CustomerCallbackRoute: CustomerCallbackRoute,
   FavoritesRoute: FavoritesRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
