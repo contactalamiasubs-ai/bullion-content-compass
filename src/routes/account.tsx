@@ -4,7 +4,7 @@ import { UserRound, Heart, LogOut, ShieldCheck, ShoppingBag } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { LoginPanel } from "@/components/login-panel";
 import { useShopping, useShoppingText } from "@/components/shopping-provider";
-import { supabase } from "@/integrations/supabase/client";
+import { customerAuth as supabase } from "@/lib/customer-client";
 import { useLang, pick } from "@/lib/i18n";
 import { sectionsQuery } from "@/lib/data";
 

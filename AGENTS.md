@@ -59,11 +59,11 @@ use the editor.
 - User deletion requires full-admin authorization and a self-deletion guard; a user_roles deletion trigger shares the access-change advisory lock to preserve the final admin even during concurrent Auth deletion.
 - Dashboard company labels read the shared settings query through pick() so settings saves update dashboard branding without a separate company name.
 - Header branding and display controls use a constrained grid; persistent account/shopping shortcuts live in the main navigation alongside a collapsible section menu below desktop width to avoid mobile crowding.
-- Customer profiles mirror Auth identity via triggers; shopping mutations merge guest data once and run atomically per account. Customer data reads allow owners, full admins and customer-permission members; staff administration remains full-admin only.
-- Customer management lives at the protected, unnested /admin/customers route; dashboard desktop links and mobile selection navigate there to support refreshable page URLs.
+- Customer accounts/profiles/shopping/activity live in the owner's separate project (`src/lib/customer-client.ts`); staff auth and content stay on Cloud. Dashboard customer reads pass the Cloud permission check before using the server-only customer client, so identities never mix.
+- Customer management is the protected unnested /admin/customers route so its URL refreshes.
 - Keep administrator sign-in implemented in its own route rather than the customer LoginPanel so customer presentation changes cannot alter dashboard entry.
 - Customer analytics reads all paginated rows through customer-permission authenticated RLS and summarizes disclosed account activity separately from current shopping state; carts are not completed orders.
 - Customer exports fetch every page under customer-permission RLS and generate XLSX locally in the browser; export strings as text, never formulas, and exclude credentials.
 - Bar serials use a separate serial permission in navigation and RLS; public lookup returns only one active exact match, and Excel parsing runs in the browser with atomic validated upserts. Backfill existing product members' serial permission when separating access.
 - Hostinger privileged Auth actions relay to the pinned Lovable endpoint with a validated admin bearer; secrets stay hosted and invitation origins are allowlisted.
-- Customer auth pages are separate routes sharing AuthShell; sign-up keeps name/phone in Auth metadata to avoid schema changes.
+- Customer auth pages share AuthShell; name/phone go in customer Auth metadata. Customer Google stays hidden until enabled in the customer project.

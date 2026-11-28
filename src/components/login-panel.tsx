@@ -5,10 +5,9 @@ import { Mail, LockKeyhole, Eye, EyeOff, LogIn, LoaderCircle, ArrowRight, UserRo
 import { getCountries, getCountryCallingCode, parsePhoneNumberFromString, type CountryCode } from "libphonenumber-js";
 import goldBarsAsset from "@/assets/auth-gold-bars.webp.asset.json";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { customerAuth as supabase } from "@/lib/customer-client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { GoogleSignIn } from "@/components/google-sign-in";
 import { useShoppingText } from "@/components/shopping-provider";
 import { settingsQuery } from "@/lib/data";
 import { pick, useLang } from "@/lib/i18n";
@@ -76,7 +75,6 @@ export function LoginPanel({ destination = "/account" }: { destination?: LoginDe
       {error && <p role="alert" className="login-error">{error}</p>}
       <Button type="submit" className="login-submit" disabled={busy}>{busy ? <LoaderCircle className="animate-spin" /> : <LogIn />}{text("login")}</Button>
     </form>
-    <div className="login-divider"><span />{text("or")}<span /></div><GoogleSignIn destination={destination} remember={remember} />
     <div className="login-bottom"><span>{text("no_account")}</span><Link to="/register" className="auth-link">{text("signup")}</Link></div>
   </AuthShell>;
 }
@@ -121,7 +119,6 @@ export function RegisterPanel() {
       {error && <p role="alert" className="login-error">{error}</p>}
       <Button type="submit" className="login-submit" disabled={busy}>{busy ? <LoaderCircle className="animate-spin" /> : <UserPlus />}{text("signup")}</Button>
     </form>
-    <div className="login-divider"><span />{text("or")}<span /></div><GoogleSignIn destination="/account" remember />
     <div className="login-bottom"><span>{text("have_account")}</span><Link to="/login" className="auth-link">{text("login")}</Link></div>
   </AuthShell>;
 }

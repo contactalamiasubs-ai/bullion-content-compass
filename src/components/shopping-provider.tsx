@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, useRef, useCallback, ty
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { customerAuth as supabase } from "@/lib/customer-client";
 import { toast } from "sonner";
 import { customerActionSchema } from "@/lib/customer-accounts";
 import { sectionsQuery } from "@/lib/data";

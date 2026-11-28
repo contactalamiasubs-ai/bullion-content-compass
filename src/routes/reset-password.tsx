@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { customerAuth as supabase } from "@/lib/customer-client";
 import { LoginScene, LoginBrand } from "@/components/login-panel";
 import { useShoppingText } from "@/components/shopping-provider";
 import { Button } from "@/components/ui/button";
